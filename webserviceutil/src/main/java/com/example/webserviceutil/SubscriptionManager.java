@@ -108,12 +108,11 @@ public final class SubscriptionManager {
      */
     public static void removeSubscription(Subscription subscription) {
         if(subscription != null && !subscription.isUnsubscribed() && subscriptionCallMap.containsKey(subscription)) {
-
-            Call call = subscriptionCallMap.get(subscription);
-
-            OkHttpUtils.cancelCall(call);
             subscription.unsubscribe();
             Log.d(TAG, "subscription is unsubscribe");
+
+            Call call = subscriptionCallMap.get(subscription);
+            OkHttpUtils.cancelCall(call);
 
             //remove webServiceParamSubMap
             WebServiceParam param = getKeyByValue(webServiceParamSubMap, subscription);

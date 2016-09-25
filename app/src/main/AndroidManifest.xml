@@ -25,6 +25,7 @@
         <activity android:name=".GetBitmapDataActivity" android:label="getBitmap"/>
         <activity android:name=".PostObjectDataActivity" android:label="PostObject"/>
         <activity android:name=".PostCollectionDataActivity" android:label="PostCollection"/>
+        <activity android:name=".GetObjectDatasActivity" android:label="GetObjectDatas"/>
     </application>
 
 </manifest>

@@ -29,7 +29,7 @@ import rx.Subscription;
 public abstract class Service {
 
     public final static String TAG = "WebService";
-    final static Gson gson = new Gson();
+    public final static Gson gson = new Gson();
     public final static String POST_TYPE = "POST";
     public final static String GET_TYPE = "GET";
 

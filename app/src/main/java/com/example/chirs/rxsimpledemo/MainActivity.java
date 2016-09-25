@@ -67,6 +67,7 @@ public class MainActivity extends BaseActivity {
         activityClassList.add(new ActivityClass("获取图片资源", GetBitmapDataActivity.class));
         activityClassList.add(new ActivityClass("post方式获取单个对象", PostObjectDataActivity.class));
         activityClassList.add(new ActivityClass("提交多个文件", PostCollectionDataActivity.class));
+        activityClassList.add(new ActivityClass("请求嵌套", GetObjectDatasActivity.class));
 
         return activityClassList;
     }

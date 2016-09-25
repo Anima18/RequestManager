@@ -9,13 +9,29 @@ import com.example.webserviceutil.callBack.ObjectCallBack;
 import com.example.webserviceutil.callBack.ProgressCollectionCallBack;
 import com.example.webserviceutil.callBack.ProgressObjectCallBack;
 import com.example.webserviceutil.entity.WebServiceParam;
+import com.example.webserviceutil.exception.ServiceErrorException;
 import com.example.webserviceutil.service.BitMapService;
 import com.example.webserviceutil.service.CollectionService;
 import com.example.webserviceutil.service.ObjectService;
 import com.example.webserviceutil.service.ProgressCollectionService;
 import com.example.webserviceutil.service.ProgressObjectService;
+import com.example.webserviceutil.service.Service;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
+
+import static com.example.webserviceutil.service.Service.GET_TYPE;
+import static com.example.webserviceutil.service.Service.POST_TYPE;
+import static com.example.webserviceutil.service.Service.gson;
 
 /**
  * 服务封装类，这里的服务是指网络服务，比如get/post请求。
@@ -76,6 +92,112 @@ public final class WebService {
      */
     public static Subscription getBitMap(Context context, String url, BitmapCallBack callBack) {
         return BitMapService.getInstance().execute(context, url, callBack);
+    }
+
+    public static <T> Observable<T> getObjectObservable(final Context context, final WebServiceParam param) {
+        return Observable.create(new Observable.OnSubscribe<T>() {
+            @Override
+            public void call(Subscriber<? super T> subscriber) {
+                if(subscriber.isUnsubscribed())
+                    return;
+                try {
+                    Call call = null;
+                    if(GET_TYPE.equals(param.getMethod())) {
+                        call = OkHttpUtils.get(context, param.getRequestUrl());
+                    }else if(POST_TYPE.equals(param.getMethod())) {
+                        call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
+                    }
+                    SubscriptionManager.addRequest(param, call);
+                    Response response = call.execute();
+                    if(response.isSuccessful()) {
+                        subscriber.onNext((T)gson.fromJson(response.body().charStream(), param.getClazz()));
+                        subscriber.onCompleted();
+                    }else {
+                        subscriber.onError(new ServiceErrorException(response.code()));
+                    }
+                    SubscriptionManager.addRequest(param, call);
+                }catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    public static <T> Observable<List<T>> getCollectionObservable(final Context context, final WebServiceParam param) {
+        return Observable.create(new Observable.OnSubscribe<List<T>>() {
+            @Override
+            public void call(Subscriber<? super List<T>> subscriber) {
+                if(subscriber.isUnsubscribed())
+                    return;
+                try {
+                    Call call = null;
+                    if(GET_TYPE.equals(param.getMethod())) {
+                        call = OkHttpUtils.get(context, param.getRequestUrl());
+                    }else if(POST_TYPE.equals(param.getMethod())) {
+                        call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
+                    }
+                    SubscriptionManager.addRequest(param, call);
+                    Response response = call.execute();
+                    if(response.isSuccessful()) {
+                        List<T> resultList = new ArrayList<>();
+
+                        JsonArray array = new JsonParser().parse(response.body().charStream()).getAsJsonArray();
+                        for(JsonElement elem : array){
+                            resultList.add((T) gson.fromJson(elem, param.getClazz()));
+                        }
+                        subscriber.onNext(resultList);
+                        subscriber.onCompleted();
+                    }else {
+                        subscriber.onError(new ServiceErrorException(response.code()));
+                    }
+                    SubscriptionManager.addRequest(param, call);
+                }catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    public static Subscriber<Object> getObjectSubscriber(final ObjectCallBack<Object> callBack) {
+        return new Subscriber<Object>() {
+            @Override
+            public void onCompleted() {
+                callBack.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Service.handleException(e, callBack);
+                e.printStackTrace();
+                onCompleted();
+            }
+
+            @Override
+            public void onNext(Object o) {
+                callBack.onSuccess(o);
+            }
+        };
+    }
+
+    public static Subscriber<List<Object>> getCollectionSubscriber( final CollectionCallBack<Object> callBack) {
+        return new Subscriber<List<Object>>() {
+            @Override
+            public void onCompleted() {
+                callBack.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Service.handleException(e, callBack);
+                onCompleted();
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(List<Object> t) {
+                callBack.onSuccess(t);
+            }
+        };
     }
 
     /**

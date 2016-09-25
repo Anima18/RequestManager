@@ -50,7 +50,7 @@ public final class ObjectService extends Service {
         return subscription;
     }
 
-    private <T> void callObjectWebService(Context context, Subscriber<? super T> subscriber, WebServiceParam param) {
+    public <T> void callObjectWebService(Context context, Subscriber<? super T> subscriber, WebServiceParam param) {
         try {
             Response response = getResponse(context, param);
             if(response.isSuccessful()) {

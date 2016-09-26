@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * 文件上传回调，继承接口{@link CallBack}
+ *  @param <T> 请求数据的类型
  * @author 简建鸿 2016/6/14
  * @version 1.0
  */

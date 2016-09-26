@@ -8,11 +8,14 @@ package com.example.webserviceutil.callBack;
  */
 public interface CallBack<T> {
     /**
-     * 得到服务端错误响应的回调方法
+     * 请求失败的回调方法
      * @param code  异常code
      * @param message 异常信息
      */
     void onFailure(int code, String message);
 
+    /**
+     * 请求结束的回调方法.
+     */
     void onCompleted();
 }

@@ -94,6 +94,13 @@ public final class WebService {
         return BitMapService.getInstance().execute(context, url, callBack);
     }
 
+    /**
+     * 发送获取单个对象的请求，并返回请求的Observable对象
+     * @param context 上下文
+     * @param param 请求参数
+     * @param <T> 请求参数类型
+     * @return Observable
+     */
     public static <T> Observable<T> getObjectObservable(final Context context, final WebServiceParam param) {
         return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
@@ -123,6 +130,13 @@ public final class WebService {
         });
     }
 
+    /**
+     * 发送获取对象集合的请求，并返回请求的Observable对象
+     * @param context 上下文
+     * @param param 请求参数
+     * @param <T> 请求参数类型
+     * @return Observable
+     */
     public static <T> Observable<List<T>> getCollectionObservable(final Context context, final WebServiceParam param) {
         return Observable.create(new Observable.OnSubscribe<List<T>>() {
             @Override
@@ -158,6 +172,11 @@ public final class WebService {
         });
     }
 
+    /**
+     * 返回获取单个对象请求的Subscriber
+     * @param callBack 请求结束后的回调
+     * @return Subscriber
+     */
     public static Subscriber<Object> getObjectSubscriber(final ObjectCallBack<Object> callBack) {
         return new Subscriber<Object>() {
             @Override
@@ -179,6 +198,11 @@ public final class WebService {
         };
     }
 
+    /**
+     * 返回获取对象集合请求的Subscriber
+     * @param callBack 请求结束后的回调
+     * @return Subscriber
+     */
     public static Subscriber<List<Object>> getCollectionSubscriber( final CollectionCallBack<Object> callBack) {
         return new Subscriber<List<Object>>() {
             @Override

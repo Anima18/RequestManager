@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * 获取对象集合的回调接口，继承接口{@link CallBack}
+ * @param <T> 请求数据的类型
  * @author 简建鸿 2016/6/2
  * @version 1.0
  */

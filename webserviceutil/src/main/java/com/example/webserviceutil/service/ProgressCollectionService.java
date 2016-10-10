@@ -96,6 +96,7 @@ public final class ProgressCollectionService extends Service {
                 Log.d(TAG, "WebService onError");
                 SubscriptionManager.removeSubscription(param);
                 Service.handleException(e, callBack);
+                callBack.onCompleted();
                 e.printStackTrace();
             }
 

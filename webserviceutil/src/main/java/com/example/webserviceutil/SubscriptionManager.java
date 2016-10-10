@@ -5,7 +5,9 @@ import android.util.Log;
 import com.example.webserviceutil.OkHttp.OkHttpUtils;
 import com.example.webserviceutil.entity.WebServiceParam;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -20,7 +22,7 @@ public final class SubscriptionManager {
     private final static String TAG = "WebService";
     //普通请求管理
     private static Map<WebServiceParam, Subscription> webServiceParamSubMap = new HashMap<>();
-    private static Map<Subscription, Call> subscriptionCallMap = new HashMap<>();
+    private static Map<Subscription, List<Call>> subscriptionCallMap = new HashMap<>();
 
     //图片请求管理
     private static Map<String, Subscription> urlSubMap = new HashMap<>();
@@ -52,7 +54,14 @@ public final class SubscriptionManager {
      */
     public static void addRequest(WebServiceParam param, Call call) {
         if(webServiceParamSubMap.containsKey(param)) {
-            subscriptionCallMap.put(webServiceParamSubMap.get(param), call);
+            List<Call> callList = subscriptionCallMap.get(webServiceParamSubMap.get(param));
+            if(callList == null) {
+                callList = new ArrayList<>();
+                callList.add(call);
+                subscriptionCallMap.put(webServiceParamSubMap.get(param), callList);
+            }else {
+                callList.add(call);
+            }
             Log.d(TAG, "SubscriptionManager add Request");
         }
     }
@@ -64,7 +73,15 @@ public final class SubscriptionManager {
      */
     public static void addRequest(String url, Call call) {
         if(urlSubMap.containsKey(url)) {
-            subscriptionCallMap.put(urlSubMap.get(url), call);
+            //subscriptionCallMap.put(urlSubMap.get(url), call);
+            List<Call> callList = subscriptionCallMap.get(urlSubMap.get(url));
+            if(callList == null) {
+                callList = new ArrayList<>();
+                callList.add(call);
+                subscriptionCallMap.put(urlSubMap.get(url), callList);
+            }else {
+                callList.add(call);
+            }
             Log.d(TAG, "SubscriptionManager add Request");
         }
     }
@@ -80,6 +97,8 @@ public final class SubscriptionManager {
 
         Log.d(TAG, "SubscriptionManager remove subscription");
         Log.d(TAG, "SubscriptionManager remove Request");
+        Log.d(TAG, "urlSubMap size :" + urlSubMap.size());
+        Log.d(TAG, "subscriptionCallMap size :" + subscriptionCallMap.size());
     }
 
     /**
@@ -88,8 +107,12 @@ public final class SubscriptionManager {
      */
     public static void removeSubscription(String url) {
         Subscription subscription = urlSubMap.get(url);
-        Call call = subscriptionCallMap.get(subscription);
-        OkHttpUtils.cancelCall(call);
+
+        List<Call> callList = subscriptionCallMap.get(subscription);
+        for(Call call : callList) {
+            OkHttpUtils.cancelCall(call);
+        }
+
         if(subscription != null && subscription.isUnsubscribed()) {
             subscription.unsubscribe();
             Log.d(TAG, "subscription is unsubscribe");
@@ -111,8 +134,10 @@ public final class SubscriptionManager {
             subscription.unsubscribe();
             Log.d(TAG, "subscription is unsubscribe");
 
-            Call call = subscriptionCallMap.get(subscription);
-            OkHttpUtils.cancelCall(call);
+            List<Call> callList = subscriptionCallMap.get(subscription);
+            for(Call call : callList) {
+                OkHttpUtils.cancelCall(call);
+            }
 
             //remove webServiceParamSubMap
             WebServiceParam param = getKeyByValue(webServiceParamSubMap, subscription);
@@ -130,7 +155,13 @@ public final class SubscriptionManager {
 
     public static void removeSubscription(Call call) {
         if(call != null) {
-            Subscription subscription = getKeyByValue(subscriptionCallMap, call);
+            Subscription subscription = null;
+            for (Map.Entry<Subscription, List<Call>> entry : subscriptionCallMap.entrySet()) {
+                if (entry.getValue().contains(call)) {
+                    subscription = entry.getKey();
+                    break;
+                }
+            }
             removeSubscription(subscription);
         }
     }

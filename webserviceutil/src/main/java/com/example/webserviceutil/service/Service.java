@@ -9,13 +9,21 @@ import com.example.webserviceutil.entity.WebServiceError;
 import com.example.webserviceutil.entity.WebServiceParam;
 import com.example.webserviceutil.exception.ServiceErrorException;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -94,4 +102,114 @@ public abstract class Service {
         }
         callBack.onFailure(webServiceError.getCode(), webServiceError.getMessage());
     }
+
+    public static void rebuildJsonObj(JsonObject jsonObject) {
+        Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
+        for (Map.Entry<String, JsonElement> entry : entrySet) {
+            String key = entry.getKey();
+            JsonElement jsonElement = jsonObject.get(key);
+            if(jsonElement.isJsonObject()) {
+                rebuildJsonObj((JsonObject) jsonElement);
+            }else if(jsonElement.isJsonArray()) {
+                rebuildJsonArray((JsonArray) jsonElement);
+            }else {
+                String str = jsonElement.getAsString();
+                JsonReader reader = new JsonReader(new StringReader(str));
+                reader.setLenient(true);
+                JsonElement strJE = new JsonParser().parse(reader);
+                if(strJE.isJsonObject()) {
+                    jsonObject.add(key, strJE);
+                    rebuildJsonObj((JsonObject) strJE);
+                }else if(strJE.isJsonArray()) {
+                    jsonObject.add(key, strJE);
+                    rebuildJsonArray((JsonArray) strJE);
+                }else {
+
+                }
+            }
+        }
+    }
+
+    public static void rebuildJsonArray(JsonArray jsonArray) {
+        for(JsonElement jsonElement : jsonArray){
+            if(jsonElement.isJsonObject()) {
+                rebuildJsonObj((JsonObject) jsonElement);
+            }else if(jsonElement.isJsonArray()) {
+                rebuildJsonArray((JsonArray) jsonElement);
+            }else {
+                String str = jsonElement.getAsString();
+                JsonElement strJE = new JsonParser().parse(str);
+                if(strJE.isJsonObject()) {
+                    jsonElement = strJE;
+                    rebuildJsonObj((JsonObject) strJE);
+                }else if(strJE.isJsonArray()) {
+                    jsonElement = strJE;
+                    rebuildJsonArray((JsonArray) strJE);
+                }else {
+
+                }
+            }
+        }
+    }
+
+    /*public static void rebuildJsonObj(JSONObject jsonObject) {
+        Iterator<String> iterator = jsonObject.keys();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            try {
+                Object o = jsonObject.get(key);
+                if(o instanceof String) {
+                    try {
+                        JSONObject dd = new JSONObject(o.toString());
+                        jsonObject.put(key, dd);
+                        rebuildJsonObj(dd);
+                        Log.i("ObjectService", key+": JSONObject");
+                    } catch (JSONException e) {
+                        try{
+                            JSONArray cc = new JSONArray(o.toString());
+                            jsonObject.put(key, cc);
+                            rebuildJsonArray(cc);
+                            Log.i("ObjectService", key+": JSONArray");
+                        } catch (JSONException e2) {
+                            Log.i("ObjectService", key+": String");
+                        }
+                    }
+                }else if(o instanceof JSONObject) {
+                    rebuildJsonObj((JSONObject)o);
+                }else if(o instanceof JSONArray) {
+                    rebuildJsonArray((JSONArray)o);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
+
+    /*public static void rebuildJsonArray(JSONArray jsonArray) {
+        for(int i = 0; i < jsonArray.length(); i++) {
+            try {
+                Object o = jsonArray.get(i);
+                if(o instanceof String) {
+                    try {
+                        JSONObject dd = new JSONObject(o.toString());
+                        o = dd;
+                        rebuildJsonObj(dd);
+                    } catch (JSONException e) {
+                        try{
+                            JSONArray cc = new JSONArray(o.toString());
+                            o = cc;
+                            rebuildJsonArray(cc);
+                        } catch (JSONException e2) {
+                        }
+                    }
+                }else if(o instanceof JSONObject) {
+                    rebuildJsonObj((JSONObject)o);
+                }else if(o instanceof JSONArray) {
+                    rebuildJsonArray((JSONArray)o);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }*/
 }

@@ -67,8 +67,8 @@ public class MainActivity extends BaseActivity {
         activityClassList.add(new ActivityClass("获取图片资源", GetBitmapDataActivity.class));
         activityClassList.add(new ActivityClass("post方式获取单个对象", PostObjectDataActivity.class));
         activityClassList.add(new ActivityClass("提交多个文件", PostCollectionDataActivity.class));
-        activityClassList.add(new ActivityClass("请求嵌套", GetObjectDatasActivity.class));
-
+        activityClassList.add(new ActivityClass("请求嵌套", GetNestedObjectDataActivity.class));
+        activityClassList.add(new ActivityClass("顺序请求", GetObjectDataListActivity.class));
         return activityClassList;
     }
 
@@ -141,23 +141,23 @@ public class MainActivity extends BaseActivity {
 
     private List<String> initData() {
         List<String> urlList = new ArrayList<>();
-        urlList.add("http://192.168.1.103:8080/WebService/file/doughnut.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/darts.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/life-saver.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/beer-cap.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/compass.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/clock.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/beer-cap-dribble.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/1.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/2.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/3.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/4.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/5.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/6.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/7.png");
-        urlList.add("http://192.168.1.103:8080/WebService/file/Kalimba.mp3");
-        urlList.add("http://192.168.1.103:8080/WebService/file/OkHttp发布.rar");
-        urlList.add("http://192.168.1.103:8080/WebService/file/app-debug.apk");
+        urlList.add(BASE_PATH + "file/doughnut.png");
+        urlList.add(BASE_PATH + "file/darts.png");
+        urlList.add(BASE_PATH + "file/life-saver.png");
+        urlList.add(BASE_PATH + "file/beer-cap.png");
+        urlList.add(BASE_PATH + "file/compass.png");
+        urlList.add(BASE_PATH + "file/clock.png");
+        urlList.add(BASE_PATH + "file/beer-cap-dribble.png");
+        urlList.add(BASE_PATH + "file/1.png");
+        urlList.add(BASE_PATH + "file/2.png");
+        urlList.add(BASE_PATH + "file/3.png");
+        urlList.add(BASE_PATH + "file/4.png");
+        urlList.add(BASE_PATH + "file/5.png");
+        urlList.add(BASE_PATH + "file/6.png");
+        urlList.add(BASE_PATH + "file/7.png");
+        urlList.add(BASE_PATH + "file/Kalimba.mp3");
+        urlList.add(BASE_PATH + "file/OkHttp发布.rar");
+        urlList.add(BASE_PATH + "file/app-debug.apk");
         return urlList;
     }
 }

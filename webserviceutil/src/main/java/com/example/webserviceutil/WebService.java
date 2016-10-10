@@ -28,6 +28,8 @@ import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static com.example.webserviceutil.service.Service.GET_TYPE;
 import static com.example.webserviceutil.service.Service.POST_TYPE;
@@ -47,7 +49,7 @@ public final class WebService {
      * @param <T> 结果对象类型
      * @return 订阅对象
      */
-    public final static <T> Subscription updateFile(Context context, WebServiceParam param, ProgressObjectCallBack<T> callBack) {
+    public final static <T> Subscription uploadFile(Context context, WebServiceParam param, ProgressObjectCallBack<T> callBack) {
         return ProgressObjectService.getInstance().execute(context, param, callBack);
     }
 
@@ -58,7 +60,7 @@ public final class WebService {
      * @param <T> 结果对象类型
      * @return 订阅对象
      */
-    public final static <T> Subscription updateFile(Context context, WebServiceParam param, ProgressCollectionCallBack<T> callBack) {
+    public final static <T> Subscription uploadFile(Context context, WebServiceParam param, ProgressCollectionCallBack<T> callBack) {
         return ProgressCollectionService.getInstance().execute(context, param, callBack);
     }
 
@@ -95,16 +97,68 @@ public final class WebService {
     }
 
     /**
-     * 发送获取单个对象的请求，并返回请求的Observable对象
+     * 按顺序发送获取请求列表，每个请求都会回调方法；如果其中一个请求发送错误，则终止请求。
+     * 这个方法没有对订阅关系进行管理。
      * @param context 上下文
-     * @param param 请求参数
-     * @param <T> 请求参数类型
-     * @return Observable
+     * @param params 请求列表
+     * @param callBack 请求回调
+     * @return Subscription 订阅对象
      */
-    public static <T> Observable<T> getObjectObservable(final Context context, final WebServiceParam param) {
-        return Observable.create(new Observable.OnSubscribe<T>() {
+    public static Subscription getObjectInSeq(final Context context, final List<WebServiceParam> params, final ObjectCallBack<Object> callBack) {
+        Subscription subscription = Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
-            public void call(Subscriber<? super T> subscriber) {
+            public void call(Subscriber<? super Object> subscriber) {
+                if(subscriber.isUnsubscribed())
+                    return;
+                try {
+                    Call call = null;
+                    for(WebServiceParam param : params) {
+                        if(GET_TYPE.equals(param.getMethod())) {
+                            call = OkHttpUtils.get(context, param.getRequestUrl());
+                        }else if(POST_TYPE.equals(param.getMethod())) {
+                            call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
+                        }
+                        Response response = call.execute();
+                        SubscriptionManager.addRequest(params.get(0), call);
+                        if(response.isSuccessful()) {
+                            JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
+                            if(jsonElement.isJsonObject()) {
+                                subscriber.onNext(gson.fromJson(jsonElement.toString(), param.getClazz()));
+                            }else if(jsonElement.isJsonArray()) {
+                                JsonArray array = (JsonArray)jsonElement;
+                                List<Object> resultList = new ArrayList<>();
+                                for(JsonElement elem : array){
+                                    resultList.add(gson.fromJson(elem, param.getClazz()));
+                                }
+                                subscriber.onNext(resultList);
+                            }
+                        }else {
+                            subscriber.onError(new ServiceErrorException(response.code()));
+                        }
+                    }
+                    subscriber.onCompleted();
+                }catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(WebService.getObjectSubscriber(params.get(0), callBack));
+        SubscriptionManager.addSubscription(params.get(0), subscription);
+        return subscription;
+    }
+
+    /**
+     * 获取请求的被观察者对象。
+     * 这个方法没有对订阅关系进行管理。
+     * @param context 上下文
+     * @param param 请求列表
+     * @return Observable 被观察者
+     */
+    public static Observable<Object> getObjectObservable(final Context context, final WebServiceParam param) {
+        return Observable.create(new Observable.OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {
@@ -114,29 +168,30 @@ public final class WebService {
                     }else if(POST_TYPE.equals(param.getMethod())) {
                         call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
                     }
-                    SubscriptionManager.addRequest(param, call);
                     Response response = call.execute();
                     if(response.isSuccessful()) {
-                        subscriber.onNext((T)gson.fromJson(response.body().charStream(), param.getClazz()));
+                        JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
+                        if(jsonElement.isJsonObject()) {
+                            subscriber.onNext(gson.fromJson(jsonElement.toString(), param.getClazz()));
+                        }else if(jsonElement.isJsonArray()) {
+                            JsonArray array = (JsonArray)jsonElement;
+                            List<Object> resultList = new ArrayList<>();
+                            for(JsonElement elem : array){
+                                resultList.add(gson.fromJson(elem, param.getClazz()));
+                            }
+                            subscriber.onNext(resultList);
+                        }
                         subscriber.onCompleted();
                     }else {
                         subscriber.onError(new ServiceErrorException(response.code()));
                     }
-                    SubscriptionManager.addRequest(param, call);
                 }catch (Exception e) {
                     subscriber.onError(e);
                 }
             }
         });
     }
-
-    /**
-     * 发送获取对象集合的请求，并返回请求的Observable对象
-     * @param context 上下文
-     * @param param 请求参数
-     * @param <T> 请求参数类型
-     * @return Observable
-     */
+/*
     public static <T> Observable<List<T>> getCollectionObservable(final Context context, final WebServiceParam param) {
         return Observable.create(new Observable.OnSubscribe<List<T>>() {
             @Override
@@ -150,7 +205,7 @@ public final class WebService {
                     }else if(POST_TYPE.equals(param.getMethod())) {
                         call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
                     }
-                    SubscriptionManager.addRequest(param, call);
+                    //SubscriptionManager.addRequest(param, call);
                     Response response = call.execute();
                     if(response.isSuccessful()) {
                         List<T> resultList = new ArrayList<>();
@@ -164,28 +219,29 @@ public final class WebService {
                     }else {
                         subscriber.onError(new ServiceErrorException(response.code()));
                     }
-                    SubscriptionManager.addRequest(param, call);
                 }catch (Exception e) {
                     subscriber.onError(e);
                 }
             }
         });
-    }
+    }*/
 
     /**
-     * 返回获取单个对象请求的Subscriber
-     * @param callBack 请求结束后的回调
+     * 获取观察者对象
+     * @param callBack 回调方法
      * @return Subscriber
      */
-    public static Subscriber<Object> getObjectSubscriber(final ObjectCallBack<Object> callBack) {
+    public static Subscriber<Object> getObjectSubscriber(final WebServiceParam param, final ObjectCallBack<Object> callBack) {
         return new Subscriber<Object>() {
             @Override
             public void onCompleted() {
+                SubscriptionManager.removeSubscription(param);
                 callBack.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
+                SubscriptionManager.removeSubscription(param);
                 Service.handleException(e, callBack);
                 e.printStackTrace();
                 onCompleted();
@@ -197,12 +253,7 @@ public final class WebService {
             }
         };
     }
-
-    /**
-     * 返回获取对象集合请求的Subscriber
-     * @param callBack 请求结束后的回调
-     * @return Subscriber
-     */
+/*
     public static Subscriber<List<Object>> getCollectionSubscriber( final CollectionCallBack<Object> callBack) {
         return new Subscriber<List<Object>>() {
             @Override

@@ -85,7 +85,7 @@ public class PostCollectionDataActivity extends BaseActivity implements View.OnC
             Log.d(TAG, fileName);
             param.addParam(fileName, new FileObject(basePath + fileName));
         }
-        return WebService.updateFile(PostCollectionDataActivity.this, param, new ProgressCollectionCallBack<User>() {
+        return WebService.uploadFile(PostCollectionDataActivity.this, param, new ProgressCollectionCallBack<User>() {
             @Override
             public void onProgress(String fileName, int progress) {
                 updataProgress(fileName, progress);

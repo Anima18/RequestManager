@@ -1,7 +1,6 @@
 package com.example.chirs.rxsimpledemo;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
  */
 public class BaseActivity extends AppCompatActivity{
     protected ProgressDialog progressDialog;
+    protected final static String BASE_PATH = "http://192.168.1.103:8080/webService/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

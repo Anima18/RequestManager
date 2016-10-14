@@ -118,6 +118,76 @@ WebService.getObjectInSeq(this, params, new ObjectCallBack<Object>() {
 ```
 
 - getObjectObservable 嵌套获取对象请求
+```
+final WebServiceParam param = new WebServiceParam(BASE_PATH+"security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
+final WebServiceParam param2 = new WebServiceParam(BASE_PATH+"security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
 
+Subscription subscribe = WebService.getObjectObservable(GetNestedObjectDataActivity.this, param)
+    .flatMap(new Func1<Object, Observable<?>>() {
+        @Override
+        public Observable<?> call(Object o) {
+            if(o == null) {
+                Log.i("GetObjectDataActivity", "第一个请求：null");
+            }else {
+                Log.i("GetObjectDataActivity", "第一个请求："+((User)o).toString());
+            }
+
+            return WebService.getObjectObservable(GetNestedObjectDataActivity.this, param2);
+        }
+    })
+    .subscribeOn(Schedulers.io())
+    .observeOn(AndroidSchedulers.mainThread())
+    .subscribe(WebService.getObjectSubscriber(param, new ObjectCallBack<Object>() {
+        @Override
+        public void onSuccess(Object data) {
+            if(data == null) {
+                resultTv.setText("没有数据");
+            }else {
+                resultTv.setText(data.toString());
+            }
+        }
+
+        @Override
+        public void onFailure(int code, String message) {
+            String errorMessage = "code："+ code +", message:"+message;
+            resultTv.setText(errorMessage);
+        }
+
+        @Override
+        public void onCompleted() {
+            hideProgress();
+        }
+    }));
+```
 
 - uploadFile  文件上传请求
+```
+WebServiceParam param = new WebServiceParam(BASE_PATH + "security/security_uploadList.action", Service.POST_TYPE, User.class);
+param.addParam("user.name", "Anima18");
+param.addParam("user.password", "123456");
+for(String fileName : fileNameArray) {
+    Log.d(TAG, fileName);
+    param.addParam(fileName, new FileObject(basePath + fileName));
+}
+return WebService.uploadFile(PostCollectionDataActivity.this, param, new ProgressCollectionCallBack<User>() {
+    @Override
+    public void onProgress(String fileName, int progress) {
+        updataProgress(fileName, progress);
+    }
+
+    @Override
+    public void onSuccess(List<User> data) {
+        resultTv.setText(data.toString());
+    }
+
+    @Override
+    public void onFailure(int code, String message) {
+        resultTv.setText("code："+ code +", message:"+message);
+    }
+
+    @Override
+    public void onCompleted() {
+        hideProgress();
+    }
+});
+```

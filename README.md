@@ -10,7 +10,7 @@ rxjava-okHttp是封装RxJava和OkHttp的网络组件，目的在于让开发者�
 - cancel 取消请求
 
 ## simple
-1. getObject, 获取单个对象请求
+- getObject, 获取单个对象请求
 ```
 WebServiceParam param = new WebServiceParam(BASE_PATH + "security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
 WebService.getObject(this, param, new ObjectCallBack<User>() {
@@ -35,7 +35,7 @@ WebService.getObject(this, param, new ObjectCallBack<User>() {
 });
 ```
 
-2. getCollection 获取对象集合对象
+- getCollection 获取对象集合对象
 ```
 WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action", Service.GET_TYPE, User.class);
 WebService.getCollection(GetCollectionDataActivity.this, param, new CollectionCallBack<Object>() {
@@ -61,7 +61,7 @@ WebService.getCollection(GetCollectionDataActivity.this, param, new CollectionCa
 }
 ```
 
-3. getBitMap 获取图片资源
+- getBitMap 获取图片资源
 ```
 WebService.getBitMap(context, url, new BitmapCallBack() {
     @Override
@@ -85,7 +85,7 @@ WebService.getBitMap(context, url, new BitmapCallBack() {
 });
 ```
 
-4. getObjectInSeq  顺序获取对象请求
+- getObjectInSeq  顺序获取对象请求
 ```
 requestIndex = 0;
 List<WebServiceParam> params = new ArrayList<>();
@@ -117,7 +117,7 @@ WebService.getObjectInSeq(this, params, new ObjectCallBack<Object>() {
 }
 ```
 
-5. getObjectObservable 嵌套获取对象请求
+- getObjectObservable 嵌套获取对象请求
 
 
-6. uploadFile  文件上传请求
+- uploadFile  文件上传请求

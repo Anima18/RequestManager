@@ -1,12 +1,12 @@
 package com.example.webserviceutil;
 
+import android.util.ArrayMap;
 import android.util.Log;
 
 import com.example.webserviceutil.OkHttp.OkHttpUtils;
 import com.example.webserviceutil.entity.WebServiceParam;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,11 +21,11 @@ import rx.Subscription;
 public final class SubscriptionManager {
     private final static String TAG = "WebService";
     //普通请求管理
-    private static Map<WebServiceParam, Subscription> webServiceParamSubMap = new HashMap<>();
-    private static Map<Subscription, List<Call>> subscriptionCallMap = new HashMap<>();
+    private static Map<WebServiceParam, Subscription> webServiceParamSubMap = new ArrayMap<>();
+    private static Map<Subscription, List<Call>> subscriptionCallMap = new ArrayMap<>();
 
     //图片请求管理
-    private static Map<String, Subscription> urlSubMap = new HashMap<>();
+    private static Map<String, Subscription> urlSubMap = new ArrayMap<>();
 
     /**
      * 管理普通请求

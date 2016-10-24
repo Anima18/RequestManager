@@ -11,15 +11,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chirs.rxsimpledemo.entity.User;
+import com.example.chirs.rxsimpledemo.entity.ResultData;
 import com.example.webserviceutil.WebService;
-import com.example.webserviceutil.callBack.ProgressCollectionCallBack;
+import com.example.webserviceutil.callBack.ProgressObjectCallBack;
 import com.example.webserviceutil.entity.FileObject;
 import com.example.webserviceutil.entity.WebServiceParam;
 import com.example.webserviceutil.service.Service;
 
 import java.io.File;
-import java.util.List;
 
 import rx.Subscription;
 
@@ -78,21 +77,21 @@ public class PostCollectionDataActivity extends BaseActivity implements View.OnC
         String[] fileNameArray = file.list();
 
 
-        WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_uploadList.action", Service.POST_TYPE, User.class);
+        WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_uploadList.action", Service.POST_TYPE, ResultData.class);
         param.addParam("user.name", "Anima18");
         param.addParam("user.password", "123456");
         for(String fileName : fileNameArray) {
             Log.d(TAG, fileName);
             param.addParam(fileName, new FileObject(basePath + fileName));
         }
-        return WebService.uploadFile(PostCollectionDataActivity.this, param, new ProgressCollectionCallBack<User>() {
+        return WebService.uploadFile(PostCollectionDataActivity.this, param, new ProgressObjectCallBack<ResultData>() {
             @Override
             public void onProgress(String fileName, int progress) {
                 updataProgress(fileName, progress);
             }
 
             @Override
-            public void onSuccess(List<User> data) {
+            public void onSuccess(ResultData data) {
                 resultTv.setText(data.toString());
             }
 

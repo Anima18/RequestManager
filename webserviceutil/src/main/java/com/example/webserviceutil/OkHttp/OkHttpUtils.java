@@ -1,4 +1,4 @@
-package com.example.webserviceutil.OkHttp;
+package com.example.webserviceutil.okhttp;
 
 import android.content.Context;
 import android.util.Log;

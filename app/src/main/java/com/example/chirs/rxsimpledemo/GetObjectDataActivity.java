@@ -5,17 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chirs.rxsimpledemo.entity.User;
+import com.example.chirs.rxsimpledemo.entity.ResultData;
 import com.example.webserviceutil.WebService;
 import com.example.webserviceutil.callBack.ObjectCallBack;
 import com.example.webserviceutil.entity.WebServiceParam;
 import com.example.webserviceutil.service.Service;
 
 import rx.Subscription;
+
+import static android.R.attr.name;
 
 ;
 
@@ -24,7 +25,6 @@ import rx.Subscription;
  */
 public class GetObjectDataActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -39,7 +39,6 @@ public class GetObjectDataActivity extends BaseActivity implements View.OnClickL
     }
 
     private void initView() {
-        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -67,12 +66,11 @@ public class GetObjectDataActivity extends BaseActivity implements View.OnClickL
 
     private Subscription getObjectData() {
         resultTv.setText("");
-        String name = nameEt.getText().toString();
         showProgress("正在查询...");
-        WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
-        return WebService.getObject(GetObjectDataActivity.this, param, new ObjectCallBack<User>() {
+        WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action?user.name="+name, Service.GET_TYPE, ResultData.class);
+        return WebService.getData(GetObjectDataActivity.this, param, new ObjectCallBack<ResultData>() {
             @Override
-            public void onSuccess(User data) {
+            public void onSuccess(ResultData data) {
                 if(data == null) {
                     resultTv.setText("没有数据");
                 }else {

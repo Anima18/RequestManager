@@ -3,7 +3,7 @@ package com.example.webserviceutil.service;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.webserviceutil.OkHttp.OkHttpUtils;
+import com.example.webserviceutil.okhttp.OkHttpUtils;
 import com.example.webserviceutil.SubscriptionManager;
 import com.example.webserviceutil.callBack.CallBack;
 import com.example.webserviceutil.callBack.ProgressCollectionCallBack;

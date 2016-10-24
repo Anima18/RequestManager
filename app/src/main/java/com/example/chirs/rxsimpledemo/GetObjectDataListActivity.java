@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,12 +19,13 @@ import java.util.List;
 
 import rx.Subscription;
 
+import static android.R.attr.name;
+
 /**
  * Created by jianjianhong on 2016/6/12.
  */
 public class GetObjectDataListActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -45,7 +45,6 @@ public class GetObjectDataListActivity extends BaseActivity implements View.OnCl
     }
 
     public void initView() {
-        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -73,7 +72,6 @@ public class GetObjectDataListActivity extends BaseActivity implements View.OnCl
 
     private Subscription getObjectData() {
         resultTv.setText("");
-        String name = nameEt.getText().toString();
         showProgress("正在查询...");
         requestIndex = 0;
         List<WebServiceParam> params = new ArrayList<>();

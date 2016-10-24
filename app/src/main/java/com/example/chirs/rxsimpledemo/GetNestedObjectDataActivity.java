@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +22,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
+import static android.R.attr.name;
+
 ;
 
 /**
@@ -30,7 +31,6 @@ import rx.schedulers.Schedulers;
  */
 public class GetNestedObjectDataActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -45,7 +45,6 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
     }
 
     private void initView() {
-        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -73,7 +72,6 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
 
     private Subscription getObjectData() {
         resultTv.setText("");
-        String name = nameEt.getText().toString();
         showProgress("正在查询...");
         final WebServiceParam param = new WebServiceParam(BASE_PATH+"security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
         final WebServiceParam param2 = new WebServiceParam(BASE_PATH+"security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
@@ -122,7 +120,6 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
 
     private Subscription getObjectData2() {
         resultTv.setText("");
-        String name = nameEt.getText().toString();
         showProgress("正在查询...");
         final WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
 

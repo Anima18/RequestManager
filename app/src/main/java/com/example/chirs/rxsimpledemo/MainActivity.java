@@ -12,7 +12,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.chirs.rxsimpledemo.entity.ActivityClass;
-import com.example.webserviceutil.OkHttp.OkHttpUtils;
+import com.example.webserviceutil.okhttp.OkHttpUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,10 +62,8 @@ public class MainActivity extends BaseActivity {
     private List<ActivityClass> getActivityClassList() {
         activityClassList = new ArrayList<>();
 
-        activityClassList.add(new ActivityClass("get方式获取单个对象", GetObjectDataActivity.class));
-        activityClassList.add(new ActivityClass("get方式获取对象对象集合", GetCollectionDataActivity.class));
+        activityClassList.add(new ActivityClass("get方式获取数据", GetObjectDataActivity.class));
         activityClassList.add(new ActivityClass("获取图片资源", GetBitmapDataActivity.class));
-        activityClassList.add(new ActivityClass("post方式获取单个对象", PostObjectDataActivity.class));
         activityClassList.add(new ActivityClass("提交多个文件", PostCollectionDataActivity.class));
         activityClassList.add(new ActivityClass("请求嵌套", GetNestedObjectDataActivity.class));
         activityClassList.add(new ActivityClass("顺序请求", GetObjectDataListActivity.class));

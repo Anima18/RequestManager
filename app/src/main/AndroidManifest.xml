@@ -21,9 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".GetObjectDataActivity" android:label="getObject"/>
-        <activity android:name=".GetCollectionDataActivity" android:label="getCollection"/>
         <activity android:name=".GetBitmapDataActivity" android:label="getBitmap"/>
-        <activity android:name=".PostObjectDataActivity" android:label="PostObject"/>
         <activity android:name=".PostCollectionDataActivity" android:label="PostCollection"/>
         <activity android:name=".GetNestedObjectDataActivity" android:label="getNestedObject"/>
         <activity android:name=".GetObjectDataListActivity" android:label="getObjectList"/>

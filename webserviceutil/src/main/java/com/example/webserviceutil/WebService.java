@@ -2,18 +2,14 @@ package com.example.webserviceutil;
 
 import android.content.Context;
 
-import com.example.webserviceutil.OkHttp.OkHttpUtils;
 import com.example.webserviceutil.callBack.BitmapCallBack;
-import com.example.webserviceutil.callBack.CollectionCallBack;
 import com.example.webserviceutil.callBack.ObjectCallBack;
-import com.example.webserviceutil.callBack.ProgressCollectionCallBack;
 import com.example.webserviceutil.callBack.ProgressObjectCallBack;
 import com.example.webserviceutil.entity.WebServiceParam;
 import com.example.webserviceutil.exception.ServiceErrorException;
+import com.example.webserviceutil.okhttp.OkHttpUtils;
 import com.example.webserviceutil.service.BitMapService;
-import com.example.webserviceutil.service.CollectionService;
 import com.example.webserviceutil.service.ObjectService;
-import com.example.webserviceutil.service.ProgressCollectionService;
 import com.example.webserviceutil.service.ProgressObjectService;
 import com.example.webserviceutil.service.Service;
 import com.google.gson.JsonArray;
@@ -60,9 +56,9 @@ public final class WebService {
      * @param <T> 结果对象类型
      * @return 订阅对象
      */
-    public final static <T> Subscription uploadFile(Context context, WebServiceParam param, ProgressCollectionCallBack<T> callBack) {
+    /*public final static <T> Subscription uploadFile(Context context, WebServiceParam param, ProgressCollectionCallBack<T> callBack) {
         return ProgressCollectionService.getInstance().execute(context, param, callBack);
-    }
+    }*/
 
     /**
      * 请求对象集合服务
@@ -71,9 +67,9 @@ public final class WebService {
      * @param <T> 结果对象类型
      * @return 订阅对象
      */
-    public final static <T> Subscription getCollection(Context context, WebServiceParam param, CollectionCallBack<T> callBack) {
+    /*public final static <T> Subscription getCollection(Context context, WebServiceParam param, CollectionCallBack<T> callBack) {
         return CollectionService.getInstance().execute(context, param, callBack);
-    }
+    }*/
 
     /**
      * 请求单个对象服务
@@ -82,7 +78,7 @@ public final class WebService {
      * @param <T> 结果对象类型
      * @return 订阅对象
      */
-    public final static <T> Subscription getObject(Context context, WebServiceParam param, ObjectCallBack<T> callBack) {
+    public final static <T> Subscription getData(Context context, WebServiceParam param, ObjectCallBack<T> callBack) {
         return ObjectService.getInstance().execute(context, param, callBack);
     }
 

@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.example.webserviceutil.OkHttp.OkHttpUtils;
+import com.example.webserviceutil.okhttp.OkHttpUtils;
 import com.example.webserviceutil.SubscriptionManager;
 import com.example.webserviceutil.callBack.BitmapCallBack;
 import com.example.webserviceutil.exception.ServiceErrorException;

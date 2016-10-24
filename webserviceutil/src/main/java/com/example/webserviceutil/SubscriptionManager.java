@@ -3,7 +3,7 @@ package com.example.webserviceutil;
 import android.util.ArrayMap;
 import android.util.Log;
 
-import com.example.webserviceutil.OkHttp.OkHttpUtils;
+import com.example.webserviceutil.okhttp.OkHttpUtils;
 import com.example.webserviceutil.entity.WebServiceParam;
 
 import java.util.ArrayList;

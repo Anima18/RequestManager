@@ -20,9 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GetObjectDataActivity" android:label="getObject"/>
+        <activity android:name=".GetDataActivity" android:label="getData"/>
         <activity android:name=".GetBitmapDataActivity" android:label="getBitmap"/>
-        <activity android:name=".PostCollectionDataActivity" android:label="PostCollection"/>
+        <activity android:name=".PostDataActivity" android:label="postData"/>
+        <activity android:name=".DownloadFileActivity" android:label="DownloadFile"/>
+        <activity android:name=".UploadFileActivity" android:label="uploadFile"/>
         <activity android:name=".GetNestedObjectDataActivity" android:label="getNestedObject"/>
         <activity android:name=".GetObjectDataListActivity" android:label="getObjectList"/>
     </application>

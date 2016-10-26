@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.chirs.rxsimpledemo.entity.ActivityClass;
-import com.example.webserviceutil.okhttp.OkHttpUtils;
+import com.example.requestmanager.okhttp.OkHttpUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +27,11 @@ import okio.Okio;
 
 public class MainActivity extends BaseActivity {
 
+    private ListView dataLv;
     private List<ActivityClass> activityClassList;
     private List<String> urlList;
+
+    private final static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +41,23 @@ public class MainActivity extends BaseActivity {
         urlList = initData();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //Runtime.getRuntime().gc();
+        int maxMemory = ((int) Runtime.getRuntime().maxMemory())/1024/1024;
+        //应用程序已获得内存
+        long totalMemory = ((int) Runtime.getRuntime().totalMemory())/1024/1024;
+        //应用程序已获得内存中未使用内存
+        long freeMemory = ((int) Runtime.getRuntime().freeMemory())/1024/1024;
+        //应用程序已使用的内存
+        long usedMemory = totalMemory - freeMemory;
+        Log.i(TAG, "---> maxMemory=" + maxMemory + "M,totalMemory=" + totalMemory + "M,freeMemory=" + freeMemory + "M,usedMemory="+usedMemory+"M");
+        //Runtime.getRuntime().gc();
+    }
+
     private void initView() {
-        ListView dataLv = (ListView) findViewById(R.id.data_lv);
-        if(dataLv == null) {
-            return;
-        }
+        dataLv = (ListView)findViewById(R.id.data_lv);
 
         ListDataAdapter adapter = new ListDataAdapter(this, getActivityClassList());
         dataLv.setAdapter(adapter);
@@ -59,14 +75,16 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private List<ActivityClass> getActivityClassList() {
+    public List<ActivityClass> getActivityClassList() {
         activityClassList = new ArrayList<>();
 
-        activityClassList.add(new ActivityClass("get方式获取数据", GetObjectDataActivity.class));
+        activityClassList.add(new ActivityClass("GET方式获取数据", GetDataActivity.class));
+        activityClassList.add(new ActivityClass("POST方式获取数据", PostDataActivity.class));
         activityClassList.add(new ActivityClass("获取图片资源", GetBitmapDataActivity.class));
-        activityClassList.add(new ActivityClass("提交多个文件", PostCollectionDataActivity.class));
+        activityClassList.add(new ActivityClass("上传文件", UploadFileActivity.class));
         activityClassList.add(new ActivityClass("请求嵌套", GetNestedObjectDataActivity.class));
         activityClassList.add(new ActivityClass("顺序请求", GetObjectDataListActivity.class));
+        activityClassList.add(new ActivityClass("下载文件", DownloadFileActivity.class));
         return activityClassList;
     }
 
@@ -87,7 +105,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void download() {
+    public void download() {
         showProgress("正在下载中");
         final String basePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava/";
         createDir(basePath);
@@ -106,7 +124,7 @@ public class MainActivity extends BaseActivity {
                 protected String doInBackground(String... params) {
                     String url = params[0];
                     String filename = url.substring(url.lastIndexOf("/"));
-                    Call call;
+                    Call call = null;
                     try {
                         call = OkHttpUtils.get(MainActivity.this, url);
                         Response response = call.execute();
@@ -124,7 +142,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private static boolean createDir(String destDirName) {
+    public static boolean createDir(String destDirName) {
         boolean flag = false;
         File dir = new File(destDirName);
         if (!dir.exists()) {
@@ -137,7 +155,7 @@ public class MainActivity extends BaseActivity {
         return flag;
     }
 
-    private List<String> initData() {
+    public List<String> initData() {
         List<String> urlList = new ArrayList<>();
         urlList.add(BASE_PATH + "file/doughnut.png");
         urlList.add(BASE_PATH + "file/darts.png");

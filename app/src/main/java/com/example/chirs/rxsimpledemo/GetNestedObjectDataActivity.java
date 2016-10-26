@@ -7,22 +7,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.chirs.rxsimpledemo.entity.User;
-import com.example.webserviceutil.SubscriptionManager;
-import com.example.webserviceutil.WebService;
-import com.example.webserviceutil.callBack.ObjectCallBack;
-import com.example.webserviceutil.entity.WebServiceParam;
-import com.example.webserviceutil.service.Service;
+import com.example.chirs.rxsimpledemo.entity.DataObject;
+import com.example.requestmanager.NetworkRequest;
+import com.example.requestmanager.callBack.DataCallBack;
+import com.example.requestmanager.service.Service;
 
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static android.R.attr.name;
 
 ;
 
@@ -55,8 +50,8 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                WebService.cancel(subscription);
-                Toast.makeText(GetNestedObjectDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
+                NetworkRequest.cancel(subscription);
+                //Toast.makeText(GetNestedObjectDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -70,81 +65,40 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
         }
     }
 
-    private Subscription getObjectData() {
-        resultTv.setText("");
-        showProgress("正在查询...");
-        final WebServiceParam param = new WebServiceParam(BASE_PATH+"security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
-        final WebServiceParam param2 = new WebServiceParam(BASE_PATH+"security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
-
-        Subscription subscribe = WebService.getObjectObservable(GetNestedObjectDataActivity.this, param)
-            .flatMap(new Func1<Object, Observable<?>>() {
-                @Override
-                public Observable<?> call(Object o) {
-                    if(o == null) {
-                        Log.i("GetObjectDataActivity", "第一个请求：null");
-                    }else {
-                        Log.i("GetObjectDataActivity", "第一个请求："+((User)o).toString());
-                    }
-
-                    return WebService.getObjectObservable(GetNestedObjectDataActivity.this, param2);
-                }
-            })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(WebService.getObjectSubscriber(param, new ObjectCallBack<Object>() {
-                @Override
-                public void onSuccess(Object data) {
-                    if(data == null) {
-                        resultTv.setText("没有数据");
-                    }else {
-                        resultTv.setText(data.toString());
-                    }
-                }
-
-                @Override
-                public void onFailure(int code, String message) {
-                    String errorMessage = "code："+ code +", message:"+message;
-                    resultTv.setText(errorMessage);
-                }
-
-                @Override
-                public void onCompleted() {
-                    hideProgress();
-                    SubscriptionManager.removeSubscription(param);
-                    SubscriptionManager.removeSubscription(param2);
-                }
-            }));
-        SubscriptionManager.addSubscription(param2, subscribe);
-        return subscribe;
-    }
-
     private Subscription getObjectData2() {
         resultTv.setText("");
         showProgress("正在查询...");
-        final WebServiceParam param = new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_get.action?user.name="+name, Service.GET_TYPE, User.class);
 
-        Subscription subscribe = WebService.getObjectObservable(GetNestedObjectDataActivity.this, param)
+        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
+                .setMethod(Service.GET_TYPE)
+                .setDataClass(DataObject.class)
+                .request()
                 .flatMap(new Func1<Object, Observable<?>>() {
                     @Override
                     public Observable<?> call(Object o) {
                         if(o == null) {
-                            Log.i("GetObjectDataActivity", "第一个请求：null");
+                            Log.i("GetDataActivity", "第一个请求：null");
                         }else {
-                            Log.i("GetObjectDataActivity", "第一个请求："+o.toString());
+                            Log.i("GetDataActivity", "第一个请求："+o.toString());
                         }
 
-                        return WebService.getObjectObservable(GetNestedObjectDataActivity.this, param);
+                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
+                                .setMethod(Service.GET_TYPE)
+                                .setDataClass(DataObject.class)
+                                .request();
                     }
-                })
-                .subscribeOn(Schedulers.io())
+                }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(WebService.getObjectSubscriber(param, new ObjectCallBack<Object>() {
+                .subscribe(NetworkRequest.response(null, new DataCallBack<Object>() {
                     @Override
                     public void onSuccess(Object data) {
                         if(data == null) {
                             resultTv.setText("没有数据");
                         }else {
-                            resultTv.setText(data.toString());
+                            DataObject dataObject = (DataObject)data;
+                            //List<Map<String, String>> utyybanbens = (List<Map<String, String>>)dataObject.data.rows;
+                            //Log.i("GetDataActivity", utyybanbens.get(0).get("appname"));
+                            resultTv.setText(dataObject.toString());
                         }
                     }
 
@@ -157,11 +111,7 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
                     @Override
                     public void onCompleted() {
                         hideProgress();
-                        //SubscriptionManager.removeSubscription(param);
-                        //SubscriptionManager.removeSubscription(param2);
                     }
                 }));
-        //SubscriptionManager.addSubscription(param2, subscribe);
-        return subscribe;
     }
 }

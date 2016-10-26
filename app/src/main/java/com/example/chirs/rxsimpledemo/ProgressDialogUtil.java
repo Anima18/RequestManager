@@ -12,6 +12,7 @@ public class ProgressDialogUtil {
     public static ProgressDialog showProgessDialog(Context context, String message) {
         ProgressDialog dialog = new ProgressDialog(context);
         dialog.setMessage(message);
+        //dialog.setIndeterminate(true);
         return dialog;
     }
 

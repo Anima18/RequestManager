@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.example.webserviceutil.WebService;
+import com.example.requestmanager.NetworkRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class GetBitmapDataActivity extends BaseActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                WebService.cancel(urlList.get(position));
+                NetworkRequest.cancel(urlList.get(position));
             }
         });
     }
@@ -61,6 +61,6 @@ public class GetBitmapDataActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        WebService.cancel(GetBitmapDataActivity.this);
+        NetworkRequest.cancel(GetBitmapDataActivity.this);
     }
 }

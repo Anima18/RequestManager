@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.example.webserviceutil.WebService;
-import com.example.webserviceutil.callBack.BitmapCallBack;
+import com.example.requestmanager.NetworkRequest;
+import com.example.requestmanager.callBack.BitmapCallBack;
 
 import java.util.List;
 
@@ -53,11 +53,21 @@ public class BitmapAdapter extends BaseAdapter {
             convertView.setTag(holder);
         }else {
             holder = (ViewHolder)convertView.getTag();
+            /*BitmapDrawable dd = (BitmapDrawable) (holder.image).getDrawable();
+
+            if(dd != null) {
+                Bitmap bm =dd.getBitmap();
+                if(bm != null) {
+                    Log.d("BitmapAdapter", "bm is not null");
+                    bm.recycle();
+                    bm = null;
+                }
+            }*/
         }
 
         String url = urlList.get(position);
         Log.d("WebService", url);
-        WebService.getBitMap(context, url, new BitmapCallBack() {
+        /*WebService.getBitMap(context, url, new BitmapCallBack() {
             @Override
             public void onSuccess(String url, Bitmap bitmap) {
                 if(bitmap == null) {
@@ -74,9 +84,29 @@ public class BitmapAdapter extends BaseAdapter {
 
             @Override
             public void onCompleted() {
-            }
-        });
 
+            }
+        });*/
+        NetworkRequest.create(new BitmapCallBack(){
+            @Override
+            public void onSuccess(String url, Bitmap bitmap) {
+                if(bitmap == null) {
+                    holder.image.setImageResource(R.drawable.not_found);
+                }else {
+                    holder.image.setImageBitmap(bitmap);
+                }
+            }
+
+            @Override
+            public void onFailure(int code, String message) {
+                holder.image.setImageResource(R.drawable.not_found);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+        }).setContext(context).setUrl(url).getBitMap();
 
         return convertView;
     }

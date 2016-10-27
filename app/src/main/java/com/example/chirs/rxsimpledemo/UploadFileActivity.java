@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
@@ -91,7 +92,7 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public void onSuccess(DataObject<User> data) {
-                resultTv.setText(data.toString());
+                resultTv.setText(data.data.rows.get(0).getName());
             }
 
             @Override
@@ -107,7 +108,8 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
         .setUrl(BASE_PATH + "security/security_uploadList.action")
         .setContext(this)
         .setParam(param)
-        .setDataClass(DataObject.class)
+        //.setDataClass(DataObject2.class)
+        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
         .uploadFile();
     }
 }

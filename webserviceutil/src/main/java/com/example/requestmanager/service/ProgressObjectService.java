@@ -3,16 +3,17 @@ package com.example.requestmanager.service;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.requestmanager.SubscriptionManager;
-import com.example.requestmanager.callBack.CallBack;
-import com.example.requestmanager.callBack.ProgressCallBack;
-import com.example.requestmanager.entity.ProgressValue;
-import com.example.requestmanager.entity.WebServiceParam;
-import com.example.requestmanager.exception.ServiceErrorException;
-import com.example.requestmanager.okhttp.OkHttpUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.example.requestmanager.callBack.ProgressCallBack;
+import com.example.requestmanager.okhttp.OkHttpUtils;
+import com.example.requestmanager.SubscriptionManager;
+import com.example.requestmanager.callBack.CallBack;
+import com.example.requestmanager.entity.ProgressValue;
+import com.example.requestmanager.entity.WebServiceParam;
+import com.example.requestmanager.exception.ServiceErrorException;
+
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -58,9 +59,12 @@ public final class ProgressObjectService extends Service {
                         if(jsonElement.isJsonObject()) {
                             rebuildJsonObj((JsonObject)jsonElement);
                         }
-                        T t = (T)gson.fromJson(jsonElement.toString(), param.getClazz());
-                        Log.i("WebService", t.toString());
-                        subscriber.onNext(new ProgressValue<T>(t));
+
+                        if(param.getClassType() != null) {
+                            subscriber.onNext(new ProgressValue<T>((T)gson.fromJson(jsonElement.toString(), param.getClassType())));
+                        }else if((param.getClazz() != null)) {
+                            subscriber.onNext(new ProgressValue<T>((T)gson.fromJson(jsonElement.toString(), param.getClazz())));
+                        }
                         subscriber.onCompleted();
                     }else {
                         subscriber.onError(new ServiceErrorException(response.code()));

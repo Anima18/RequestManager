@@ -62,7 +62,11 @@ public final class DataService extends Service {
                     rebuildJsonObj((JsonObject)jsonElement);
                 }
                 response.body().close();
-                subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClazz()));
+                if(param.getClassType() != null) {
+                    subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClassType()));
+                }else if((param.getClazz() != null)) {
+                    subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClazz()));
+                }
                 subscriber.onCompleted();
             }else {
                 subscriber.onError(new ServiceErrorException(response.code()));

@@ -6,12 +6,14 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
+import com.google.gson.reflect.TypeToken;
 
 import rx.Subscription;
 
@@ -20,6 +22,7 @@ import rx.Subscription;
  */
 public class GetDataActivity extends BaseActivity implements View.OnClickListener {
 
+    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -35,6 +38,7 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
     }
 
     public void initView() {
+        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -69,7 +73,7 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
                 if(data == null) {
                     resultTv.setText("没有数据");
                 }else {
-                    Log.i("WebService", data.data.get(0).getName());
+                    Log.i("WebService", data.data.rows.get(0).getName());
                     resultTv.setText(data.toString());
                 }
             }
@@ -86,7 +90,8 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
         })
         .setContext(this)
         .setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
-        .setDataClass(DataObject.class)
+        //.setDataClass(ObjectShowData.class)
+                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
         .getData();
     }
 }

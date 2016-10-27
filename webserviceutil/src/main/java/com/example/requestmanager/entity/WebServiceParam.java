@@ -1,5 +1,6 @@
 package com.example.requestmanager.entity;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ public class WebServiceParam {
      * 请求数据的映射类型
      */
     private Class clazz;
+
+    private Type classType;
     /**
      * 请求的发生, eg:GET或者POST
      */
@@ -48,6 +51,12 @@ public class WebServiceParam {
         this.requestUrl = requestUrl;
         this.method = method;
         this.clazz = clazz;
+    }
+
+    public WebServiceParam(String requestUrl, String method, Type dataType) {
+        this.requestUrl = requestUrl;
+        this.method = method;
+        this.classType = dataType;
     }
 
     /**
@@ -93,5 +102,13 @@ public class WebServiceParam {
 
     public void setClazz(Class clazz) {
         this.clazz = clazz;
+    }
+
+    public Type getClassType() {
+        return classType;
+    }
+
+    public void setClassType(Type classType) {
+        this.classType = classType;
     }
 }

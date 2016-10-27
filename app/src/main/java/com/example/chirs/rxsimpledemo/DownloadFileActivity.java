@@ -83,10 +83,6 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
             public void onCompleted() {
                 hideProgress();
             }
-        }).setContext(this)
-                .setUrl(BASE_PATH + "file/OkHttp发布.rar")
-                .setDataClass(Boolean.class)
-                .addParam("fileName", "OkHttp发布.rar")
-                .downloadFile();
+        }).setContext(this).setUrl(BASE_PATH + "file/OkHttp发布.rar").setDataClass(Boolean.class).addParam("fileName", "OkHttp发布.rar").downloadFile();
     }
 }

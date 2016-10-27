@@ -3,10 +3,12 @@ package com.example.chirs.rxsimpledemo;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
@@ -63,14 +65,13 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
     private Subscription getCollectionData() {
         showProgress("正在查询...");
         resultTv.setText("");
-
         return NetworkRequest.create(new DataCallBack<DataObject<User>>() {
             @Override
             public void onSuccess(DataObject<User> data) {
                 if(data == null) {
                     resultTv.setText("没有数据");
                 }else {
-                    //Log.i("WebService", data.data.get(0).get("userName"));
+                    Log.i("WebService", data.data.rows.get(0).getName());
                     resultTv.setText(data.toString());
                 }
             }
@@ -88,6 +89,12 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
         .setContext(this)
         .setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
         .setDataClass(DataObject.class)
+        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        /*.addParam("c","passwordvalidation")
+        .addParam("d","{\"ursvr_username\":\"吴海\", \"ursvr_pwd\":\"123456\"}")
+        .addParam("a","")
+        .addParam("b","")
+        .addParam("serviceflag", "userrightservice")*/
         .postData();
     }
 

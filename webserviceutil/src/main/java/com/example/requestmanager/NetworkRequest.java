@@ -2,7 +2,6 @@ package com.example.requestmanager;
 
 import android.content.Context;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,6 +19,7 @@ import com.example.requestmanager.service.ProgressObjectService;
 import com.example.requestmanager.service.Service;
 import com.example.requestmanager.util.StringUtil;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +30,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static com.example.requestmanager.service.Service.GET_TYPE;
@@ -61,6 +62,8 @@ public class NetworkRequest<T> {
      * 获取图片回调
      */
     private BitmapCallBack bitmapCallBack;
+
+    private Observable<T> observable;
 
     private NetworkRequest() {}
 
@@ -104,6 +107,12 @@ public class NetworkRequest<T> {
         param.setClazz(dataClass);
         return this;
     }
+
+    public NetworkRequest setDataType(Type type) {
+        param.setClassType(type);
+        return this;
+    }
+
     public NetworkRequest setMethod(String method) {
         param.setMethod(method);
         return this;
@@ -133,7 +142,7 @@ public class NetworkRequest<T> {
             throw new Error("NetworkRequest context is null");
         }else if(StringUtil.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
-        }else if(param.getClazz() == null) {
+        }else if(param.getClazz() == null && param.getClassType() == null) {
             throw new Error("NetworkRequest dataType is null");
         }else if(!Service.GET_TYPE.equals(param.getMethod()) && !Service.POST_TYPE.equals(param.getMethod())) {
             throw new Error("NetworkRequest method is neither POST nor GET");
@@ -192,20 +201,17 @@ public class NetworkRequest<T> {
                             call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
                         }
                         Response response = call.execute();
-                        SubscriptionManager.addRequest(paramList.get(0), call);
+                        SubscriptionManager.addRequest(param, call);
                         if(response.isSuccessful()) {
                             JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
                             if(jsonElement.isJsonObject()) {
                                 Service.rebuildJsonObj((JsonObject)jsonElement);
-                                subscriber.onNext(gson.fromJson(jsonElement.toString(), param.getClazz()));
-                            }else if(jsonElement.isJsonArray()) {
-                                JsonArray array = (JsonArray)jsonElement;
-                                Service.rebuildJsonArray(array);
-                                List<Object> resultList = new ArrayList<>();
-                                for(JsonElement elem : array){
-                                    resultList.add(gson.fromJson(elem, param.getClazz()));
-                                }
-                                subscriber.onNext(resultList);
+                            }
+                            response.body().close();
+                            if(param.getClassType() != null) {
+                                subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClassType()));
+                            }else if((param.getClazz() != null)) {
+                                subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClazz()));
                             }
                         }else {
                             subscriber.onError(new ServiceErrorException(response.code()));
@@ -218,9 +224,12 @@ public class NetworkRequest<T> {
                 }
             }
         }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response(paramList.get(0), (DataCallBack<Object>)dataCallBack));
-        SubscriptionManager.addSubscription(paramList.get(0), subscription);
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(seqResponse(paramList, (DataCallBack<List<Object>>)dataCallBack));
+
+        for(WebServiceParam param : paramList) {
+            SubscriptionManager.addSubscription(param, subscription);
+        }
         return subscription;
     }
 
@@ -229,17 +238,22 @@ public class NetworkRequest<T> {
      * @param callBack 回调方法
      * @return Subscriber
      */
-    public static Subscriber<Object> response(final WebServiceParam param, final DataCallBack<Object> callBack) {
+    private Subscriber<Object> seqResponse(final List<WebServiceParam> paramList, final DataCallBack<List<Object>> callBack) {
         return new Subscriber<Object>() {
+            List<Object> dataList = new ArrayList<>();
             @Override
             public void onCompleted() {
-                SubscriptionManager.removeSubscription(param);
+                for(WebServiceParam param : paramList) {
+                    SubscriptionManager.removeSubscription(param);
+                }
                 callBack.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
-                SubscriptionManager.removeSubscription(param);
+                for(WebServiceParam param : paramList) {
+                    SubscriptionManager.removeSubscription(param);
+                }
                 Service.handleException(e, callBack);
                 e.printStackTrace();
                 onCompleted();
@@ -247,9 +261,36 @@ public class NetworkRequest<T> {
 
             @Override
             public void onNext(Object o) {
-                callBack.onSuccess(o);
+                dataList.add(o);
+                if(dataList.size() == paramList.size()) {
+                    callBack.onSuccess(dataList);
+                }
             }
         };
+    }
+
+    public Subscription response(final DataCallBack<T> callBack) {
+        return observable.observeOn(AndroidSchedulers.mainThread())
+        .subscribe(
+                new Subscriber<T>() {
+                    @Override
+                    public void onCompleted() {
+                        callBack.onCompleted();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Service.handleException(e, callBack);
+                        e.printStackTrace();
+                        onCompleted();
+                    }
+
+                    @Override
+                    public void onNext(T t) {
+                        callBack.onSuccess(t);
+                    }
+                }
+        );
     }
 
     /**
@@ -257,10 +298,10 @@ public class NetworkRequest<T> {
      * 这个方法没有对订阅关系进行管理。
      * @return Observable 被观察者
      */
-    public Observable<Object> request() {
-        return Observable.create(new Observable.OnSubscribe<Object>() {
+    public NetworkRequest request() {
+        observable = Observable.create(new Observable.OnSubscribe<T>() {
             @Override
-            public void call(Subscriber<? super Object> subscriber) {
+            public void call(Subscriber<? super T> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {
@@ -275,17 +316,13 @@ public class NetworkRequest<T> {
                         JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
                         if(jsonElement.isJsonObject()) {
                             Service.rebuildJsonObj((JsonObject)jsonElement);
-                            subscriber.onNext(gson.fromJson(jsonElement.toString(), param.getClazz()));
-                        }else if(jsonElement.isJsonArray()) {
-                            JsonArray array = (JsonArray)jsonElement;
-                            Service.rebuildJsonArray(array);
-                            List<Object> resultList = new ArrayList<>();
-                            for(JsonElement elem : array){
-                                resultList.add(gson.fromJson(elem, param.getClazz()));
-                            }
-                            subscriber.onNext(resultList);
                         }
                         response.body().close();
+                        if(param.getClassType() != null) {
+                            subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClassType()));
+                        }else if((param.getClazz() != null)) {
+                            subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClazz()));
+                        }
                         subscriber.onCompleted();
                     }else {
                         subscriber.onError(new ServiceErrorException(response.code()));
@@ -294,9 +331,14 @@ public class NetworkRequest<T> {
                     subscriber.onError(e);
                 }
             }
-        });
+        }).subscribeOn(Schedulers.io());
+        return this;
     }
 
+    public NetworkRequest flatMap(Func1<T, Observable<?>> func1) {
+        observable.flatMap(func1);
+        return this;
+    }
 
 
     /**
@@ -321,5 +363,9 @@ public class NetworkRequest<T> {
      */
     public static void cancel(Context tag) {
         OkHttpUtils.cancelTag(tag);
+    }
+
+    public Observable<T> getObservable() {
+        return observable;
     }
 }

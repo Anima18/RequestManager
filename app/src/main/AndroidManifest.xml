@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
+        android:name="com.example.chirs.rxsimpledemo.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,13 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".GetDataActivity" android:label="getData"/>
-        <activity android:name=".GetBitmapDataActivity" android:label="getBitmap"/>
-        <activity android:name=".PostDataActivity" android:label="postData"/>
-        <activity android:name=".DownloadFileActivity" android:label="DownloadFile"/>
-        <activity android:name=".UploadFileActivity" android:label="uploadFile"/>
-        <activity android:name=".GetNestedObjectDataActivity" android:label="getNestedObject"/>
-        <activity android:name=".GetObjectDataListActivity" android:label="getObjectList"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.GetDataActivity" android:label="GetData"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.GetNestedDataActivity" android:label="GetNestedData"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.GetSeqDataActivity" android:label="GetSeqData"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.PostDataActivity" android:label="PostData"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.GetBitmapDataActivity" android:label="GetBitmap"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.UploadFileActivity" android:label="UploadFile"/>
+        <activity android:name="com.example.chirs.rxsimpledemo.DownloadFileActivity" android:label="DownloadFile" />
     </application>
 
 </manifest>

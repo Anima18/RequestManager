@@ -6,26 +6,29 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
+import com.example.chirs.rxsimpledemo.entity.ObjectShowData;
+import com.example.chirs.rxsimpledemo.entity.Utyybanben;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.service.Service;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 ;
 
 /**
  * Created by jianjianhong on 2016/6/12.
  */
-public class GetNestedObjectDataActivity extends BaseActivity implements View.OnClickListener {
+public class GetNestedDataActivity extends BaseActivity implements View.OnClickListener {
 
+    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -40,6 +43,7 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
     }
 
     private void initView() {
+        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -51,7 +55,7 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
             @Override
             public void onCancel(DialogInterface dialog) {
                 NetworkRequest.cancel(subscription);
-                //Toast.makeText(GetNestedObjectDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GetNestedDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -67,39 +71,37 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
 
     private Subscription getObjectData2() {
         resultTv.setText("");
+        String name = nameEt.getText().toString();
         showProgress("正在查询...");
 
-        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
+        return NetworkRequest.create()
+                .setUrl("http://192.168.60.242:8080/scs/mobile/getdtshowobject.do?username=&pwd=&projectcode=utyingyongbanben&showobjectcode=utyybanben")
                 .setMethod(Service.GET_TYPE)
-                .setDataClass(DataObject.class)
+                .setDataClass(ObjectShowData.class)
+                //.setDataType(new TypeToken<Utyybanben>(){}.getType())
                 .request()
-                .flatMap(new Func1<Object, Observable<?>>() {
+                .flatMap(new Func1<ObjectShowData, Observable<?>>() {
                     @Override
-                    public Observable<?> call(Object o) {
-                        if(o == null) {
-                            Log.i("GetDataActivity", "第一个请求：null");
-                        }else {
-                            Log.i("GetDataActivity", "第一个请求："+o.toString());
-                        }
-
-                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
+                    public Observable<?> call(ObjectShowData o) {
+                        Log.i("WebSerivec", o.toString());
+                        return NetworkRequest.create().setUrl("http://192.168.60.242:8080/scs/mobile/getdtobjectdata.do?&username=&pwd=&projectcode=utyingyongbanben&objectcode=utyybanben&pagesize=5&pagenum=1&sort=&condi=")
                                 .setMethod(Service.GET_TYPE)
-                                .setDataClass(DataObject.class)
-                                .request();
+                                //.setDataClass(DataObject.class)
+                                .setDataType(new TypeToken<DataObject<Utyybanben>>(){}.getType())
+                                .request().getObservable();
                     }
-                }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(NetworkRequest.response(null, new DataCallBack<Object>() {
+                })
+                .response(new DataCallBack<Object>() {
                     @Override
                     public void onSuccess(Object data) {
-                        if(data == null) {
+                        Log.i("WebSerivec", data.toString());
+                        /*if(data == null) {
                             resultTv.setText("没有数据");
                         }else {
-                            DataObject dataObject = (DataObject)data;
-                            //List<Map<String, String>> utyybanbens = (List<Map<String, String>>)dataObject.data.rows;
-                            //Log.i("GetDataActivity", utyybanbens.get(0).get("appname"));
-                            resultTv.setText(dataObject.toString());
-                        }
+                            List<Utyybanben> utyybanbens = (List<Utyybanben>)data.data.rows;
+                            Log.i("GetDataActivity", utyybanbens.get(0).getAppname());
+                            resultTv.setText(utyybanbens.toString());
+                        }*/
                     }
 
                     @Override
@@ -112,6 +114,6 @@ public class GetNestedObjectDataActivity extends BaseActivity implements View.On
                     public void onCompleted() {
                         hideProgress();
                     }
-                }));
+                });
     }
 }

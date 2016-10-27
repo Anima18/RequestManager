@@ -3,13 +3,17 @@ package com.example.chirs.rxsimpledemo;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
+import com.example.chirs.rxsimpledemo.entity.ObjectShowData;
+import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.entity.WebServiceParam;
@@ -23,7 +27,7 @@ import rx.Subscription;
 /**
  * Created by jianjianhong on 2016/6/12.
  */
-public class GetObjectDataListActivity extends BaseActivity implements View.OnClickListener {
+public class GetSeqDataActivity extends BaseActivity implements View.OnClickListener {
 
     private EditText nameEt;
     private Button searchBt;
@@ -32,9 +36,8 @@ public class GetObjectDataListActivity extends BaseActivity implements View.OnCl
 
     private final static String TAG = "GetDataActivity";
 
-    private DataObject<Object> dataObject = new DataObject<>();
-    private DataObject<Object> dataObject2 = new DataObject<>();
-    private int requestIndex = 0;
+    private ObjectShowData showObject = new ObjectShowData();
+    private DataObject<User> dataObject = new DataObject<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class GetObjectDataListActivity extends BaseActivity implements View.OnCl
     }
 
     public void initView() {
+        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -56,7 +60,7 @@ public class GetObjectDataListActivity extends BaseActivity implements View.OnCl
             @Override
             public void onCancel(DialogInterface dialog) {
                 NetworkRequest.cancel(subscription);
-                //Toast.makeText(GetObjectDataListActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GetSeqDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -72,27 +76,17 @@ public class GetObjectDataListActivity extends BaseActivity implements View.OnCl
 
     private Subscription getObjectData() {
         resultTv.setText("");
-        String name = nameEt.getText().toString();
         showProgress("正在查询...");
-        requestIndex = 0;
         List<WebServiceParam> params = new ArrayList<>();
-        params.add(new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action", Service.GET_TYPE, DataObject.class));
-        params.add(new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action",
-                Service.GET_TYPE, DataObject.class));
+        params.add(new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
 
-        return NetworkRequest.create(new DataCallBack<Object>() {
+        return NetworkRequest.create(new DataCallBack<List<Object>>() {
             @Override
-            public void onSuccess(Object data) {
-                if(requestIndex == 0) {
-                    dataObject = (DataObject<Object>)data;
-                    //Log.i("WebService", showObject.getData().get(0).getLtfield().toString());
-                    Toast.makeText(GetObjectDataListActivity.this, "第一个请求成功", Toast.LENGTH_SHORT).show();
-                }else if(requestIndex == 1) {
-                    dataObject2 = (DataObject<Object>)data;
-                    //Log.i("WebService", dataObject.data.rows.get(0).get("appname"));
-                    Toast.makeText(GetObjectDataListActivity.this, "第二个请求成功", Toast.LENGTH_SHORT).show();
-                }
-                requestIndex++;
+            public void onSuccess(List<Object> dataList) {
+                dataObject = (DataObject<User>)dataList.get(0);
+                Log.i("WebService", dataObject.data.rows.toString());
+                Toast.makeText(GetSeqDataActivity.this, "请求成功，请求数量："+dataList.size(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

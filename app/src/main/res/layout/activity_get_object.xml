@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <EditText
+        android:id="@+id/goAct_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入名称(Chris、Robert)"/>
     <Button
         android:id="@+id/goAct_bt"
         android:layout_width="match_parent"

@@ -78,12 +78,12 @@ public class MainActivity extends BaseActivity {
     public List<ActivityClass> getActivityClassList() {
         activityClassList = new ArrayList<>();
 
-        activityClassList.add(new ActivityClass("GET方式获取数据", GetDataActivity.class));
-        activityClassList.add(new ActivityClass("POST方式获取数据", PostDataActivity.class));
-        activityClassList.add(new ActivityClass("获取图片资源", GetBitmapDataActivity.class));
+        activityClassList.add(new ActivityClass("GET请求", GetDataActivity.class));
+        activityClassList.add(new ActivityClass("POST请求", PostDataActivity.class));
+        activityClassList.add(new ActivityClass("图片请求", GetBitmapDataActivity.class));
         activityClassList.add(new ActivityClass("上传文件", UploadFileActivity.class));
-        activityClassList.add(new ActivityClass("请求嵌套", GetNestedObjectDataActivity.class));
-        activityClassList.add(new ActivityClass("顺序请求", GetObjectDataListActivity.class));
+        activityClassList.add(new ActivityClass("嵌套请求", GetNestedDataActivity.class));
+        activityClassList.add(new ActivityClass("顺序请求", GetSeqDataActivity.class));
         activityClassList.add(new ActivityClass("下载文件", DownloadFileActivity.class));
         return activityClassList;
     }

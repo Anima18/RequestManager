@@ -63,7 +63,7 @@ public class NetworkRequest<T> {
      */
     private BitmapCallBack bitmapCallBack;
 
-    private Observable<T> observable;
+    private Observable<Object> observable;
 
     private NetworkRequest() {}
 
@@ -269,28 +269,30 @@ public class NetworkRequest<T> {
         };
     }
 
-    public Subscription response(final DataCallBack<T> callBack) {
-        return observable.observeOn(AndroidSchedulers.mainThread())
-        .subscribe(
-                new Subscriber<T>() {
+    public Subscription response(final DataCallBack<Object> callBack) {
+        Subscription subscription = observable.observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Object>() {
                     @Override
                     public void onCompleted() {
+                        SubscriptionManager.removeSubscription(param);
                         callBack.onCompleted();
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        SubscriptionManager.removeSubscription(param);
                         Service.handleException(e, callBack);
                         e.printStackTrace();
                         onCompleted();
                     }
 
                     @Override
-                    public void onNext(T t) {
+                    public void onNext(Object t) {
                         callBack.onSuccess(t);
                     }
-                }
-        );
+                });
+        SubscriptionManager.addSubscription(param, subscription);
+        return subscription;
     }
 
     /**
@@ -298,10 +300,10 @@ public class NetworkRequest<T> {
      * 这个方法没有对订阅关系进行管理。
      * @return Observable 被观察者
      */
-    public NetworkRequest request() {
-        observable = Observable.create(new Observable.OnSubscribe<T>() {
+    public NetworkRequest<T> request() {
+        observable = Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
-            public void call(Subscriber<? super T> subscriber) {
+            public void call(Subscriber<? super Object> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {
@@ -312,6 +314,7 @@ public class NetworkRequest<T> {
                         call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
                     }
                     Response response = call.execute();
+                    SubscriptionManager.addRequest(param, call);
                     if(response.isSuccessful()) {
                         JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
                         if(jsonElement.isJsonObject()) {
@@ -331,12 +334,45 @@ public class NetworkRequest<T> {
                     subscriber.onError(e);
                 }
             }
-        }).subscribeOn(Schedulers.io());
+        });
         return this;
     }
 
-    public NetworkRequest flatMap(Func1<T, Observable<?>> func1) {
-        observable.flatMap(func1);
+    public NetworkRequest <T> flatMap(Func1<T, Observable<?>> func1) {
+        observable = Observable.create(new Observable.OnSubscribe<T>() {
+            @Override
+            public void call(Subscriber<? super T> subscriber) {
+                if(subscriber.isUnsubscribed())
+                    return;
+                try {
+                    Call call = null;
+                    if(GET_TYPE.equals(param.getMethod())) {
+                        call = OkHttpUtils.get(context, param.getRequestUrl());
+                    }else if(POST_TYPE.equals(param.getMethod())) {
+                        call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
+                    }
+                    Response response = call.execute();
+                    SubscriptionManager.addRequest(param, call);
+                    if(response.isSuccessful()) {
+                        JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
+                        if(jsonElement.isJsonObject()) {
+                            Service.rebuildJsonObj((JsonObject)jsonElement);
+                        }
+                        response.body().close();
+                        if(param.getClassType() != null) {
+                            subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClassType()));
+                        }else if((param.getClazz() != null)) {
+                            subscriber.onNext((T)gson.fromJson(jsonElement.toString(), param.getClazz()));
+                        }
+                        subscriber.onCompleted();
+                    }else {
+                        subscriber.onError(new ServiceErrorException(response.code()));
+                    }
+                }catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).flatMap(func1).subscribeOn(Schedulers.io());
         return this;
     }
 
@@ -365,7 +401,7 @@ public class NetworkRequest<T> {
         OkHttpUtils.cancelTag(tag);
     }
 
-    public Observable<T> getObservable() {
+    public Observable<Object> getObservable() {
         return observable;
     }
 }

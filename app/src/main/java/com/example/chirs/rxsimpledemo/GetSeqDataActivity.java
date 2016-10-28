@@ -3,14 +3,11 @@ package com.example.chirs.rxsimpledemo;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.ObjectShowData;
 import com.example.chirs.rxsimpledemo.entity.User;
@@ -18,6 +15,7 @@ import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.entity.WebServiceParam;
 import com.example.requestmanager.service.Service;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,6 @@ import rx.Subscription;
  */
 public class GetSeqDataActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -48,7 +45,6 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
     }
 
     public void initView() {
-        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -78,14 +74,12 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
         resultTv.setText("");
         showProgress("正在查询...");
         List<WebServiceParam> params = new ArrayList<>();
-        params.add(new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
-        params.add(new WebServiceParam("http://192.168.1.103:8080/WebService/security/security_list.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
 
         return NetworkRequest.create(new DataCallBack<List<Object>>() {
             @Override
             public void onSuccess(List<Object> dataList) {
-                dataObject = (DataObject<User>)dataList.get(0);
-                Log.i("WebService", dataObject.data.rows.toString());
                 Toast.makeText(GetSeqDataActivity.this, "请求成功，请求数量："+dataList.size(), Toast.LENGTH_SHORT).show();
             }
 

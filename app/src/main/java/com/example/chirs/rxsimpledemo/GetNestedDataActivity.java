@@ -6,16 +6,14 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
-import com.example.chirs.rxsimpledemo.entity.ObjectShowData;
-import com.example.chirs.rxsimpledemo.entity.Utyybanben;
+import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.service.Service;
+import com.google.gson.reflect.TypeToken;
 
 import rx.Observable;
 import rx.Subscription;
@@ -28,7 +26,6 @@ import rx.functions.Func1;
  */
 public class GetNestedDataActivity extends BaseActivity implements View.OnClickListener {
 
-    private EditText nameEt;
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
@@ -43,7 +40,6 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
     }
 
     private void initView() {
-        nameEt = (EditText)findViewById(R.id.goAct_et);
         searchBt = (Button)findViewById(R.id.goAct_bt);
         resultTv = (TextView)findViewById(R.id.goAct_result);
     }
@@ -71,37 +67,42 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
 
     private Subscription getObjectData2() {
         resultTv.setText("");
-        String name = nameEt.getText().toString();
         showProgress("正在查询...");
 
         return NetworkRequest.create()
-                .setUrl("http://192.168.60.242:8080/scs/mobile/getdtshowobject.do?username=&pwd=&projectcode=utyingyongbanben&showobjectcode=utyybanben")
+                .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                 .setMethod(Service.GET_TYPE)
-                .setDataClass(ObjectShowData.class)
-                //.setDataType(new TypeToken<Utyybanben>(){}.getType())
-                .request()
-                .flatMap(new Func1<ObjectShowData, Observable<?>>() {
+                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+                .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
-                    public Observable<?> call(ObjectShowData o) {
-                        Log.i("WebSerivec", o.toString());
-                        return NetworkRequest.create().setUrl("http://192.168.60.242:8080/scs/mobile/getdtobjectdata.do?&username=&pwd=&projectcode=utyingyongbanben&objectcode=utyybanben&pagesize=5&pagenum=1&sort=&condi=")
+                    public Observable<?> call(DataObject<User> o) {
+                        Log.i("WebService", "嵌套请求一成功");
+                        Log.i("WebService", o.data.rows.get(0).toString());
+                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                                 .setMethod(Service.GET_TYPE)
-                                //.setDataClass(DataObject.class)
-                                .setDataType(new TypeToken<DataObject<Utyybanben>>(){}.getType())
-                                .request().getObservable();
+                                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+                                .request()
+                                .getObservable();
                     }
                 })
-                .response(new DataCallBack<Object>() {
+                .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
-                    public void onSuccess(Object data) {
-                        Log.i("WebSerivec", data.toString());
-                        /*if(data == null) {
-                            resultTv.setText("没有数据");
-                        }else {
-                            List<Utyybanben> utyybanbens = (List<Utyybanben>)data.data.rows;
-                            Log.i("GetDataActivity", utyybanbens.get(0).getAppname());
-                            resultTv.setText(utyybanbens.toString());
-                        }*/
+                    public Observable<?> call(DataObject<User> o) {
+                        Log.i("WebService", "嵌套请求二成功");
+                        Log.i("WebService", o.data.rows.get(0).toString());
+                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
+                                .setMethod(Service.GET_TYPE)
+                                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+                                .request()
+                                .getObservable();
+                    }
+                })
+                .response(new DataCallBack<DataObject<User>>() {
+                    @Override
+                    public void onSuccess(DataObject<User> data) {
+                        Log.i("WebService", "最后请求成功");
+                        resultTv.setText("嵌套请求成功");
+                        Log.i("WebService", data.data.rows.get(0).toString());
                     }
 
                     @Override

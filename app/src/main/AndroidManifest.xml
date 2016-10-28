@@ -28,6 +28,7 @@
         <activity android:name="com.example.chirs.rxsimpledemo.GetBitmapDataActivity" android:label="GetBitmap"/>
         <activity android:name="com.example.chirs.rxsimpledemo.UploadFileActivity" android:label="UploadFile"/>
         <activity android:name="com.example.chirs.rxsimpledemo.DownloadFileActivity" android:label="DownloadFile" />
+        <activity android:name=".GetZipDataActivity" android:label="ZipData"/>
     </application>
 
 </manifest>

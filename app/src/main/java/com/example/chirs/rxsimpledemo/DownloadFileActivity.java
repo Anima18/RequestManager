@@ -63,6 +63,31 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
         showProgress("正在查询...");
         resultTv.setText("");
 
+
+        /*WebServiceParam param = new WebServiceParam(BASE_PATH + "file/LuaDemo.rar", Service.POST_TYPE, Boolean.class);
+        param.addParam("fileName", "LuaDemo.rar");
+        return WebService.downloadFile(DownloadFileActivity.this, param, new ProgressCallBack<Boolean>() {
+            @Override
+            public void onProgress(String fileName, int progress) {
+                updataProgress(fileName, progress);
+            }
+
+            @Override
+            public void onSuccess(Boolean data) {
+                resultTv.setText("下载成功！");
+            }
+
+            @Override
+            public void onFailure(int code, String message) {
+                resultTv.setText("code："+ code +", message:"+message);
+            }
+
+            @Override
+            public void onCompleted() {
+                hideProgress();
+            }
+        });*/
+
         return NetworkRequest.create(new ProgressCallBack<Boolean>() {
             @Override
             public void onProgress(String fileName, int progress) {
@@ -83,6 +108,6 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
             public void onCompleted() {
                 hideProgress();
             }
-        }).setContext(this).setUrl(BASE_PATH + "file/OkHttp发布.rar").setDataClass(Boolean.class).addParam("fileName", "OkHttp发布.rar").downloadFile();
+        }).setContext(this).setUrl(BASE_PATH + "file/LuaDemo.rar").setDataClass(Boolean.class).addParam("fileName", "LuaDemo.rar").downloadFile();
     }
 }

@@ -87,7 +87,7 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
             }
         })
         .setContext(this)
-        .setUrl("http://192.168.1.103:8080/WebService/security/security_list.action")
+        .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
         .setDataClass(DataObject.class)
         .setDataType(new TypeToken<DataObject<User>>(){}.getType())
         /*.addParam("c","passwordvalidation")

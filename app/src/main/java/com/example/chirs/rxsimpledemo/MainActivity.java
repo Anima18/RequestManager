@@ -82,9 +82,10 @@ public class MainActivity extends BaseActivity {
         activityClassList.add(new ActivityClass("POST请求", PostDataActivity.class));
         activityClassList.add(new ActivityClass("图片请求", GetBitmapDataActivity.class));
         activityClassList.add(new ActivityClass("上传文件", UploadFileActivity.class));
+        activityClassList.add(new ActivityClass("下载文件", DownloadFileActivity.class));
         activityClassList.add(new ActivityClass("嵌套请求", GetNestedDataActivity.class));
         activityClassList.add(new ActivityClass("顺序请求", GetSeqDataActivity.class));
-        activityClassList.add(new ActivityClass("下载文件", DownloadFileActivity.class));
+        activityClassList.add(new ActivityClass("并发等待请求", GetZipDataActivity.class));
         return activityClassList;
     }
 

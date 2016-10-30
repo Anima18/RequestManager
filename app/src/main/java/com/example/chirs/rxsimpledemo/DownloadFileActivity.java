@@ -88,26 +88,30 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
             }
         });*/
 
-        return NetworkRequest.create(new ProgressCallBack<Boolean>() {
-            @Override
-            public void onProgress(String fileName, int progress) {
-                updataProgress(fileName, progress);
-            }
+        return NetworkRequest.create().setContext(this).setUrl(BASE_PATH + "file/LuaDemo.rar")
+                .setDataClass(Boolean.class)
+                .addParam("fileName", "LuaDemo.rar")
+                .setMethod(NetworkRequest.POST_TYPE)
+                .downloadFile(new ProgressCallBack<Boolean>() {
+                    @Override
+                    public void onProgress(String fileName, int progress) {
+                        updataProgress(fileName, progress);
+                    }
 
-            @Override
-            public void onSuccess(Boolean data) {
-                resultTv.setText("下载成功！");
-            }
+                    @Override
+                    public void onSuccess(Boolean data) {
+                        resultTv.setText("下载成功！");
+                    }
 
-            @Override
-            public void onFailure(int code, String message) {
-                resultTv.setText("code："+ code +", message:"+message);
-            }
+                    @Override
+                    public void onFailure(int code, String message) {
+                        resultTv.setText("code："+ code +", message:"+message);
+                    }
 
-            @Override
-            public void onCompleted() {
-                hideProgress();
-            }
-        }).setContext(this).setUrl(BASE_PATH + "file/LuaDemo.rar").setDataClass(Boolean.class).addParam("fileName", "LuaDemo.rar").downloadFile();
+                    @Override
+                    public void onCompleted() {
+                        hideProgress();
+                    }
+                });
     }
 }

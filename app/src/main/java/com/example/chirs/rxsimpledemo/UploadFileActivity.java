@@ -11,12 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.gson.reflect.TypeToken;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.ProgressCallBack;
 import com.example.requestmanager.entity.FileObject;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.util.Map;
@@ -84,7 +84,13 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
             Log.d(TAG, fileName);
             param.put(fileName, new FileObject(basePath + fileName));
         }
-        return NetworkRequest.create(new ProgressCallBack<DataObject<User>>() {
+        return NetworkRequest.create()
+        .setUrl(BASE_PATH + "security/security_uploadList.action")
+        .setContext(this)
+        .setParam(param)
+        .setMethod(NetworkRequest.POST_TYPE)
+        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        .uploadFile(new ProgressCallBack<DataObject<User>>() {
             @Override
             public void onProgress(String fileName, int progress) {
                 updataProgress(fileName, progress);
@@ -104,12 +110,6 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
             public void onCompleted() {
                 hideProgress();
             }
-        })
-        .setUrl(BASE_PATH + "security/security_uploadList.action")
-        .setContext(this)
-        .setParam(param)
-        //.setDataClass(DataObject2.class)
-        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-        .uploadFile();
+        });
     }
 }

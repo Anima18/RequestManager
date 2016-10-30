@@ -14,7 +14,6 @@ import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.entity.WebServiceParam;
-import com.example.requestmanager.service.Service;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
@@ -74,10 +73,13 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
         resultTv.setText("");
         showProgress("正在查询...");
         List<WebServiceParam> params = new ArrayList<>();
-        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
-        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", Service.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
 
-        return NetworkRequest.create(new DataCallBack<List<Object>>() {
+        return NetworkRequest.create()
+        .setContext(this)
+        .setWebServerParamList(params)
+        .getSeqData(new DataCallBack<List<Object>>() {
             @Override
             public void onSuccess(List<Object> dataList) {
                 resultTv.setText("顺序请求成功");
@@ -94,9 +96,6 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
             public void onCompleted() {
                 hideProgress();
             }
-        })
-        .setContext(this)
-        .setWebServerParamList(params)
-        .getObjectInSeq();
+        });
     }
 }

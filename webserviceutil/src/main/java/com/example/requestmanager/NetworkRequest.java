@@ -32,14 +32,14 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static com.example.requestmanager.service.Service.GET_TYPE;
-import static com.example.requestmanager.service.Service.POST_TYPE;
 import static com.example.requestmanager.service.Service.gson;
 
 /**
  * Created by jianjianhong on 2016/10/26.
  */
 public class NetworkRequest<T> {
+    public final static String POST_TYPE = "POST";
+    public final static String GET_TYPE = "GET";
     private Context context;
     /**
      * 单个请求参数
@@ -49,49 +49,11 @@ public class NetworkRequest<T> {
      * 多个请求列表，用于顺序请求
      */
     private List<WebServiceParam> paramList = new ArrayList<>();
-    /**
-     * 请求回调
-     */
-    private DataCallBack<T> dataCallBack;
-    /**
-     * 有进度条的请求回调，用于上传和下载
-     */
-    private ProgressCallBack<T> progressCallBack;
-    /**
-     * 获取图片回调
-     */
-    private BitmapCallBack bitmapCallBack;
-
-    /*private Observable<T> observable;*/
 
     private NetworkRequest() {}
 
-    private NetworkRequest(DataCallBack<T> callBack) {
-        this.dataCallBack = callBack;
-    }
-
-    private NetworkRequest(ProgressCallBack<T> progressCallBack) {
-        this.progressCallBack = progressCallBack;
-    }
-
-    private NetworkRequest(BitmapCallBack bitmapCallBack) {
-        this.bitmapCallBack = bitmapCallBack;
-    }
-
     public static NetworkRequest create() {
         return new NetworkRequest();
-    }
-
-    public static <T> NetworkRequest<T> create(DataCallBack<T> callBack) {
-        return new NetworkRequest<>(callBack);
-    }
-
-    public static <T> NetworkRequest<T> create(ProgressCallBack<T> callBack) {
-        return new NetworkRequest<>(callBack);
-    }
-
-    public static  NetworkRequest create(BitmapCallBack callBack) {
-        return new NetworkRequest(callBack);
     }
 
     public NetworkRequest setContext(Context context) {
@@ -143,38 +105,31 @@ public class NetworkRequest<T> {
             throw new Error("NetworkRequest url is null");
         }else if(param.getClazz() == null && param.getClassType() == null) {
             throw new Error("NetworkRequest dataType is null");
-        }else if(!Service.GET_TYPE.equals(param.getMethod()) && !Service.POST_TYPE.equals(param.getMethod())) {
+        }else if(!GET_TYPE.equals(param.getMethod()) && !POST_TYPE.equals(param.getMethod())) {
             throw new Error("NetworkRequest method is neither POST nor GET");
         }else if(callBack == null) {
             throw new Error("NetworkRequest callBack is null");
         }
     }
 
-    public Subscription uploadFile() {
-        param.setMethod(Service.POST_TYPE);
+    public Subscription uploadFile(ProgressCallBack progressCallBack) {
+        //param.setMethod(Service.POST_TYPE);
         checkParam(progressCallBack);
         return ProgressObjectService.getInstance().execute(context, param, progressCallBack);
     }
 
-    public Subscription downloadFile() {
-        param.setMethod(Service.POST_TYPE);
+    public Subscription downloadFile(ProgressCallBack progressCallBack) {
+       //param.setMethod(Service.POST_TYPE);
         checkParam(progressCallBack);
         return DownloadFileService.getInstance().execute(context, param, progressCallBack);
     }
 
-    public Subscription getData() {
-        param.setMethod(Service.GET_TYPE);
+    public Subscription send(DataCallBack<T> dataCallBack) {
         checkParam(dataCallBack);
         return DataService.getInstance().execute(context, param, dataCallBack);
     }
 
-    public Subscription postData() {
-        param.setMethod(Service.POST_TYPE);
-        checkParam(dataCallBack);
-        return DataService.getInstance().execute(context, param, dataCallBack);
-    }
-
-    public Subscription getBitMap() {
+    public Subscription getBitMap(BitmapCallBack bitmapCallBack) {
         if(context == null) {
             throw new Error("NetworkRequest context is null");
         }else if(StringUtil.isEmpty(param.getRequestUrl())) {
@@ -185,7 +140,7 @@ public class NetworkRequest<T> {
         return BitMapService.getInstance().execute(context, param.getRequestUrl(), bitmapCallBack);
     }
 
-    public Subscription getObjectInSeq() {
+    public Subscription getSeqData(DataCallBack<T> dataCallBack) {
         Subscription subscription = Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -268,27 +223,6 @@ public class NetworkRequest<T> {
         };
     }
 
-    public static Subscriber<Object> response(final DataCallBack<Object> callBack) {
-        return new Subscriber<Object>() {
-            @Override
-            public void onCompleted() {
-                callBack.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Service.handleException(e, callBack);
-                e.printStackTrace();
-                onCompleted();
-            }
-
-            @Override
-            public void onNext(Object t) {
-                callBack.onSuccess(t);
-            }
-        };
-    }
-
     /**
      * 获取请求的被观察者对象。
      * 这个方法没有对订阅关系进行管理。
@@ -354,10 +288,5 @@ public class NetworkRequest<T> {
     public static void cancel(Context tag) {
         OkHttpUtils.cancelTag(tag);
     }
-
-    public WebServiceParam getParam() {
-        return param;
-    }
-
 
 }

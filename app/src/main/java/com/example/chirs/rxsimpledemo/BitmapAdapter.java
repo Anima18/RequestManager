@@ -87,7 +87,7 @@ public class BitmapAdapter extends BaseAdapter {
 
             }
         });*/
-        NetworkRequest.create(new BitmapCallBack(){
+        NetworkRequest.create().setContext(context).setUrl(url).getBitMap(new BitmapCallBack(){
             @Override
             public void onSuccess(String url, Bitmap bitmap) {
                 if(bitmap == null) {
@@ -106,7 +106,7 @@ public class BitmapAdapter extends BaseAdapter {
             public void onCompleted() {
 
             }
-        }).setContext(context).setUrl(url).getBitMap();
+        });
 
         return convertView;
     }

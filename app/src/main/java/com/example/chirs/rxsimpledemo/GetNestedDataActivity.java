@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
-import com.example.requestmanager.service.Service;
 import com.google.gson.reflect.TypeToken;
 
 import rx.Observable;
@@ -124,11 +123,9 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                     }
                 });*/
 
-        final NetworkRequest request = NetworkRequest.create();
-
-        Subscription subscription = request
+        Subscription subscription = NetworkRequest.create()
                 .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(Service.GET_TYPE)
+                .setMethod(NetworkRequest.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>() {}.getType())
                 .request()
                 .flatMap(new Func1<DataObject<User>, Observable<?>>() {
@@ -137,7 +134,7 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", "嵌套请求一成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                                .setMethod(Service.GET_TYPE)
+                                .setMethod(NetworkRequest.GET_TYPE)
                                 .setDataType(new TypeToken<DataObject<User>>() {
                                 }.getType())
                                 .request();
@@ -149,7 +146,7 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", "嵌套请求二成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
-                                .setMethod(Service.GET_TYPE)
+                                .setMethod(NetworkRequest.GET_TYPE)
                                 .setDataType(new TypeToken<DataObject<User>>() {
                                 }.getType())
                                 .request();
@@ -161,7 +158,6 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onCompleted() {
                         hideProgress();
-                        //SubscriptionManager.removeSubscription(request.getParam());
                     }
 
                     @Override
@@ -176,7 +172,6 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", o.data.rows.get(0).toString());
                     }
                 });
-        //SubscriptionManager.addSubscription(request.getParam(), subscription);
         return subscription;
     }
 }

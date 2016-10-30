@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
-import com.example.requestmanager.service.Service;
 import com.google.gson.reflect.TypeToken;
 
 import rx.Observable;
@@ -69,17 +68,17 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
         showProgress("正在查询...");
 
         Observable<DataObject<User>> observable1 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
-                .setMethod(Service.GET_TYPE)
+                .setMethod(NetworkRequest.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
 
         Observable<DataObject<User>> observable2 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(Service.GET_TYPE)
+                .setMethod(NetworkRequest.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
 
         Observable<DataObject<User>> observable3 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(Service.GET_TYPE)
+                .setMethod(NetworkRequest.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
         return Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, DataObject<User>>() {

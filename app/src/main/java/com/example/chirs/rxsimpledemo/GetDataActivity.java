@@ -64,7 +64,12 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
     private Subscription getObjectData() {
         resultTv.setText("");
         showProgress("正在查询...");
-        return NetworkRequest.create(new DataCallBack<DataObject<User>>() {
+        return NetworkRequest.create()
+        .setContext(this)
+        .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
+        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        .setMethod(NetworkRequest.GET_TYPE)
+        .send(new DataCallBack<DataObject<User>>() {
             @Override
             public void onSuccess(DataObject<User> data) {
                 if(data == null) {
@@ -84,10 +89,6 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
             public void onCompleted() {
                 hideProgress();
             }
-        })
-        .setContext(this)
-        .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
-        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-        .getData();
+        });
     }
 }

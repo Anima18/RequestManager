@@ -11,13 +11,15 @@ import android.widget.TextView;
 import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
-import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.service.Service;
 import com.google.gson.reflect.TypeToken;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 ;
 
@@ -69,10 +71,12 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
         resultTv.setText("");
         showProgress("正在查询...");
 
-        return NetworkRequest.create()
+        /*return NetworkRequest.create()
                 .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                 .setMethod(Service.GET_TYPE)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+                .setDataType(new TypeToken<DataObject<User>>() {
+                }.getType())
+                .request()
                 .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
                     public Observable<?> call(DataObject<User> o) {
@@ -80,9 +84,9 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                                 .setMethod(Service.GET_TYPE)
-                                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-                                .request()
-                                .getObservable();
+                                .setDataType(new TypeToken<DataObject<User>>() {
+                                }.getType())
+                                .request();
                     }
                 })
                 .flatMap(new Func1<DataObject<User>, Observable<?>>() {
@@ -92,29 +96,87 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                                 .setMethod(Service.GET_TYPE)
-                                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-                                .request()
-                                .getObservable();
+                                .setDataType(new TypeToken<DataObject<User>>() {
+                                }.getType())
+                                .request();
                     }
                 })
-                .response(new DataCallBack<DataObject<User>>() {
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber() {
                     @Override
-                    public void onSuccess(DataObject<User> data) {
+                    public void onCompleted() {
+                        Log.i("WebService", "onCompleted");
+                        hideProgress();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("WebService", "onError");
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
                         Log.i("WebService", "最后请求成功");
                         resultTv.setText("嵌套请求成功");
+                        DataObject<User> data = (DataObject<User>) o;
                         Log.i("WebService", data.data.rows.get(0).toString());
                     }
+                });*/
 
+        final NetworkRequest request = NetworkRequest.create();
+
+        Subscription subscription = request
+                .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
+                .setMethod(Service.GET_TYPE)
+                .setDataType(new TypeToken<DataObject<User>>() {}.getType())
+                .request()
+                .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
-                    public void onFailure(int code, String message) {
-                        String errorMessage = "code："+ code +", message:"+message;
-                        resultTv.setText(errorMessage);
+                    public Observable<?> call(DataObject<User> o) {
+                        Log.i("WebService", "嵌套请求一成功");
+                        Log.i("WebService", o.data.rows.get(0).toString());
+                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
+                                .setMethod(Service.GET_TYPE)
+                                .setDataType(new TypeToken<DataObject<User>>() {
+                                }.getType())
+                                .request();
                     }
-
+                })
+                .flatMap(new Func1<DataObject<User>, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(DataObject<User> o) {
+                        Log.i("WebService", "嵌套请求二成功");
+                        Log.i("WebService", o.data.rows.get(0).toString());
+                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
+                                .setMethod(Service.GET_TYPE)
+                                .setDataType(new TypeToken<DataObject<User>>() {
+                                }.getType())
+                                .request();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<DataObject<User>>() {
                     @Override
                     public void onCompleted() {
                         hideProgress();
+                        //SubscriptionManager.removeSubscription(request.getParam());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("WebService", e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(DataObject<User> o) {
+                        resultTv.setText("嵌套请求成功");
+                        Log.i("WebService", "最后请求成功");
+                        Log.i("WebService", o.data.rows.get(0).toString());
                     }
                 });
+        //SubscriptionManager.addSubscription(request.getParam(), subscription);
+        return subscription;
     }
 }

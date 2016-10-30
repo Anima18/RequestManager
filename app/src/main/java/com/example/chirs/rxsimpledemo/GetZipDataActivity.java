@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.chirs.rxsimpledemo.entity.DataObject;
-import com.example.chirs.rxsimpledemo.entity.ObjectShowData;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.service.Service;
@@ -18,6 +17,7 @@ import com.google.gson.reflect.TypeToken;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func3;
 import rx.schedulers.Schedulers;
 
@@ -29,10 +29,6 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
     private Button searchBt;
     private TextView resultTv;
     private Subscription subscription;
-
-
-    private ObjectShowData showObject = new ObjectShowData();
-    private DataObject<User> dataObject = new DataObject<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,44 +71,42 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
         Observable<DataObject<User>> observable1 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
                 .setMethod(Service.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-                .request()
-                .getObservable();
+                .request();
 
         Observable<DataObject<User>> observable2 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                 .setMethod(Service.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-                .request()
-                .getObservable();
+                .request();
 
         Observable<DataObject<User>> observable3 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
                 .setMethod(Service.GET_TYPE)
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-                .request()
-                .getObservable();
-        return Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, Object>() {
+                .request();
+        return Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, DataObject<User>>() {
             @Override
-            public Object call(DataObject<User> userDataObject, DataObject<User> userDataObject2, DataObject<User> userDataObject3) {
+            public DataObject<User> call(DataObject<User> userDataObject, DataObject<User> userDataObject2, DataObject<User> userDataObject3) {
                 Log.i("WebService", "第一个请求："+ userDataObject.data.rows.get(0).toString());
                 Log.i("WebService", "第二个请求："+ userDataObject2.data.rows.get(0).toString());
                 Log.i("WebService", "第三个请求："+ userDataObject3.data.rows.get(0).toString());
-                return null;
+                return userDataObject;
             }
-        }).subscribeOn(Schedulers.io()).subscribe(new Subscriber<Object>() {
+        }).subscribeOn(Schedulers.io())
+         .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<DataObject<User>>() {
             @Override
             public void onCompleted() {
-                Log.i("WebService", "请求结束");
                 hideProgress();
             }
 
             @Override
             public void onError(Throwable e) {
-                Log.i("WebService", "请求错误："+ e.getMessage());
-                hideProgress();
+                Log.i("WebService", e.getMessage());
+                resultTv.setText(e.getMessage());
             }
 
             @Override
-            public void onNext(Object o) {
-                Log.i("WebService", "请求成功");
+            public void onNext(DataObject<User> userDataObject) {
+                resultTv.setText("并发请求成功");
             }
         });
     }

@@ -80,6 +80,7 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
         return NetworkRequest.create(new DataCallBack<List<Object>>() {
             @Override
             public void onSuccess(List<Object> dataList) {
+                resultTv.setText("顺序请求成功");
                 Toast.makeText(GetSeqDataActivity.this, "请求成功，请求数量："+dataList.size(), Toast.LENGTH_SHORT).show();
             }
 

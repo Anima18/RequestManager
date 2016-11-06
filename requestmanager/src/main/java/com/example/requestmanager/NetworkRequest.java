@@ -21,6 +21,7 @@ import com.google.gson.JsonParser;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,10 @@ public class NetworkRequest<T> {
     private List<WebServiceParam> paramList = new ArrayList<>();
 
     private NetworkRequest() {}
+
+    private NetworkRequest(Builder builder) {
+
+    }
 
     public static NetworkRequest create() {
         return new NetworkRequest();
@@ -96,6 +101,71 @@ public class NetworkRequest<T> {
     public NetworkRequest setWebServerParamList(List<WebServiceParam> params) {
         paramList.addAll(params);
         return this;
+    }
+
+    public static class Builder<T> {
+        private String url;
+        private Context context;
+        private Class aClass;
+        private Type type;
+        private String method;
+        private Map<String, Object> param;
+        private List<WebServiceParam> params;
+
+        public Builder setContext(Context context) {
+            this.context = context;
+            return this;
+        }
+        public Builder setUrl(String url) {
+            this.url = url;
+            return this;
+        }
+        public Builder setDataClass(Class aClass) {
+            this.aClass = aClass;
+            return this;
+        }
+
+        public Builder setDataType(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder setMethod(String method) {
+           this.method = method;
+            return this;
+        }
+        public Builder param(String key, Object value) {
+            if(this.param == null) {
+                param = new HashMap<>();
+            }
+            this.param.put(key, value);
+            return this;
+        }
+
+        public Builder param(Map<String, Object> param) {
+            if(this.param == null) {
+                param = new HashMap<>();
+            }
+            this.param.putAll(param);
+            return this;
+        }
+
+        public Builder params(WebServiceParam param) {
+            if(this.params == null) {
+                params = new ArrayList<>();
+            }
+            this.params.add(param);
+            return this;
+        }
+
+        public Builder params(List<WebServiceParam> params) {
+            if(this.params == null) {
+                params = new ArrayList<>();
+            }
+            this.params.addAll(params);
+            return this;
+        }
+
     }
 
     private void checkParam(CallBack callBack) {

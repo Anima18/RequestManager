@@ -67,19 +67,22 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
         resultTv.setText("");
         showProgress("正在查询...");
 
-        Observable<DataObject<User>> observable1 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
-                .setMethod(NetworkRequest.GET_TYPE)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        Observable<DataObject<User>> observable1 = new NetworkRequest.Builder()
+                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .method(NetworkRequest.GET_TYPE)
+                .dataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
 
-        Observable<DataObject<User>> observable2 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(NetworkRequest.GET_TYPE)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        Observable<DataObject<User>> observable2 = new NetworkRequest.Builder()
+                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .method(NetworkRequest.GET_TYPE)
+                .dataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
 
-        Observable<DataObject<User>> observable3 = NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(NetworkRequest.GET_TYPE)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        Observable<DataObject<User>> observable3 = new NetworkRequest.Builder()
+                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .method(NetworkRequest.GET_TYPE)
+                .dataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
         return Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, DataObject<User>>() {
             @Override

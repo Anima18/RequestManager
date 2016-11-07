@@ -43,27 +43,25 @@ public abstract class Service {
 
     /**
      * 服务执行方法
-     * @param context OKHttp tag参数
      * @param param 请求参数
      * @param callBack 响应回调
      * @param <T>   请求对象类型
      * @return Subscription订阅对象
      */
-    abstract <T> Subscription execute(final Context context, final WebServiceParam param, CallBack<T> callBack);
+    abstract <T> Subscription execute(final WebServiceParam param, CallBack<T> callBack);
 
     /**
      * 获取网络请求响应体
-     * @param context OKHttp tag参数
      * @param param 请求参数
      * @return Response
      * @throws IOException
      */
-    Response getResponse(Context context, WebServiceParam param) throws IOException {
+    Response getResponse(WebServiceParam param) throws IOException {
         Call call = null;
         if(GET_TYPE.equals(param.getMethod())) {
-            call = OkHttpUtils.get(context, param.getRequestUrl());
+            call = OkHttpUtils.get(param.getRequestUrl());
         }else if(POST_TYPE.equals(param.getMethod())) {
-            call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams());
+            call = OkHttpUtils.post(param.getRequestUrl(), param.getParams());
         }
         SubscriptionManager.addRequest(param, call);
         return call.execute();

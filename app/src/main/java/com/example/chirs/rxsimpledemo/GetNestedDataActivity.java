@@ -123,20 +123,20 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                     }
                 });*/
 
-        Subscription subscription = NetworkRequest.create()
-                .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(NetworkRequest.GET_TYPE)
-                .setDataType(new TypeToken<DataObject<User>>() {}.getType())
+        Subscription subscription = new NetworkRequest.Builder()
+                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .method(NetworkRequest.GET_TYPE)
+                .dataType(new TypeToken<DataObject<User>>() {}.getType())
                 .request()
                 .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
                     public Observable<?> call(DataObject<User> o) {
                         Log.i("WebService", "嵌套请求一成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
-                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                                .setMethod(NetworkRequest.GET_TYPE)
-                                .setDataType(new TypeToken<DataObject<User>>() {
-                                }.getType())
+                        return new NetworkRequest.Builder()
+                                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                                .method(NetworkRequest.GET_TYPE)
+                                .dataType(new TypeToken<DataObject<User>>() {}.getType())
                                 .request();
                     }
                 })
@@ -145,10 +145,10 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                     public Observable<?> call(DataObject<User> o) {
                         Log.i("WebService", "嵌套请求二成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
-                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
-                                .setMethod(NetworkRequest.GET_TYPE)
-                                .setDataType(new TypeToken<DataObject<User>>() {
-                                }.getType())
+                        return new NetworkRequest.Builder()
+                                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                                .method(NetworkRequest.GET_TYPE)
+                                .dataType(new TypeToken<DataObject<User>>() {}.getType())
                                 .request();
                     }
                 })

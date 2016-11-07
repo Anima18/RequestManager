@@ -65,12 +65,10 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
     private Subscription getCollectionData() {
         showProgress("正在查询...");
         resultTv.setText("");
-        return NetworkRequest.create()
-        .setContext(this)
-        .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-        .setDataClass(DataObject.class)
-        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-        .setMethod(NetworkRequest.POST_TYPE)
+        return new NetworkRequest.Builder()
+        .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+        .dataType(new TypeToken<DataObject<User>>(){}.getType())
+        .method(NetworkRequest.POST_TYPE)
         .send(new DataCallBack<DataObject<User>>() {
             @Override
             public void onSuccess(DataObject<User> data) {
@@ -97,6 +95,5 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NetworkRequest.cancel(this);
     }
 }

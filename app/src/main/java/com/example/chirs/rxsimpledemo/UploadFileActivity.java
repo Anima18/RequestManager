@@ -84,12 +84,11 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
             Log.d(TAG, fileName);
             param.put(fileName, new FileObject(basePath + fileName));
         }
-        return NetworkRequest.create()
-        .setUrl(BASE_PATH + "security/security_uploadList.action")
-        .setContext(this)
-        .setParam(param)
-        .setMethod(NetworkRequest.POST_TYPE)
-        .setDataType(new TypeToken<DataObject<User>>(){}.getType())
+        return new NetworkRequest.Builder()
+        .url(BASE_PATH + "security/security_uploadList.action")
+        .param(param)
+        .method(NetworkRequest.POST_TYPE)
+        .dataType(new TypeToken<DataObject<User>>(){}.getType())
         .uploadFile(new ProgressCallBack<DataObject<User>>() {
             @Override
             public void onProgress(String fileName, int progress) {

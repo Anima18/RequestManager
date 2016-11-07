@@ -64,7 +64,34 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
     private Subscription getObjectData() {
         resultTv.setText("");
         showProgress("正在查询...");
-        return NetworkRequest.create()
+
+        return new NetworkRequest.Builder()
+                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .dataType(new TypeToken<DataObject<User>>(){}.getType())
+                .method(NetworkRequest.GET_TYPE)
+                .send(new DataCallBack<DataObject<User>>() {
+                    @Override
+                    public void onSuccess(DataObject<User> data) {
+                        if(data == null) {
+                            resultTv.setText("没有数据");
+                        }else {
+                            Log.i("WebService", data.data.rows.get(0).getName());
+                            resultTv.setText(data.toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int code, String message) {
+                        resultTv.setText("code："+ code +", message:"+message);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        hideProgress();
+                    }
+                });
+
+        /*return NetworkRequest.create()
         .setContext(this)
         .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfoLayer.action")
         .setDataType(new TypeToken<DataObject<User>>(){}.getType())
@@ -89,6 +116,6 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
             public void onCompleted() {
                 hideProgress();
             }
-        });
+        });*/
     }
 }

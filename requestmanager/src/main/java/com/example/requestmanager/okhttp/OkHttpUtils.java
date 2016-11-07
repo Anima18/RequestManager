@@ -59,10 +59,9 @@ public class OkHttpUtils {
      * @return call
      * @throws IOException
      */
-    public static Call get(Context context, String url) throws IOException {
+    public static Call get(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
-                .tag(context)
                 .build();
 
         return client.newCall(request);
@@ -77,7 +76,7 @@ public class OkHttpUtils {
      * @return call
      * @throws IOException
      */
-    public static Call post (Context context, String url, Map<String, Object> paramMap, final ProgressCallBack callBack) throws IOException {
+    public static Call post(String url, Map<String, Object> paramMap, final ProgressCallBack callBack) throws IOException {
 
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         //MultipartBody必须有一个请求体，设置一个默认请求体
@@ -116,14 +115,13 @@ public class OkHttpUtils {
 
         Request request = new Request.Builder()
                 .url(url)
-                .tag(context)
                 .post(requestBody)
                 .build();
 
         return client.newCall(request);
     }
 
-    public static Call post (Context context, String url, Map<String, Object> paramMap) throws IOException {
+    public static Call post (String url, Map<String, Object> paramMap) throws IOException {
 
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("1", "1");
@@ -139,14 +137,13 @@ public class OkHttpUtils {
 
         Request request = new Request.Builder()
                 .url(url)
-                .tag(context)
                 .post(requestBody)
                 .build();
 
         return client.newCall(request);
     }
 
-    public static Call downloadFile(Context context, String url, final Map<String, Object> paramMap, final ProgressCallBack callBack) throws IOException {
+    public static Call downloadFile(String url, final Map<String, Object> paramMap, final ProgressCallBack callBack) throws IOException {
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("1", "1");
 
@@ -160,7 +157,6 @@ public class OkHttpUtils {
         RequestBody requestBody = builder.build();
         Request request = new Request.Builder()
                 .url(url)
-                .tag(context)
                 .post(requestBody)
                 .build();
 

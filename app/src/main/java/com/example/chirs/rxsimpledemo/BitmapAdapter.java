@@ -87,7 +87,7 @@ public class BitmapAdapter extends BaseAdapter {
 
             }
         });*/
-        NetworkRequest.create().setContext(context).setUrl(url).getBitMap(new BitmapCallBack(){
+        new NetworkRequest.Builder().url(url).getBitMap(new BitmapCallBack(){
             @Override
             public void onSuccess(String url, Bitmap bitmap) {
                 if(bitmap == null) {

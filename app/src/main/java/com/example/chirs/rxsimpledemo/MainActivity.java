@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity {
         activityClassList.add(new ActivityClass("下载文件", DownloadFileActivity.class));
         activityClassList.add(new ActivityClass("嵌套请求", GetNestedDataActivity.class));
         activityClassList.add(new ActivityClass("顺序请求", GetSeqDataActivity.class));
-        activityClassList.add(new ActivityClass("并发等待请求", GetZipDataActivity.class));
+        activityClassList.add(new ActivityClass("并发请求", GetZipDataActivity.class));
         return activityClassList;
     }
 
@@ -127,7 +127,7 @@ public class MainActivity extends BaseActivity {
                     String filename = url.substring(url.lastIndexOf("/"));
                     Call call = null;
                     try {
-                        call = OkHttpUtils.get(MainActivity.this, url);
+                        call = OkHttpUtils.get(url);
                         Response response = call.execute();
                         File downloadedFile = new File(basePath, filename);
                         BufferedSink sink = Okio.buffer(Okio.sink(downloadedFile));

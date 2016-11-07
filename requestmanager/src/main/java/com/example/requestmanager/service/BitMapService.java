@@ -36,7 +36,7 @@ public final class BitMapService {
         return INSTATNCE;
     }
 
-    public <T> Subscription execute(final Context context, final String url, BitmapCallBack callBack) {
+    public <T> Subscription execute(final String url, BitmapCallBack callBack) {
         if(SubscriptionManager.isContainUrl(url)) {
             return null;
         }
@@ -45,7 +45,7 @@ public final class BitMapService {
             public void call(Subscriber<? super Bitmap> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
-                callBitmapWebService(context, subscriber, url);
+                callBitmapWebService(subscriber, url);
             }
         })
         .subscribeOn(Schedulers.io())
@@ -56,9 +56,9 @@ public final class BitMapService {
         return subscription;
     }
 
-    private void callBitmapWebService(Context context, Subscriber<? super Bitmap> subscriber, String url) {
+    private void callBitmapWebService(Subscriber<? super Bitmap> subscriber, String url) {
         try {
-            Call call = OkHttpUtils.get(context, url);
+            Call call = OkHttpUtils.get(url);
             //SubscriptionManager.addRequest(url, call);
             Response response = call.execute();
             if(response.isSuccessful()) {

@@ -35,13 +35,13 @@ public final class DataService extends Service {
     }
 
     @Override
-    public <T> Subscription execute(final Context context, final WebServiceParam param, CallBack<T> callBack) {
+    public <T> Subscription execute(final WebServiceParam param, CallBack<T> callBack) {
         Subscription subscription =  Observable.create(new Observable.OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
-                callObjectWebService(context, subscriber, param);
+                callObjectWebService(subscriber, param);
 
             }
         })
@@ -53,9 +53,9 @@ public final class DataService extends Service {
         return subscription;
     }
 
-    public <T> void callObjectWebService(Context context, Subscriber<? super T> subscriber, WebServiceParam param) {
+    public <T> void callObjectWebService(Subscriber<? super T> subscriber, WebServiceParam param) {
         try {
-            Response response = getResponse(context, param);
+            Response response = getResponse(param);
             if(response.isSuccessful()) {
                 JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
                 if(jsonElement.isJsonObject()) {

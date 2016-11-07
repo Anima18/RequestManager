@@ -1,7 +1,5 @@
 package com.example.requestmanager;
 
-import android.content.Context;
-
 import com.example.requestmanager.callBack.BitmapCallBack;
 import com.example.requestmanager.callBack.CallBack;
 import com.example.requestmanager.callBack.DataCallBack;
@@ -38,10 +36,9 @@ import static com.example.requestmanager.service.Service.gson;
 /**
  * Created by jianjianhong on 2016/10/26.
  */
-public class NetworkRequest<T> {
+public class NetworkRequest<T> implements NetworkRequestApi {
     public final static String POST_TYPE = "POST";
     public final static String GET_TYPE = "GET";
-    private Context context;
     /**
      * 单个请求参数
      */
@@ -51,86 +48,40 @@ public class NetworkRequest<T> {
      */
     private List<WebServiceParam> paramList = new ArrayList<>();
 
-    private NetworkRequest() {}
-
     private NetworkRequest(Builder builder) {
-
+        this.param.setRequestUrl(builder.url);
+        this.param.setClassType(builder.type);
+        this.param.setClazz(builder.aClass);
+        this.param.setMethod(builder.method);
+        if(builder.param != null) {
+            this.param.addParam(builder.param);
+        }
+        this.paramList = builder.params;
     }
 
-    public static NetworkRequest create() {
-        return new NetworkRequest();
-    }
-
-    public NetworkRequest setContext(Context context) {
-        this.context = context;
-        return this;
-    }
-    public NetworkRequest setUrl(String url) {
-        param.setRequestUrl(url);
-        return this;
-    }
-    public NetworkRequest setDataClass(Class dataClass) {
-        param.setClazz(dataClass);
-        return this;
-    }
-
-    public NetworkRequest setDataType(Type type) {
-        param.setClassType(type);
-        return this;
-    }
-
-    public NetworkRequest setMethod(String method) {
-        param.setMethod(method);
-        return this;
-    }
-    public NetworkRequest addParam(String key, Object value) {
-        param.addParam(key, value);
-        return this;
-    }
-
-    public NetworkRequest setParam(Map<String, Object> params) {
-        param.addParam(params);
-        return this;
-    }
-
-    public NetworkRequest addWebServerParam(WebServiceParam param) {
-        paramList.add(param);
-        return this;
-    }
-
-    public NetworkRequest setWebServerParamList(List<WebServiceParam> params) {
-        paramList.addAll(params);
-        return this;
-    }
-
-    public static class Builder<T> {
+    public static class Builder<T> implements NetworkRequestApi {
         private String url;
-        private Context context;
         private Class aClass;
         private Type type;
         private String method;
         private Map<String, Object> param;
         private List<WebServiceParam> params;
 
-        public Builder setContext(Context context) {
-            this.context = context;
-            return this;
-        }
-        public Builder setUrl(String url) {
+        public Builder url(String url) {
             this.url = url;
             return this;
         }
-        public Builder setDataClass(Class aClass) {
+        public Builder dataClass(Class aClass) {
             this.aClass = aClass;
             return this;
         }
 
-        public Builder setDataType(Type type) {
+        public Builder dataType(Type type) {
             this.type = type;
             return this;
         }
 
-        public Builder setMethod(String method) {
+        public Builder method(String method) {
            this.method = method;
             return this;
         }
@@ -144,7 +95,7 @@ public class NetworkRequest<T> {
 
         public Builder param(Map<String, Object> param) {
             if(this.param == null) {
-                param = new HashMap<>();
+                this.param = new HashMap<>();
             }
             this.param.putAll(param);
             return this;
@@ -152,7 +103,7 @@ public class NetworkRequest<T> {
 
         public Builder params(WebServiceParam param) {
             if(this.params == null) {
-                params = new ArrayList<>();
+                this.params = new ArrayList<>();
             }
             this.params.add(param);
             return this;
@@ -160,18 +111,55 @@ public class NetworkRequest<T> {
 
         public Builder params(List<WebServiceParam> params) {
             if(this.params == null) {
-                params = new ArrayList<>();
+                this.params = new ArrayList<>();
             }
             this.params.addAll(params);
             return this;
         }
 
+        public NetworkRequest build() {
+            return new NetworkRequest(this);
+        }
+
+        @Override
+        public Subscription uploadFile(ProgressCallBack progressCallBack) {
+            NetworkRequest request2 = build();
+            return request2.uploadFile(progressCallBack);
+        }
+
+        @Override
+        public Subscription downloadFile(ProgressCallBack progressCallBack) {
+            NetworkRequest request2 = build();
+            return request2.downloadFile(progressCallBack);
+        }
+
+        @Override
+        public <T> Subscription send(DataCallBack<T> dataCallBack) {
+            NetworkRequest request2 = build();
+            return request2.send(dataCallBack);
+        }
+
+        @Override
+        public Subscription getBitMap(BitmapCallBack bitmapCallBack) {
+            NetworkRequest request2 = build();
+            return request2.getBitMap(bitmapCallBack);
+        }
+
+        @Override
+        public <T> Subscription getSeqData(DataCallBack<T> dataCallBack) {
+            NetworkRequest request2 = build();
+            return request2.getSeqData(dataCallBack);
+        }
+
+        @Override
+        public Observable<T> request() {
+            NetworkRequest request2 = build();
+            return request2.request();
+        }
     }
 
     private void checkParam(CallBack callBack) {
-        if(context == null) {
-            throw new Error("NetworkRequest context is null");
-        }else if(StringUtil.isEmpty(param.getRequestUrl())) {
+        if(StringUtil.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(param.getClazz() == null && param.getClassType() == null) {
             throw new Error("NetworkRequest dataType is null");
@@ -183,34 +171,30 @@ public class NetworkRequest<T> {
     }
 
     public Subscription uploadFile(ProgressCallBack progressCallBack) {
-        //param.setMethod(Service.POST_TYPE);
         checkParam(progressCallBack);
-        return ProgressObjectService.getInstance().execute(context, param, progressCallBack);
+        return ProgressObjectService.getInstance().execute(param, progressCallBack);
     }
 
     public Subscription downloadFile(ProgressCallBack progressCallBack) {
-       //param.setMethod(Service.POST_TYPE);
         checkParam(progressCallBack);
-        return DownloadFileService.getInstance().execute(context, param, progressCallBack);
+        return DownloadFileService.getInstance().execute(param, progressCallBack);
     }
 
-    public Subscription send(DataCallBack<T> dataCallBack) {
+    public <T> Subscription send(DataCallBack<T> dataCallBack) {
         checkParam(dataCallBack);
-        return DataService.getInstance().execute(context, param, dataCallBack);
+        return DataService.getInstance().execute(param, dataCallBack);
     }
 
     public Subscription getBitMap(BitmapCallBack bitmapCallBack) {
-        if(context == null) {
-            throw new Error("NetworkRequest context is null");
-        }else if(StringUtil.isEmpty(param.getRequestUrl())) {
+        if(StringUtil.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(bitmapCallBack == null) {
             throw new Error("NetworkRequest callBack is null");
         }
-        return BitMapService.getInstance().execute(context, param.getRequestUrl(), bitmapCallBack);
+        return BitMapService.getInstance().execute(param.getRequestUrl(), bitmapCallBack);
     }
 
-    public Subscription getSeqData(DataCallBack<T> dataCallBack) {
+    public <T> Subscription getSeqData(DataCallBack<T> dataCallBack) {
         Subscription subscription = Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -220,9 +204,9 @@ public class NetworkRequest<T> {
                     Call call = null;
                     for(WebServiceParam param : paramList) {
                         if(GET_TYPE.equals(param.getMethod())) {
-                            call = OkHttpUtils.get(context, param.getRequestUrl());
+                            call = OkHttpUtils.get(param.getRequestUrl());
                         }else if(POST_TYPE.equals(param.getMethod())) {
-                            call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
+                            call = OkHttpUtils.post(param.getRequestUrl(), param.getParams(), null);
                         }
                         Response response = call.execute();
                         SubscriptionManager.addRequest(param, call);
@@ -307,9 +291,9 @@ public class NetworkRequest<T> {
                 try {
                     Call call = null;
                     if(GET_TYPE.equals(param.getMethod())) {
-                        call = OkHttpUtils.get(context, param.getRequestUrl());
+                        call = OkHttpUtils.get(param.getRequestUrl());
                     }else if(POST_TYPE.equals(param.getMethod())) {
-                        call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), null);
+                        call = OkHttpUtils.post(param.getRequestUrl(), param.getParams(), null);
                     }
                     Response response = call.execute();
                     SubscriptionManager.addRequest(param, call);
@@ -341,22 +325,6 @@ public class NetworkRequest<T> {
      */
     public static void cancel(Subscription subscription) {
         SubscriptionManager.removeSubscription(subscription);
-    }
-
-    /**
-     * 取消获取图片资源服务
-     * @param url 请求图片的url
-     */
-    public static void cancel(String url) {
-        SubscriptionManager.removeSubscription(url);
-    }
-
-    /**
-     * 取消页面上所有的请求
-     * @param tag
-     */
-    public static void cancel(Context tag) {
-        OkHttpUtils.cancelTag(tag);
     }
 
 }

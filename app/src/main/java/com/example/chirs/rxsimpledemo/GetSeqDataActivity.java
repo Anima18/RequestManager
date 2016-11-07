@@ -73,12 +73,11 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
         resultTv.setText("");
         showProgress("正在查询...");
         List<WebServiceParam> params = new ArrayList<>();
-        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
-        params.add(new WebServiceParam("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam(BASE_PATH + "userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
+        params.add(new WebServiceParam(BASE_PATH + "userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
 
-        return NetworkRequest.create()
-        .setContext(this)
-        .setWebServerParamList(params)
+        return new NetworkRequest.Builder()
+        .params(params)
         .getSeqData(new DataCallBack<List<Object>>() {
             @Override
             public void onSuccess(List<Object> dataList) {

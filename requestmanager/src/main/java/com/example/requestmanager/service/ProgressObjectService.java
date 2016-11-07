@@ -37,14 +37,14 @@ public final class ProgressObjectService extends Service {
         return INSTATNCE;
     }
     @Override
-    public <T> Subscription execute(final Context context, final WebServiceParam param, CallBack<T> callBack) {
+    public <T> Subscription execute(final WebServiceParam param, CallBack<T> callBack) {
         Subscription subscription =  Observable.create(new Observable.OnSubscribe<ProgressValue<T>>() {
             @Override
             public void call(final Subscriber<? super ProgressValue<T>> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {
-                    Call call = OkHttpUtils.post(context, param.getRequestUrl(), param.getParams(), new OkHttpUtils.ProgressCallBack() {
+                    Call call = OkHttpUtils.post(param.getRequestUrl(), param.getParams(), new OkHttpUtils.ProgressCallBack() {
                         @Override
                         public void callBack(String fileName, int progress) {
                             Log.d("WebService", fileName +", "+ progress);

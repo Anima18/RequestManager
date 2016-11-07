@@ -31,12 +31,12 @@ public class GetBitmapDataActivity extends BaseActivity {
         gridView = (ListView)findViewById(R.id.gbAct_gridView);
         BitmapAdapter adapter = new BitmapAdapter(GetBitmapDataActivity.this, urlList);
         gridView.setAdapter(adapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       /* gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 NetworkRequest.cancel(urlList.get(position));
             }
-        });
+        });*/
     }
 
     public List<String> initData() {
@@ -61,6 +61,6 @@ public class GetBitmapDataActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NetworkRequest.cancel(GetBitmapDataActivity.this);
+        //NetworkRequest.cancel(GetBitmapDataActivity.this);
     }
 }

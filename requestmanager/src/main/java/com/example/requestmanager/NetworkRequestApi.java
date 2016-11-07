@@ -13,7 +13,7 @@ import rx.Subscription;
 public interface NetworkRequestApi {
     Subscription uploadFile(ProgressCallBack progressCallBack);
     Subscription downloadFile(ProgressCallBack progressCallBack);
-    <T> Subscription send(DataCallBack<T> dataCallBack);
+    <T> Subscription call(DataCallBack<T> dataCallBack);
     Subscription getBitMap(BitmapCallBack bitmapCallBack);
     <T> Subscription getSeqData(DataCallBack<T> dataCallBack);
     <T> Observable<T> request();

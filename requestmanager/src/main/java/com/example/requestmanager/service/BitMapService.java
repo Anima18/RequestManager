@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.example.requestmanager.entity.WebServiceParam;
 import com.example.requestmanager.okhttp.OkHttpUtils;
 import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.callBack.BitmapCallBack;
@@ -36,8 +37,8 @@ public final class BitMapService {
         return INSTATNCE;
     }
 
-    public <T> Subscription execute(final String url, BitmapCallBack callBack) {
-        if(SubscriptionManager.isContainUrl(url)) {
+    public <T> Subscription execute(final WebServiceParam param, BitmapCallBack callBack) {
+        if(SubscriptionManager.isContainUrl(param.getRequestUrl())) {
             return null;
         }
         Subscription subscription =  Observable.create(new Observable.OnSubscribe<Bitmap>() {
@@ -45,21 +46,21 @@ public final class BitMapService {
             public void call(Subscriber<? super Bitmap> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
-                callBitmapWebService(subscriber, url);
+                callBitmapWebService(subscriber, param);
             }
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(getBitMapSubscriber(url, callBack));
+        .subscribe(getBitMapSubscriber(param.getRequestUrl(), callBack));
 
-        //SubscriptionManager.addSubscription(url, subscription);
+        //SubscriptionManager.addSubscription(param.getRequestUrl(), subscription);
         return subscription;
     }
 
-    private void callBitmapWebService(Subscriber<? super Bitmap> subscriber, String url) {
+    private void callBitmapWebService(Subscriber<? super Bitmap> subscriber, WebServiceParam param) {
         try {
-            Call call = OkHttpUtils.get(url);
-            //SubscriptionManager.addRequest(url, call);
+            Call call = OkHttpUtils.get(param);
+            //SubscriptionManager.addRequest(param.getRequestUrl(), call);
             Response response = call.execute();
             if(response.isSuccessful()) {
                 InputStream is = response.body().byteStream();

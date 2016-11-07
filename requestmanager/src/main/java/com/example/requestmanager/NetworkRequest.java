@@ -53,6 +53,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         this.param.setClassType(builder.type);
         this.param.setClazz(builder.aClass);
         this.param.setMethod(builder.method);
+        this.param.setTag(builder.tag);
         if(builder.param != null) {
             this.param.addParam(builder.param);
         }
@@ -64,6 +65,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         private Class aClass;
         private Type type;
         private String method;
+        private Object tag;
         private Map<String, Object> param;
         private List<WebServiceParam> params;
 
@@ -78,6 +80,11 @@ public class NetworkRequest<T> implements NetworkRequestApi {
 
         public Builder dataType(Type type) {
             this.type = type;
+            return this;
+        }
+
+        public Builder tag(Object tag) {
+            this.tag = tag;
             return this;
         }
 
@@ -134,9 +141,9 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         }
 
         @Override
-        public <T> Subscription send(DataCallBack<T> dataCallBack) {
+        public <T> Subscription call(DataCallBack<T> dataCallBack) {
             NetworkRequest request2 = build();
-            return request2.send(dataCallBack);
+            return request2.call(dataCallBack);
         }
 
         @Override
@@ -180,7 +187,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         return DownloadFileService.getInstance().execute(param, progressCallBack);
     }
 
-    public <T> Subscription send(DataCallBack<T> dataCallBack) {
+    public <T> Subscription call(DataCallBack<T> dataCallBack) {
         checkParam(dataCallBack);
         return DataService.getInstance().execute(param, dataCallBack);
     }
@@ -191,7 +198,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         }else if(bitmapCallBack == null) {
             throw new Error("NetworkRequest callBack is null");
         }
-        return BitMapService.getInstance().execute(param.getRequestUrl(), bitmapCallBack);
+        return BitMapService.getInstance().execute(param, bitmapCallBack);
     }
 
     public <T> Subscription getSeqData(DataCallBack<T> dataCallBack) {
@@ -326,5 +333,9 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     public static void cancel(Subscription subscription) {
         SubscriptionManager.removeSubscription(subscription);
     }
+
+    /*public static void cancelAll(Object tag) {
+        OkHttpUtils.cancelTag(tag);
+    }*/
 
 }

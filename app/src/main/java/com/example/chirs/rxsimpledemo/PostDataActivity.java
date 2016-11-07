@@ -69,7 +69,9 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
         .url(BASE_PATH + "userInfo/getAllUserInfo.action")
         .dataType(new TypeToken<DataObject<User>>(){}.getType())
         .method(NetworkRequest.POST_TYPE)
-        .send(new DataCallBack<DataObject<User>>() {
+        .param("user.name", "Anima18")
+        .param("user.password", "123456")
+        .call(new DataCallBack<DataObject<User>>() {
             @Override
             public void onSuccess(DataObject<User> data) {
                 if(data == null) {

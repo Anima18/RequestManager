@@ -87,26 +87,29 @@ public class BitmapAdapter extends BaseAdapter {
 
             }
         });*/
-        new NetworkRequest.Builder().url(url).getBitMap(new BitmapCallBack(){
-            @Override
-            public void onSuccess(String url, Bitmap bitmap) {
-                if(bitmap == null) {
-                    holder.image.setImageResource(R.drawable.not_found);
-                }else {
-                    holder.image.setImageBitmap(bitmap);
-                }
-            }
+        new NetworkRequest.Builder()
+                .url(url)
+                .tag(context)
+                .getBitMap(new BitmapCallBack(){
+                    @Override
+                    public void onSuccess(String url, Bitmap bitmap) {
+                        if(bitmap == null) {
+                            holder.image.setImageResource(R.drawable.not_found);
+                        }else {
+                            holder.image.setImageBitmap(bitmap);
+                        }
+                    }
 
-            @Override
-            public void onFailure(int code, String message) {
-                holder.image.setImageResource(R.drawable.not_found);
-            }
+                    @Override
+                    public void onFailure(int code, String message) {
+                        holder.image.setImageResource(R.drawable.not_found);
+                    }
 
-            @Override
-            public void onCompleted() {
+                    @Override
+                    public void onCompleted() {
 
-            }
-        });
+                    }
+                });
 
         return convertView;
     }

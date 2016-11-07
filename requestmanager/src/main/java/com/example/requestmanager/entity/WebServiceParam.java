@@ -24,6 +24,9 @@ public class WebServiceParam {
      * 请求的发生, eg:GET或者POST
      */
     private String method;
+
+    private Object tag;
+
     /**
      * 请求的参数，存储键值对
      */
@@ -110,5 +113,13 @@ public class WebServiceParam {
 
     public void setClassType(Type classType) {
         this.classType = classType;
+    }
+
+    public Object getTag() {
+        return tag;
+    }
+
+    public void setTag(Object tag) {
+        this.tag = tag;
     }
 }

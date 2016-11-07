@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.entity.FileObject;
+import com.example.requestmanager.entity.WebServiceParam;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +63,15 @@ public class OkHttpUtils {
     public static Call get(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
+                .build();
+
+        return client.newCall(request);
+    }
+
+    public static Call get(WebServiceParam param) throws IOException {
+        Request request = new Request.Builder()
+                .url(param.getRequestUrl())
+                .tag(param.getTag())
                 .build();
 
         return client.newCall(request);
@@ -195,7 +205,7 @@ public class OkHttpUtils {
     }
 
     /** 根据Tag取消请求 */
-    public static void cancelTag(Context tag) {
+    public static void cancelTag(Object tag) {
         synchronized (client.dispatcher().getClass()) {
             Log.d("WebService", "queuedCalls size:"+client.dispatcher().queuedCalls().size());
             for (Call call : client.dispatcher().queuedCalls()) {

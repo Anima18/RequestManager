@@ -61,6 +61,6 @@ public class GetBitmapDataActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //NetworkRequest.cancel(GetBitmapDataActivity.this);
+        //NetworkRequest.cancelAll(GetBitmapDataActivity.this);
     }
 }

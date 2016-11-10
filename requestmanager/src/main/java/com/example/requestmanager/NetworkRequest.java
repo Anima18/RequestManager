@@ -247,8 +247,9 @@ public class NetworkRequest<T> implements NetworkRequestApi {
                     subscriber.onError(e);
                 }
             }
-        }).subscribeOn(Schedulers.io())
+        })
                 .compose(param.getProvider().bindUntilEvent(ActivityEvent.PAUSE))
+                .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(seqResponse(paramList, (DataCallBack<List<Object>>)dataCallBack));
 

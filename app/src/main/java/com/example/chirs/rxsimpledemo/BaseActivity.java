@@ -9,13 +9,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.requestmanager.NetworkRequest;
 import com.trello.rxlifecycle.LifecycleProvider;
 import com.trello.rxlifecycle.LifecycleTransformer;
 import com.trello.rxlifecycle.RxLifecycle;
 import com.trello.rxlifecycle.android.ActivityEvent;
 import com.trello.rxlifecycle.android.RxLifecycleAndroid;
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
@@ -25,7 +23,7 @@ import rx.subjects.BehaviorSubject;
  */
 public class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
     protected ProgressDialog progressDialog;
-    protected final static String BASE_PATH = "http://192.168.60.139:8080/webService/";
+    protected final static String BASE_PATH = "http://192.168.1.103:8080/webService/";
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 

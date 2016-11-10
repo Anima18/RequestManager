@@ -1,6 +1,5 @@
 package com.example.chirs.rxsimpledemo;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -46,13 +45,6 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
     public void initEvent() {
         searchBt.setOnClickListener(this);
 
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                NetworkRequest.cancel(subscription);
-                //Toast.makeText(GetSeqDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override

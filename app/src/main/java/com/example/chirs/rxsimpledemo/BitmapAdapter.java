@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.BitmapCallBack;
+import com.trello.rxlifecycle.LifecycleProvider;
 
 import java.util.List;
 
@@ -88,6 +89,7 @@ public class BitmapAdapter extends BaseAdapter {
             }
         });*/
         new NetworkRequest.Builder()
+                .lifecycleProvider((LifecycleProvider) context)
                 .url(url)
                 .tag(context)
                 .getBitMap(new BitmapCallBack(){

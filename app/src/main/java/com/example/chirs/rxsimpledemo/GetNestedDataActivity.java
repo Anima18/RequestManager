@@ -12,6 +12,7 @@ import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.google.gson.reflect.TypeToken;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -48,13 +49,6 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
     public void initEvent() {
         searchBt.setOnClickListener(this);
 
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                NetworkRequest.cancel(subscription);
-                //Toast.makeText(GetNestedDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -124,7 +118,7 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                 });*/
 
         Subscription subscription = new NetworkRequest.Builder()
-                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .method(NetworkRequest.GET_TYPE)
                 .dataType(new TypeToken<DataObject<User>>() {}.getType())
                 .request()
@@ -146,12 +140,13 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", "嵌套请求二成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return new NetworkRequest.Builder()
-                                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                                .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                                 .method(NetworkRequest.GET_TYPE)
                                 .dataType(new TypeToken<DataObject<User>>() {}.getType())
                                 .request();
                     }
                 })
+                .compose(this.bindUntilEvent(ActivityEvent.PAUSE))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<DataObject<User>>() {

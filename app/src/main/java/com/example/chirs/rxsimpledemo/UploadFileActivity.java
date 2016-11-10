@@ -51,13 +51,6 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
     public void initEvent() {
         searchBt.setOnClickListener(this);
 
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                NetworkRequest.cancel(subscription);
-                //Toast.makeText(UploadFileActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -85,6 +78,7 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
             param.put(fileName, new FileObject(basePath + fileName));
         }
         return new NetworkRequest.Builder()
+                .lifecycleProvider(this)
         .url(BASE_PATH + "security/security_uploadList.action")
         .param(param)
         .method(NetworkRequest.POST_TYPE)

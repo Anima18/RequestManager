@@ -1,9 +1,7 @@
 package com.example.requestmanager.okhttp;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.entity.FileObject;
 import com.example.requestmanager.entity.WebServiceParam;
 
@@ -212,7 +210,7 @@ public class OkHttpUtils {
                 Log.d("WebService", call.request().tag().toString());
                 if (tag.equals(call.request().tag())) {
                     call.cancel();
-                    SubscriptionManager.removeSubscription(call);
+                    //SubscriptionManager.removeSubscription(call);
                 }
             }
 
@@ -221,7 +219,7 @@ public class OkHttpUtils {
                 Log.d("WebService", call.request().tag().toString());
                 if (tag.equals(call.request().tag())) {
                     call.cancel();
-                    SubscriptionManager.removeSubscription(call);
+                    //SubscriptionManager.removeSubscription(call);
                 }
             }
         }

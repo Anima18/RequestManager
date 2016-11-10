@@ -1,10 +1,7 @@
 package com.example.requestmanager.service;
 
-import android.content.Context;
-
 import com.google.gson.stream.JsonReader;
 import com.example.requestmanager.okhttp.OkHttpUtils;
-import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.callBack.CallBack;
 import com.example.requestmanager.entity.WebServiceError;
 import com.example.requestmanager.entity.WebServiceParam;
@@ -63,7 +60,7 @@ public abstract class Service {
         }else if(POST_TYPE.equals(param.getMethod())) {
             call = OkHttpUtils.post(param.getRequestUrl(), param.getParams());
         }
-        SubscriptionManager.addRequest(param, call);
+        //SubscriptionManager.addRequest(param, call);
         return call.execute();
     }
 

@@ -12,6 +12,7 @@ import com.example.chirs.rxsimpledemo.entity.DataObject;
 import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.google.gson.reflect.TypeToken;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -68,7 +69,7 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
         showProgress("正在查询...");
 
         Observable<DataObject<User>> observable1 = new NetworkRequest.Builder()
-                .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .method(NetworkRequest.GET_TYPE)
                 .dataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
@@ -92,7 +93,9 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
                 Log.i("WebService", "第三个请求："+ userDataObject3.data.rows.get(0).toString());
                 return userDataObject;
             }
-        }).subscribeOn(Schedulers.io())
+        })
+                .compose(this.<DataObject<User>>bindUntilEvent(ActivityEvent.PAUSE))
+                .subscribeOn(Schedulers.io())
          .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<DataObject<User>>() {
             @Override

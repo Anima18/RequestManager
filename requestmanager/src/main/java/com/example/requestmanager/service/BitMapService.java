@@ -1,15 +1,14 @@
 package com.example.requestmanager.service;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.example.requestmanager.entity.WebServiceParam;
 import com.example.requestmanager.okhttp.OkHttpUtils;
-import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.callBack.BitmapCallBack;
 import com.example.requestmanager.exception.ServiceErrorException;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.io.InputStream;
 
@@ -38,9 +37,7 @@ public final class BitMapService {
     }
 
     public <T> Subscription execute(final WebServiceParam param, BitmapCallBack callBack) {
-        if(SubscriptionManager.isContainUrl(param.getRequestUrl())) {
-            return null;
-        }
+
         Subscription subscription =  Observable.create(new Observable.OnSubscribe<Bitmap>() {
             @Override
             public void call(Subscriber<? super Bitmap> subscriber) {
@@ -49,6 +46,7 @@ public final class BitMapService {
                 callBitmapWebService(subscriber, param);
             }
         })
+                .compose(param.getProvider().bindUntilEvent(ActivityEvent.PAUSE))
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(getBitMapSubscriber(param.getRequestUrl(), callBack));
@@ -82,14 +80,12 @@ public final class BitMapService {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "WebService onCompleted");
-                SubscriptionManager.removeSubscription(url);
                 callBack.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, "WebService onError");
-                SubscriptionManager.removeSubscription(url);
                 Service.handleException(e, callBack);
                 e.printStackTrace();
             }

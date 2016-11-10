@@ -1,16 +1,15 @@
 package com.example.requestmanager.service;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
-import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.callBack.CallBack;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.entity.WebServiceParam;
 import com.example.requestmanager.exception.ServiceErrorException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import okhttp3.Response;
 import rx.Observable;
@@ -47,9 +46,10 @@ public final class DataService extends Service {
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+                .compose(param.getProvider().bindUntilEvent(ActivityEvent.PAUSE))
         .subscribe(getSubscriber(param, (DataCallBack<T>)callBack));
 
-        SubscriptionManager.addSubscription(param, subscription);
+        //SubscriptionManager.addSubscription(param, subscription);
         return subscription;
     }
 
@@ -82,14 +82,12 @@ public final class DataService extends Service {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "WebService onCompleted");
-                SubscriptionManager.removeSubscription(param);
                 callBack.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, "WebService onError");
-                SubscriptionManager.removeSubscription(param);
                 Service.handleException(e, callBack);
                 callBack.onCompleted();
                 e.printStackTrace();

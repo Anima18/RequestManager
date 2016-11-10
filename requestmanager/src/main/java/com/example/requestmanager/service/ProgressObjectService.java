@@ -1,6 +1,5 @@
 package com.example.requestmanager.service;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.JsonElement;
@@ -8,11 +7,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.example.requestmanager.callBack.ProgressCallBack;
 import com.example.requestmanager.okhttp.OkHttpUtils;
-import com.example.requestmanager.SubscriptionManager;
 import com.example.requestmanager.callBack.CallBack;
 import com.example.requestmanager.entity.ProgressValue;
 import com.example.requestmanager.entity.WebServiceParam;
 import com.example.requestmanager.exception.ServiceErrorException;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 
 import okhttp3.Call;
@@ -51,7 +50,7 @@ public final class ProgressObjectService extends Service {
                             subscriber.onNext(new ProgressValue<T>(fileName, progress));
                         }
                     });
-                    SubscriptionManager.addRequest(param, call);
+                    //SubscriptionManager.addRequest(param, call);
                     Response response = call.execute();
 
                     if(response.isSuccessful()) {
@@ -76,10 +75,11 @@ public final class ProgressObjectService extends Service {
             }
         })
                 .distinct()
+                .compose(param.getProvider().bindUntilEvent(ActivityEvent.PAUSE))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getProgressSubscriber(param, (ProgressCallBack<T>)callBack));
-        SubscriptionManager.addSubscription(param, subscription);
+        //SubscriptionManager.addSubscription(param, subscription);
         return subscription;
     }
 
@@ -88,14 +88,12 @@ public final class ProgressObjectService extends Service {
             @Override
             public void onCompleted() {
                 Log.d(TAG, "WebService onCompleted");
-                SubscriptionManager.removeSubscription(param);
                 callBack.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
                 Log.d(TAG, "WebService onError");
-                SubscriptionManager.removeSubscription(param);
                 Service.handleException(e, callBack);
                 callBack.onCompleted();
                 e.printStackTrace();

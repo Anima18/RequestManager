@@ -1,5 +1,7 @@
 package com.example.requestmanager.entity;
 
+import com.trello.rxlifecycle.LifecycleProvider;
+
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,8 @@ import java.util.Map;
  * @version 1.0
  */
 public class WebServiceParam {
+
+    private LifecycleProvider provider;
     /**
      * 请求的url
      */
@@ -121,5 +125,13 @@ public class WebServiceParam {
 
     public void setTag(Object tag) {
         this.tag = tag;
+    }
+
+    public LifecycleProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(LifecycleProvider provider) {
+        this.provider = provider;
     }
 }

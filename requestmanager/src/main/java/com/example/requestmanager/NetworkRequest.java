@@ -16,6 +16,8 @@ import com.example.requestmanager.util.StringUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.trello.rxlifecycle.LifecycleProvider;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         this.param.setClazz(builder.aClass);
         this.param.setMethod(builder.method);
         this.param.setTag(builder.tag);
+        this.param.setProvider(builder.lifecycleProvider);
         if(builder.param != null) {
             this.param.addParam(builder.param);
         }
@@ -61,6 +64,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     }
 
     public static class Builder<T> implements NetworkRequestApi {
+        private LifecycleProvider lifecycleProvider;
         private String url;
         private Class aClass;
         private Type type;
@@ -68,6 +72,11 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         private Object tag;
         private Map<String, Object> param;
         private List<WebServiceParam> params;
+
+        public Builder lifecycleProvider(LifecycleProvider lifecycleProvider) {
+            this.lifecycleProvider = lifecycleProvider;
+            return this;
+        }
 
         public Builder url(String url) {
             this.url = url;
@@ -216,7 +225,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
                             call = OkHttpUtils.post(param.getRequestUrl(), param.getParams(), null);
                         }
                         Response response = call.execute();
-                        SubscriptionManager.addRequest(param, call);
+                        //SubscriptionManager.addRequest(param, call);
                         if(response.isSuccessful()) {
                             JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
                             if(jsonElement.isJsonObject()) {
@@ -239,12 +248,13 @@ public class NetworkRequest<T> implements NetworkRequestApi {
                 }
             }
         }).subscribeOn(Schedulers.io())
+                .compose(param.getProvider().bindUntilEvent(ActivityEvent.PAUSE))
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(seqResponse(paramList, (DataCallBack<List<Object>>)dataCallBack));
 
-        for(WebServiceParam param : paramList) {
+        /*for(WebServiceParam param : paramList) {
             SubscriptionManager.addSubscription(param, subscription);
-        }
+        }*/
         return subscription;
     }
 
@@ -258,17 +268,11 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             List<Object> dataList = new ArrayList<>();
             @Override
             public void onCompleted() {
-                for(WebServiceParam param : paramList) {
-                    SubscriptionManager.removeSubscription(param);
-                }
                 callBack.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
-                for(WebServiceParam param : paramList) {
-                    SubscriptionManager.removeSubscription(param);
-                }
                 Service.handleException(e, callBack);
                 e.printStackTrace();
                 onCompleted();
@@ -303,7 +307,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
                         call = OkHttpUtils.post(param.getRequestUrl(), param.getParams(), null);
                     }
                     Response response = call.execute();
-                    SubscriptionManager.addRequest(param, call);
+                    //SubscriptionManager.addRequest(param, call);
                     if(response.isSuccessful()) {
                         JsonElement jsonElement = new JsonParser().parse(response.body().charStream());
                         if(jsonElement.isJsonObject()) {
@@ -331,7 +335,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
      * @param subscription 订阅对象
      */
     public static void cancel(Subscription subscription) {
-        SubscriptionManager.removeSubscription(subscription);
+        //SubscriptionManager.removeSubscription(subscription);
     }
 
     /*public static void cancelAll(Object tag) {

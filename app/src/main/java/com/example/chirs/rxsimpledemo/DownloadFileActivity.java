@@ -41,13 +41,6 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
     public void initEvent() {
         searchBt.setOnClickListener(this);
 
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                NetworkRequest.cancel(subscription);
-                //Toast.makeText(UploadFileActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -64,6 +57,7 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
         resultTv.setText("");
 
         return new NetworkRequest.Builder()
+                .lifecycleProvider(this)
                 .url(BASE_PATH + "file/LuaDemo.rar")
                 .dataClass(Boolean.class)
                 .param("fileName", "LuaDemo.rar")

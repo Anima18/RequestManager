@@ -44,13 +44,13 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
     public void initEvent() {
         searchBt.setOnClickListener(this);
 
-        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+        /*progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
                 NetworkRequest.cancel(subscription);
                 //Toast.makeText(PostDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -66,7 +66,8 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
         showProgress("正在查询...");
         resultTv.setText("");
         return new NetworkRequest.Builder()
-        .url(BASE_PATH + "userInfo/getAllUserInfo.action")
+                .lifecycleProvider(this)
+        .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
         .dataType(new TypeToken<DataObject<User>>(){}.getType())
         .method(NetworkRequest.POST_TYPE)
         .param("user.name", "Anima18")

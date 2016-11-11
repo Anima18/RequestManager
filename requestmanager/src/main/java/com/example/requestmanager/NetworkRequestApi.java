@@ -11,10 +11,10 @@ import rx.Subscription;
  * Created by jianjianhong on 2016/11/7.
  */
 public interface NetworkRequestApi {
-    Subscription uploadFile(ProgressCallBack progressCallBack);
-    Subscription downloadFile(ProgressCallBack progressCallBack);
-    <T> Subscription call(DataCallBack<T> dataCallBack);
-    Subscription getBitMap(BitmapCallBack bitmapCallBack);
-    <T> Subscription getSeqData(DataCallBack<T> dataCallBack);
+    void uploadFile(ProgressCallBack progressCallBack);
+    void downloadFile(ProgressCallBack progressCallBack);
+    <T> void call(DataCallBack<T> dataCallBack);
+    void getBitMap(BitmapCallBack bitmapCallBack);
+    <T> void getSeqData(DataCallBack<T> dataCallBack);
     <T> Observable<T> request();
 }

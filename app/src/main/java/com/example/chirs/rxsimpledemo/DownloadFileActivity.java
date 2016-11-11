@@ -19,7 +19,6 @@ import rx.Subscription;
 public class DownloadFileActivity extends BaseActivity implements View.OnClickListener {
 
     private Button searchBt;
-    private Subscription subscription;
     private TextView resultTv;
 
     private final static String TAG = "PostCollectionData";
@@ -47,41 +46,40 @@ public class DownloadFileActivity extends BaseActivity implements View.OnClickLi
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.gcAct_bt:
-                subscription = getCollectionData();
+                getCollectionData();
                 break;
         }
     }
 
-    private Subscription getCollectionData() {
+    private void getCollectionData() {
         showProgress("正在查询...");
         resultTv.setText("");
 
-        return new NetworkRequest.Builder()
-                .lifecycleProvider(this)
-                .url(BASE_PATH + "file/LuaDemo.rar")
-                .dataClass(Boolean.class)
-                .param("fileName", "LuaDemo.rar")
-                .method(NetworkRequest.POST_TYPE)
-                .downloadFile(new ProgressCallBack<Boolean>() {
-                    @Override
-                    public void onProgress(String fileName, int progress) {
-                        updataProgress(fileName, progress);
-                    }
+        new NetworkRequest.Builder(this)
+            .url(BASE_PATH + "file/LuaDemo.rar")
+            .dataClass(Boolean.class)
+            .param("fileName", "LuaDemo.rar")
+            .method(NetworkRequest.POST_TYPE)
+            .downloadFile(new ProgressCallBack<Boolean>() {
+                @Override
+                public void onProgress(String fileName, int progress) {
+                    updataProgress(fileName, progress);
+                }
 
-                    @Override
-                    public void onSuccess(Boolean data) {
-                        resultTv.setText("下载成功！");
-                    }
+                @Override
+                public void onSuccess(Boolean data) {
+                    resultTv.setText("下载成功！");
+                }
 
-                    @Override
-                    public void onFailure(int code, String message) {
-                        resultTv.setText("code："+ code +", message:"+message);
-                    }
+                @Override
+                public void onFailure(int code, String message) {
+                    resultTv.setText("code："+ code +", message:"+message);
+                }
 
-                    @Override
-                    public void onCompleted() {
-                        hideProgress();
-                    }
-                });
+                @Override
+                public void onCompleted() {
+                    hideProgress();
+                }
+            });
     }
 }

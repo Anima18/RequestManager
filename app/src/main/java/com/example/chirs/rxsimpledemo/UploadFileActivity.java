@@ -29,7 +29,6 @@ import rx.Subscription;
 public class UploadFileActivity extends BaseActivity implements View.OnClickListener {
 
     private Button searchBt;
-    private Subscription subscription;
     private TextView resultTv;
 
     private final static String TAG = "PostCollectionData";
@@ -57,12 +56,12 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.gcAct_bt:
-                subscription = getCollectionData();
+                getCollectionData();
                 break;
         }
     }
 
-    private Subscription getCollectionData() {
+    private void getCollectionData() {
         showProgress("正在查询...");
         resultTv.setText("");
 
@@ -77,8 +76,7 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
             Log.d(TAG, fileName);
             param.put(fileName, new FileObject(basePath + fileName));
         }
-        return new NetworkRequest.Builder()
-                .lifecycleProvider(this)
+        new NetworkRequest.Builder(this)
         .url(BASE_PATH + "security/security_uploadList.action")
         .param(param)
         .method(NetworkRequest.POST_TYPE)

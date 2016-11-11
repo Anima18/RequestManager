@@ -27,7 +27,6 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
 
     private Button searchBt;
     private TextView resultTv;
-    private Subscription subscription;
 
     private final static String TAG = "GetDataActivity";
 
@@ -56,20 +55,19 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
-                subscription = getObjectData();
+                getObjectData();
                 break;
         }
     }
 
-    private Subscription getObjectData() {
+    private void getObjectData() {
         resultTv.setText("");
         showProgress("正在查询...");
         List<WebServiceParam> params = new ArrayList<>();
         params.add(new WebServiceParam(BASE_PATH + "userInfo/getAllUserInfoLayer.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
         params.add(new WebServiceParam(BASE_PATH + "userInfo/getAllUserInfo.action", NetworkRequest.GET_TYPE, new TypeToken<DataObject<User>>(){}.getType()));
 
-        return new NetworkRequest.Builder()
-                .lifecycleProvider(this)
+        new NetworkRequest.Builder(this)
         .params(params)
         .getSeqData(new DataCallBack<List<Object>>() {
             @Override

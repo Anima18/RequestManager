@@ -23,7 +23,6 @@ import rx.Subscription;
 public class PostDataActivity extends BaseActivity implements View.OnClickListener {
 
     private Button searchBt;
-    private Subscription subscription;
     private TextView resultTv;
 
     private final static String TAG = "PostDataActivity";
@@ -44,55 +43,47 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
     public void initEvent() {
         searchBt.setOnClickListener(this);
 
-        /*progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                NetworkRequest.cancel(subscription);
-                //Toast.makeText(PostDataActivity.this, "请求结束", Toast.LENGTH_SHORT).show();
-            }
-        });*/
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.gcAct_bt:
-                subscription = getCollectionData();
+                getCollectionData();
                 break;
         }
     }
 
-    private Subscription getCollectionData() {
+    private void getCollectionData() {
         showProgress("正在查询...");
         resultTv.setText("");
-        return new NetworkRequest.Builder()
-                .lifecycleProvider(this)
-        .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
-        .dataType(new TypeToken<DataObject<User>>(){}.getType())
-        .method(NetworkRequest.POST_TYPE)
-        .param("user.name", "Anima18")
-        .param("user.password", "123456")
-        .call(new DataCallBack<DataObject<User>>() {
-            @Override
-            public void onSuccess(DataObject<User> data) {
-                if(data == null) {
-                    resultTv.setText("没有数据");
-                }else {
-                    Log.i("WebService", data.data.rows.get(0).getName());
-                    resultTv.setText(data.toString());
+        new NetworkRequest.Builder(this)
+            .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
+            .dataType(new TypeToken<DataObject<User>>(){}.getType())
+            .method(NetworkRequest.POST_TYPE)
+            .param("user.name", "Anima18")
+            .param("user.password", "123456")
+            .call(new DataCallBack<DataObject<User>>() {
+                @Override
+                public void onSuccess(DataObject<User> data) {
+                    if(data == null) {
+                        resultTv.setText("没有数据");
+                    }else {
+                        Log.i("WebService", data.data.rows.get(0).getName());
+                        resultTv.setText(data.toString());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(int code, String message) {
-                resultTv.setText("code："+ code +", message:"+message);
-            }
+                @Override
+                public void onFailure(int code, String message) {
+                    resultTv.setText("code："+ code +", message:"+message);
+                }
 
-            @Override
-            public void onCompleted() {
-                hideProgress();
-            }
-        });
+                @Override
+                public void onCompleted() {
+                    hideProgress();
+                }
+            });
     }
 
     @Override

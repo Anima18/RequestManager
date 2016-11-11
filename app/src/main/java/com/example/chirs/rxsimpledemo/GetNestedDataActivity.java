@@ -30,7 +30,6 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
 
     private Button searchBt;
     private TextView resultTv;
-    private Subscription subscription;
 
 
     @Override
@@ -55,69 +54,16 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
-                subscription = getObjectData2();
+                getObjectData2();
                 break;
         }
     }
 
-    private Subscription getObjectData2() {
+    private void getObjectData2() {
         resultTv.setText("");
         showProgress("正在查询...");
 
-        /*return NetworkRequest.create()
-                .setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                .setMethod(Service.GET_TYPE)
-                .setDataType(new TypeToken<DataObject<User>>() {
-                }.getType())
-                .request()
-                .flatMap(new Func1<DataObject<User>, Observable<?>>() {
-                    @Override
-                    public Observable<?> call(DataObject<User> o) {
-                        Log.i("WebService", "嵌套请求一成功");
-                        Log.i("WebService", o.data.rows.get(0).toString());
-                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                                .setMethod(Service.GET_TYPE)
-                                .setDataType(new TypeToken<DataObject<User>>() {
-                                }.getType())
-                                .request();
-                    }
-                })
-                .flatMap(new Func1<DataObject<User>, Observable<?>>() {
-                    @Override
-                    public Observable<?> call(DataObject<User> o) {
-                        Log.i("WebService", "嵌套请求二成功");
-                        Log.i("WebService", o.data.rows.get(0).toString());
-                        return NetworkRequest.create().setUrl("http://192.168.1.103:8080/webService/userInfo/getAllUserInfo.action")
-                                .setMethod(Service.GET_TYPE)
-                                .setDataType(new TypeToken<DataObject<User>>() {
-                                }.getType())
-                                .request();
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber() {
-                    @Override
-                    public void onCompleted() {
-                        Log.i("WebService", "onCompleted");
-                        hideProgress();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("WebService", "onError");
-                    }
-
-                    @Override
-                    public void onNext(Object o) {
-                        Log.i("WebService", "最后请求成功");
-                        resultTv.setText("嵌套请求成功");
-                        DataObject<User> data = (DataObject<User>) o;
-                        Log.i("WebService", data.data.rows.get(0).toString());
-                    }
-                });*/
-
-        Subscription subscription = new NetworkRequest.Builder()
+         new NetworkRequest.Builder()
                 .url(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .method(NetworkRequest.GET_TYPE)
                 .dataType(new TypeToken<DataObject<User>>() {}.getType())
@@ -167,6 +113,5 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                         Log.i("WebService", o.data.rows.get(0).toString());
                     }
                 });
-        return subscription;
     }
 }

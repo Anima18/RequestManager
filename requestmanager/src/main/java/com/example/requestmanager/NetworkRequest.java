@@ -73,9 +73,10 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         private Map<String, Object> param;
         private List<WebServiceParam> params;
 
-        public Builder lifecycleProvider(LifecycleProvider lifecycleProvider) {
+        public Builder() {}
+
+        public Builder(LifecycleProvider lifecycleProvider) {
             this.lifecycleProvider = lifecycleProvider;
-            return this;
         }
 
         public Builder url(String url) {
@@ -138,33 +139,30 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         }
 
         @Override
-        public Subscription uploadFile(ProgressCallBack progressCallBack) {
+        public void uploadFile(ProgressCallBack progressCallBack) {
             NetworkRequest request2 = build();
-            return request2.uploadFile(progressCallBack);
+            request2.uploadFile(progressCallBack);
         }
 
         @Override
-        public Subscription downloadFile(ProgressCallBack progressCallBack) {
-            NetworkRequest request2 = build();
-            return request2.downloadFile(progressCallBack);
+        public void downloadFile(ProgressCallBack progressCallBack) {
+            build().downloadFile(progressCallBack);
         }
 
         @Override
-        public <T> Subscription call(DataCallBack<T> dataCallBack) {
+        public <T> void call(DataCallBack<T> dataCallBack) {
             NetworkRequest request2 = build();
-            return request2.call(dataCallBack);
+            request2.call(dataCallBack);
         }
 
         @Override
-        public Subscription getBitMap(BitmapCallBack bitmapCallBack) {
-            NetworkRequest request2 = build();
-            return request2.getBitMap(bitmapCallBack);
+        public void getBitMap(BitmapCallBack bitmapCallBack) {
+            build().getBitMap(bitmapCallBack);
         }
 
         @Override
-        public <T> Subscription getSeqData(DataCallBack<T> dataCallBack) {
-            NetworkRequest request2 = build();
-            return request2.getSeqData(dataCallBack);
+        public <T> void getSeqData(DataCallBack<T> dataCallBack) {
+            build().getSeqData(dataCallBack);
         }
 
         @Override
@@ -186,31 +184,31 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         }
     }
 
-    public Subscription uploadFile(ProgressCallBack progressCallBack) {
+    public void uploadFile(ProgressCallBack progressCallBack) {
         checkParam(progressCallBack);
-        return ProgressObjectService.getInstance().execute(param, progressCallBack);
+        ProgressObjectService.getInstance().execute(param, progressCallBack);
     }
 
-    public Subscription downloadFile(ProgressCallBack progressCallBack) {
+    public void downloadFile(ProgressCallBack progressCallBack) {
         checkParam(progressCallBack);
-        return DownloadFileService.getInstance().execute(param, progressCallBack);
+        DownloadFileService.getInstance().execute(param, progressCallBack);
     }
 
-    public <T> Subscription call(DataCallBack<T> dataCallBack) {
+    public <T> void call(DataCallBack<T> dataCallBack) {
         checkParam(dataCallBack);
-        return DataService.getInstance().execute(param, dataCallBack);
+        DataService.getInstance().execute(param, dataCallBack);
     }
 
-    public Subscription getBitMap(BitmapCallBack bitmapCallBack) {
+    public void getBitMap(BitmapCallBack bitmapCallBack) {
         if(StringUtil.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(bitmapCallBack == null) {
             throw new Error("NetworkRequest callBack is null");
         }
-        return BitMapService.getInstance().execute(param, bitmapCallBack);
+        BitMapService.getInstance().execute(param, bitmapCallBack);
     }
 
-    public <T> Subscription getSeqData(DataCallBack<T> dataCallBack) {
+    public <T> void getSeqData(DataCallBack<T> dataCallBack) {
         Subscription subscription = Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
@@ -253,10 +251,6 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(seqResponse(paramList, (DataCallBack<List<Object>>)dataCallBack));
 
-        /*for(WebServiceParam param : paramList) {
-            SubscriptionManager.addSubscription(param, subscription);
-        }*/
-        return subscription;
     }
 
     /**

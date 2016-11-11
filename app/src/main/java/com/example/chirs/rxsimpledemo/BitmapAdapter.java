@@ -88,8 +88,7 @@ public class BitmapAdapter extends BaseAdapter {
 
             }
         });*/
-        new NetworkRequest.Builder()
-                .lifecycleProvider((LifecycleProvider) context)
+        new NetworkRequest.Builder((LifecycleProvider) context)
                 .url(url)
                 .tag(context)
                 .getBitMap(new BitmapCallBack(){

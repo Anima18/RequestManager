@@ -27,7 +27,6 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
 
     private Button searchBt;
     private TextView resultTv;
-    private Subscription subscription;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,12 +50,12 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
-                subscription = getObjectData();
+                getObjectData();
                 break;
         }
     }
 
-    private Subscription getObjectData() {
+    private void getObjectData() {
         resultTv.setText("");
         showProgress("正在查询...");
 
@@ -77,7 +76,7 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
                 .method(NetworkRequest.GET_TYPE)
                 .dataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
-        return Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, DataObject<User>>() {
+        Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, DataObject<User>>() {
             @Override
             public DataObject<User> call(DataObject<User> userDataObject, DataObject<User> userDataObject2, DataObject<User> userDataObject3) {
                 Log.i("WebService", "第一个请求："+ userDataObject.data.rows.get(0).toString());
@@ -86,9 +85,9 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
                 return userDataObject;
             }
         })
-                .compose(this.<DataObject<User>>bindUntilEvent(ActivityEvent.PAUSE))
-                .subscribeOn(Schedulers.io())
-         .observeOn(AndroidSchedulers.mainThread())
+        .compose(this.<DataObject<User>>bindUntilEvent(ActivityEvent.PAUSE))
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Subscriber<DataObject<User>>() {
             @Override
             public void onCompleted() {

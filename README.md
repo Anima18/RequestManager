@@ -28,6 +28,21 @@ new AsyncTask<ActivityClass, Void, List<Void>>() {
 4. 可阅读性  
     就组合多个WebService来，使用AsyncTask会造成大量代码，会把业务逻辑掩埋在里面。想看清楚业务逻辑不是很轻松的事情。
 
+RequestManager能很好解决上面问题，RequestManager是封装了RxJava对Okhttp的异步操作，目的在于更方便发送网络请求，只需要关注请求参数和处理响应。   
+  
+RxJava是 ReactiveX 在JVM上的一个实现，ReactiveX使用Observable序列组合异步和基于事件的程序。
+RxJava 在 GitHub 主页上的自我介绍是 "a library for composing asynchronous and event-based programs using observable sequences for the Java VM"（一个在 Java VM 上使用可观测的序列来组成异步的、基于事件的程序的库）。简单理解， 是一个实现异步操作的库 。    
+  
+Okhttp就不用多说了，著名的网络请求库。    
+
+RequestManager的优势：
+1. 支持GET、POST请求  
+2. 文件上传、下载进度显示  
+3. 支持3种组合请求：顺序请求、嵌套请求和并发请求  
+4. 网络请求生命周期与Activity生命周期绑定，如果Activity已经退出，网络请求会终止；当然网络请求生命周期也可以与ProgressDialog绑定，比如请求开始ProgressDialog显示，把ProgressDialog关闭，请求终止。  
+5. 返回的数据是你最终想要的，不是json，是对象。  
+
+
 ##网络请求
 - Get请求
 - Post请求

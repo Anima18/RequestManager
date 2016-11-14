@@ -98,6 +98,7 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
             public void onError(Throwable e) {
                 Log.i("WebService", e.getMessage());
                 resultTv.setText(e.getMessage());
+                hideProgress();
             }
 
             @Override

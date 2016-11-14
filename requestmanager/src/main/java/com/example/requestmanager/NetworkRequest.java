@@ -209,7 +209,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     }
 
     public <T> void getSeqData(DataCallBack<T> dataCallBack) {
-        Subscription subscription = Observable.create(new Observable.OnSubscribe<Object>() {
+        Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
                 if(subscriber.isUnsubscribed())
@@ -324,17 +324,4 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             }
         });
     }
-
-    /**
-     * 取消普通请求服务
-     * @param subscription 订阅对象
-     */
-    public static void cancel(Subscription subscription) {
-        //SubscriptionManager.removeSubscription(subscription);
-    }
-
-    /*public static void cancelAll(Object tag) {
-        OkHttpUtils.cancelTag(tag);
-    }*/
-
 }

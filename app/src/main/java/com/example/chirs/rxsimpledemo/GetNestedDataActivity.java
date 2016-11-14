@@ -104,6 +104,8 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                     @Override
                     public void onError(Throwable e) {
                         Log.i("WebService", e.getMessage());
+                        resultTv.setText(e.getMessage());
+                        hideProgress();
                     }
 
                     @Override

@@ -23,7 +23,7 @@ import rx.subjects.BehaviorSubject;
  */
 public class BaseActivity extends AppCompatActivity implements LifecycleProvider<ActivityEvent> {
     protected ProgressDialog progressDialog;
-    protected final static String BASE_PATH = "http://192.168.60.139:8080/webService/";
+    protected final static String BASE_PATH = "http://192.168.60.176:8080/webService/";
 
     private final BehaviorSubject<ActivityEvent> lifecycleSubject = BehaviorSubject.create();
 

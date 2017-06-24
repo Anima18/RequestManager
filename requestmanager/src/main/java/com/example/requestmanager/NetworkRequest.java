@@ -1,5 +1,7 @@
 package com.example.requestmanager;
 
+import android.text.TextUtils;
+
 import com.example.requestmanager.callBack.BitmapCallBack;
 import com.example.requestmanager.callBack.CallBack;
 import com.example.requestmanager.callBack.DataCallBack;
@@ -12,7 +14,6 @@ import com.example.requestmanager.service.DataService;
 import com.example.requestmanager.service.DownloadFileService;
 import com.example.requestmanager.service.ProgressObjectService;
 import com.example.requestmanager.service.Service;
-import com.example.requestmanager.util.StringUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -29,7 +30,6 @@ import okhttp3.Call;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -173,7 +173,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     }
 
     private void checkParam(CallBack callBack) {
-        if(StringUtil.isEmpty(param.getRequestUrl())) {
+        if(TextUtils.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(param.getClazz() == null && param.getClassType() == null) {
             throw new Error("NetworkRequest dataType is null");
@@ -200,7 +200,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     }
 
     public void getBitMap(BitmapCallBack bitmapCallBack) {
-        if(StringUtil.isEmpty(param.getRequestUrl())) {
+        if(TextUtils.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(bitmapCallBack == null) {
             throw new Error("NetworkRequest callBack is null");

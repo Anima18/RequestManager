@@ -45,7 +45,7 @@ public abstract class Service {
      * @param <T>   请求对象类型
      * @return Subscription订阅对象
      */
-    abstract <T> Subscription execute(final WebServiceParam param, CallBack<T> callBack);
+    abstract <T> void execute(final WebServiceParam param, CallBack<T> callBack);
 
     /**
      * 获取网络请求响应体

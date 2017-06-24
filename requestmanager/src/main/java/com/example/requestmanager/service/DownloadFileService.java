@@ -3,12 +3,12 @@ package com.example.requestmanager.service;
 import android.os.Environment;
 import android.util.Log;
 
-import com.example.requestmanager.callBack.ProgressCallBack;
-import com.example.requestmanager.okhttp.OkHttpUtils;
 import com.example.requestmanager.callBack.CallBack;
+import com.example.requestmanager.callBack.ProgressCallBack;
 import com.example.requestmanager.entity.ProgressValue;
 import com.example.requestmanager.entity.WebServiceParam;
 import com.example.requestmanager.exception.ServiceErrorException;
+import com.example.requestmanager.okhttp.OkHttpUtils;
 import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.io.BufferedInputStream;
@@ -20,7 +20,6 @@ import okhttp3.Call;
 import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -39,8 +38,8 @@ public final class DownloadFileService extends Service {
         return INSTATNCE;
     }
     @Override
-    public <T> Subscription execute(final WebServiceParam param, CallBack<T> callBack) {
-        Subscription subscription =  Observable.create(new Observable.OnSubscribe<ProgressValue<T>>() {
+    public <T> void execute(final WebServiceParam param, CallBack<T> callBack) {
+        Observable.create(new Observable.OnSubscribe<ProgressValue<T>>() {
             @Override
             public void call(final Subscriber<? super ProgressValue<T>> subscriber) {
                 if(subscriber.isUnsubscribed())
@@ -86,12 +85,10 @@ public final class DownloadFileService extends Service {
                 .compose(param.getProvider().bindUntilEvent(ActivityEvent.PAUSE))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getProgressSubscriber(param, (ProgressCallBack<T>)callBack));
-        //SubscriptionManager.addSubscription(param, subscription);
-        return subscription;
+                .subscribe(getProgressSubscriber((ProgressCallBack<T>)callBack));
     }
 
-    private <T> Subscriber<ProgressValue<T>> getProgressSubscriber(final WebServiceParam param, final ProgressCallBack<T> callBack) {
+    private <T> Subscriber<ProgressValue<T>> getProgressSubscriber(final ProgressCallBack<T> callBack) {
         return new Subscriber<ProgressValue<T>>() {
             @Override
             public void onCompleted() {

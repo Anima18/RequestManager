@@ -2,6 +2,7 @@ package com.example.chirs.rxsimpledemo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -46,7 +47,7 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         switch (v.getId()) {
             case R.id.gcAct_bt:
                 getCollectionData();
@@ -65,7 +66,7 @@ public class PostDataActivity extends BaseActivity implements View.OnClickListen
             .param("user.password", "123456")
             .call(new DataCallBack<DataObject<User>>() {
                 @Override
-                public void onSuccess(DataObject<User> data) {
+                public void onSuccess(@Nullable DataObject<User> data) {
                     if(data == null) {
                         resultTv.setText("没有数据");
                     }else {

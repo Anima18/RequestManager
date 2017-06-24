@@ -1,5 +1,7 @@
 package com.example.requestmanager.okhttp;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.requestmanager.entity.FileObject;
@@ -30,6 +32,7 @@ import okhttp3.Response;
  */
 public class OkHttpUtils {
 
+    @NonNull
     private final static OkHttpClient client ;
     //private final static String CACHE_DIR = Environment.getExternalStorageDirectory() + "/RxJavaSimple/caches";
    // private final static Cache CACHE = new Cache(new File(CACHE_DIR), 10240*1024);
@@ -58,7 +61,7 @@ public class OkHttpUtils {
      * @return call
      * @throws IOException
      */
-    public static Call get(String url) throws IOException {
+    public static Call get(@NonNull String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -66,7 +69,7 @@ public class OkHttpUtils {
         return client.newCall(request);
     }
 
-    public static Call get(WebServiceParam param) throws IOException {
+    public static Call get(@NonNull WebServiceParam param) throws IOException {
         Request request = new Request.Builder()
                 .url(param.getRequestUrl())
                 .tag(param.getTag())
@@ -84,7 +87,7 @@ public class OkHttpUtils {
      * @return call
      * @throws IOException
      */
-    public static Call post(String url, Map<String, Object> paramMap, final ProgressCallBack callBack) throws IOException {
+    public static Call post(@NonNull String url, @Nullable Map<String, Object> paramMap, @NonNull final ProgressCallBack callBack) throws IOException {
 
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         //MultipartBody必须有一个请求体，设置一个默认请求体
@@ -129,7 +132,7 @@ public class OkHttpUtils {
         return client.newCall(request);
     }
 
-    public static Call post (String url, Map<String, Object> paramMap) throws IOException {
+    public static Call post (@NonNull String url, @Nullable Map<String, Object> paramMap) throws IOException {
 
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("1", "1");
@@ -151,7 +154,7 @@ public class OkHttpUtils {
         return client.newCall(request);
     }
 
-    public static Call downloadFile(String url, final Map<String, Object> paramMap, final ProgressCallBack callBack) throws IOException {
+    public static Call downloadFile(@NonNull String url, @Nullable final Map<String, Object> paramMap, @NonNull final ProgressCallBack callBack) throws IOException {
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("1", "1");
 
@@ -178,7 +181,7 @@ public class OkHttpUtils {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new Interceptor() {
-                    @Override public Response intercept(Chain chain) throws IOException {
+                    @Override public Response intercept(@NonNull Chain chain) throws IOException {
                         Response originalResponse = chain.proceed(chain.request());
                         return originalResponse.newBuilder()
                                 .body(new ProgressResponseBody(originalResponse.body(), progressListener))
@@ -196,14 +199,14 @@ public class OkHttpUtils {
      * 取消OKHttp请求
      * @param call 取消的请求
      */
-    public static void cancelCall(Call call) {
+    public static void cancelCall(@Nullable Call call) {
         if(call != null && call.isExecuted()) {
             call.cancel();
         }
     }
 
     /** 根据Tag取消请求 */
-    public static void cancelTag(Object tag) {
+    public static void cancelTag(@NonNull Object tag) {
         synchronized (client.dispatcher().getClass()) {
             Log.d("WebService", "queuedCalls size:"+client.dispatcher().queuedCalls().size());
             for (Call call : client.dispatcher().queuedCalls()) {

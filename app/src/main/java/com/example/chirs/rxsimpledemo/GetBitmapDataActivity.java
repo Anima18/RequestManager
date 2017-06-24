@@ -1,6 +1,7 @@
 package com.example.chirs.rxsimpledemo;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -39,6 +40,7 @@ public class GetBitmapDataActivity extends BaseActivity {
         });*/
     }
 
+    @NonNull
     public List<String> initData() {
         List<String> urlList = new ArrayList<>();
         urlList.add(BASE_PATH + "file/doughnut.png");

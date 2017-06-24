@@ -2,6 +2,7 @@ package com.example.requestmanager.service;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.requestmanager.callBack.BitmapCallBack;
@@ -33,15 +34,16 @@ public final class BitMapService {
     private BitMapService() {
     }
 
+    @NonNull
     public static BitMapService getInstance() {
         return INSTATNCE;
     }
 
-    public void execute(final WebServiceParam param, BitmapCallBack callBack) {
+    public void execute(@NonNull final WebServiceParam param, @NonNull BitmapCallBack callBack) {
 
         Observable.create(new Observable.OnSubscribe<Bitmap>() {
             @Override
-            public void call(Subscriber<? super Bitmap> subscriber) {
+            public void call(@NonNull Subscriber<? super Bitmap> subscriber) {
                 if (subscriber.isUnsubscribed())
                     return;
                 callBitmapWebService(subscriber, param);
@@ -54,7 +56,7 @@ public final class BitMapService {
 
     }
 
-    private void callBitmapWebService(Subscriber<? super Bitmap> subscriber, WebServiceParam param) {
+    private void callBitmapWebService(@NonNull Subscriber<? super Bitmap> subscriber, @NonNull WebServiceParam param) {
         try {
             Call call = OkHttpUtils.get(param);
             //SubscriptionManager.addRequest(param.getRequestUrl(), call);
@@ -74,7 +76,8 @@ public final class BitMapService {
         }
     }
 
-    private Subscriber<Bitmap> getBitMapSubscriber(final String url, final BitmapCallBack callBack) {
+    @NonNull
+    private Subscriber<Bitmap> getBitMapSubscriber(final String url, @NonNull final BitmapCallBack callBack) {
         return new Subscriber<Bitmap>() {
             @Override
             public void onCompleted() {
@@ -83,7 +86,7 @@ public final class BitMapService {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Log.d(TAG, "WebService onError");
                 Service.handleException(e, callBack);
                 e.printStackTrace();

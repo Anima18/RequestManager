@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -53,7 +54,7 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         switch (v.getId()) {
             case R.id.gcAct_bt:
                 getCollectionData();
@@ -88,7 +89,7 @@ public class UploadFileActivity extends BaseActivity implements View.OnClickList
             }
 
             @Override
-            public void onSuccess(DataObject<User> data) {
+            public void onSuccess(@NonNull DataObject<User> data) {
                 resultTv.setText(data.data.rows.get(0).getName());
             }
 

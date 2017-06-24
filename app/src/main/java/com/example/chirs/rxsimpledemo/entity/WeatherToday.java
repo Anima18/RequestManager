@@ -1,5 +1,7 @@
 package com.example.chirs.rxsimpledemo.entity;
 
+import android.support.annotation.NonNull;
+
 public class WeatherToday {
 	private String date;
 	private String highTemp;
@@ -75,7 +77,8 @@ public class WeatherToday {
 		this.b = b;
 	}
 
-	@Override
+	@NonNull
+    @Override
 	public String toString() {
 		return "WeatherToday{" +
 				"date='" + date + '\'' +

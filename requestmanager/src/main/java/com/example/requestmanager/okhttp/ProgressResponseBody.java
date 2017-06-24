@@ -1,5 +1,7 @@
 package com.example.requestmanager.okhttp;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -38,7 +40,8 @@ public class ProgressResponseBody extends ResponseBody {
         return bufferedSource;
     }
 
-    private Source source(Source source) {
+    @NonNull
+    private Source source(@NonNull Source source) {
         return new ForwardingSource(source) {
             long totalBytesRead = 0L;
 

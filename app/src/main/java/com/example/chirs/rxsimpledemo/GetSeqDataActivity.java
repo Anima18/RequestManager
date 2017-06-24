@@ -1,6 +1,7 @@
 package com.example.chirs.rxsimpledemo;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,9 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
 
     private final static String TAG = "GetDataActivity";
 
+    @NonNull
     private ObjectShowData showObject = new ObjectShowData();
+    @NonNull
     private DataObject<User> dataObject = new DataObject<>();
 
     @Override
@@ -52,7 +55,7 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
                 getObjectData();
@@ -71,7 +74,7 @@ public class GetSeqDataActivity extends BaseActivity implements View.OnClickList
         .params(params)
         .getSeqData(new DataCallBack<List<Object>>() {
             @Override
-            public void onSuccess(List<Object> dataList) {
+            public void onSuccess(@NonNull List<Object> dataList) {
                 resultTv.setText("顺序请求成功");
                 Toast.makeText(GetSeqDataActivity.this, "请求成功，请求数量："+dataList.size(), Toast.LENGTH_SHORT).show();
             }

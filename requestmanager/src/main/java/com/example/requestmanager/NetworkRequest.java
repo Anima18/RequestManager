@@ -1,5 +1,7 @@
 package com.example.requestmanager;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.example.requestmanager.callBack.BitmapCallBack;
@@ -44,13 +46,14 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     /**
      * 单个请求参数
      */
+    @NonNull
     private WebServiceParam param = new WebServiceParam();
     /**
      * 多个请求列表，用于顺序请求
      */
     private List<WebServiceParam> paramList = new ArrayList<>();
 
-    private NetworkRequest(Builder builder) {
+    private NetworkRequest(@NonNull Builder builder) {
         this.param.setRequestUrl(builder.url);
         this.param.setClassType(builder.type);
         this.param.setClazz(builder.aClass);
@@ -79,29 +82,35 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             this.lifecycleProvider = lifecycleProvider;
         }
 
+        @NonNull
         public Builder url(String url) {
             this.url = url;
             return this;
         }
+        @NonNull
         public Builder dataClass(Class aClass) {
             this.aClass = aClass;
             return this;
         }
 
+        @NonNull
         public Builder dataType(Type type) {
             this.type = type;
             return this;
         }
 
+        @NonNull
         public Builder tag(Object tag) {
             this.tag = tag;
             return this;
         }
 
+        @NonNull
         public Builder method(String method) {
            this.method = method;
             return this;
         }
+        @NonNull
         public Builder param(String key, Object value) {
             if(this.param == null) {
                 param = new HashMap<>();
@@ -110,7 +119,8 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             return this;
         }
 
-        public Builder param(Map<String, Object> param) {
+        @NonNull
+        public Builder param(@NonNull Map<String, Object> param) {
             if(this.param == null) {
                 this.param = new HashMap<>();
             }
@@ -118,6 +128,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             return this;
         }
 
+        @NonNull
         public Builder params(WebServiceParam param) {
             if(this.params == null) {
                 this.params = new ArrayList<>();
@@ -126,7 +137,8 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             return this;
         }
 
-        public Builder params(List<WebServiceParam> params) {
+        @NonNull
+        public Builder params(@NonNull List<WebServiceParam> params) {
             if(this.params == null) {
                 this.params = new ArrayList<>();
             }
@@ -134,6 +146,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             return this;
         }
 
+        @NonNull
         public NetworkRequest build() {
             return new NetworkRequest(this);
         }
@@ -165,6 +178,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             build().getSeqData(dataCallBack);
         }
 
+        @NonNull
         @Override
         public Observable<T> request() {
             NetworkRequest request2 = build();
@@ -172,7 +186,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         }
     }
 
-    private void checkParam(CallBack callBack) {
+    private void checkParam(@Nullable CallBack callBack) {
         if(TextUtils.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(param.getClazz() == null && param.getClassType() == null) {
@@ -199,7 +213,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
         DataService.getInstance().execute(param, dataCallBack);
     }
 
-    public void getBitMap(BitmapCallBack bitmapCallBack) {
+    public void getBitMap(@Nullable BitmapCallBack bitmapCallBack) {
         if(TextUtils.isEmpty(param.getRequestUrl())) {
             throw new Error("NetworkRequest url is null");
         }else if(bitmapCallBack == null) {
@@ -211,7 +225,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
     public <T> void getSeqData(DataCallBack<T> dataCallBack) {
         Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
-            public void call(Subscriber<? super Object> subscriber) {
+            public void call(@NonNull Subscriber<? super Object> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {
@@ -258,8 +272,10 @@ public class NetworkRequest<T> implements NetworkRequestApi {
      * @param callBack 回调方法
      * @return Subscriber
      */
-    private Subscriber<Object> seqResponse(final List<WebServiceParam> paramList, final DataCallBack<List<Object>> callBack) {
+    @NonNull
+    private Subscriber<Object> seqResponse(@NonNull final List<WebServiceParam> paramList, @NonNull final DataCallBack<List<Object>> callBack) {
         return new Subscriber<Object>() {
+            @NonNull
             List<Object> dataList = new ArrayList<>();
             @Override
             public void onCompleted() {
@@ -267,7 +283,7 @@ public class NetworkRequest<T> implements NetworkRequestApi {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Service.handleException(e, callBack);
                 e.printStackTrace();
                 onCompleted();
@@ -288,10 +304,11 @@ public class NetworkRequest<T> implements NetworkRequestApi {
      * 这个方法没有对订阅关系进行管理。
      * @return Observable 被观察者
      */
+    @NonNull
     public Observable<T> request() {
         return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
-            public void call(Subscriber<? super T> subscriber) {
+            public void call(@NonNull Subscriber<? super T> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {

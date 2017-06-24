@@ -1,5 +1,7 @@
 package com.example.requestmanager.okhttp;
 
+import android.support.annotation.NonNull;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -35,7 +37,7 @@ public class CountingFileRequestBody extends RequestBody {
     }
 
     @Override
-    public void writeTo(BufferedSink sink) throws IOException {
+    public void writeTo(@NonNull BufferedSink sink) throws IOException {
         Source source = null;
         try {
             source = Okio.source(file);

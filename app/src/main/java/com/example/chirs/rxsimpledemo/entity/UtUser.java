@@ -1,5 +1,7 @@
 package com.example.chirs.rxsimpledemo.entity;
 
+import android.support.annotation.NonNull;
+
 /**
  * Created by jianjianhong on 2016/9/28.
  */
@@ -17,6 +19,7 @@ public class UtUser {
     public String userPassword;
     public String userClassName;
 
+    @NonNull
     @Override
     public String toString() {
         return "UtUser{" +

@@ -1,5 +1,7 @@
 package com.example.chirs.rxsimpledemo.entity;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 
 /**
@@ -34,6 +36,7 @@ public class User implements Serializable {
         this.state = state;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "User{" +

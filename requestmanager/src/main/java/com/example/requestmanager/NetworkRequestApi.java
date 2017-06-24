@@ -1,5 +1,7 @@
 package com.example.requestmanager;
 
+import android.support.annotation.NonNull;
+
 import com.example.requestmanager.callBack.BitmapCallBack;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.example.requestmanager.callBack.ProgressCallBack;
@@ -16,5 +18,6 @@ public interface NetworkRequestApi {
     <T> void call(DataCallBack<T> dataCallBack);
     void getBitMap(BitmapCallBack bitmapCallBack);
     <T> void getSeqData(DataCallBack<T> dataCallBack);
+    @NonNull
     <T> Observable<T> request();
 }

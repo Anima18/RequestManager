@@ -2,6 +2,7 @@ package com.example.chirs.rxsimpledemo;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.squareup.leakcanary.AndroidExcludedRefs;
 import com.squareup.leakcanary.DisplayLeakService;
@@ -15,7 +16,7 @@ import com.squareup.leakcanary.RefWatcher;
 public class MyApplication extends Application {
     private RefWatcher refWatcher;
 
-    public static RefWatcher getRefWatcher(Context context) {
+    public static RefWatcher getRefWatcher(@NonNull Context context) {
         MyApplication application = (MyApplication) context.getApplicationContext();
         return application.refWatcher;
     }

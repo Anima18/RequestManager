@@ -1,7 +1,7 @@
 package com.example.chirs.rxsimpledemo;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -13,8 +13,6 @@ import com.example.chirs.rxsimpledemo.entity.User;
 import com.example.requestmanager.NetworkRequest;
 import com.example.requestmanager.callBack.DataCallBack;
 import com.google.gson.reflect.TypeToken;
-
-import rx.Subscription;
 
 /**
  * Created by jianjianhong on 2016/6/12.
@@ -44,7 +42,7 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
                 getObjectData();
@@ -62,7 +60,7 @@ public class GetDataActivity extends BaseActivity implements View.OnClickListene
             .method(NetworkRequest.GET_TYPE)
             .call(new DataCallBack<DataObject<User>>() {
                 @Override
-                public void onSuccess(DataObject<User> data) {
+                public void onSuccess(@NonNull DataObject<User> data) {
                     Log.i("WebService", data.data.rows.get(0).getName());
                     resultTv.setText(data.toString());
                 }

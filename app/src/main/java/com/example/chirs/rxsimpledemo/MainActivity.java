@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -96,7 +97,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.okAct_download:
                 download();
@@ -143,7 +144,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public static boolean createDir(String destDirName) {
+    public static boolean createDir(@NonNull String destDirName) {
         boolean flag = false;
         File dir = new File(destDirName);
         if (!dir.exists()) {
@@ -156,6 +157,7 @@ public class MainActivity extends BaseActivity {
         return flag;
     }
 
+    @NonNull
     public List<String> initData() {
         List<String> urlList = new ArrayList<>();
         urlList.add(BASE_PATH + "file/doughnut.png");

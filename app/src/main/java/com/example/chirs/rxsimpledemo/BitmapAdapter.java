@@ -2,6 +2,7 @@ package com.example.chirs.rxsimpledemo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,8 +44,9 @@ public class BitmapAdapter extends BaseAdapter {
         return 0;
     }
 
+    @Nullable
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, ViewGroup parent) {
 
         final ViewHolder holder;
         if(convertView == null) {
@@ -93,7 +95,7 @@ public class BitmapAdapter extends BaseAdapter {
                 .tag(context)
                 .getBitMap(new BitmapCallBack(){
                     @Override
-                    public void onSuccess(String url, Bitmap bitmap) {
+                    public void onSuccess(String url, @Nullable Bitmap bitmap) {
                         if(bitmap == null) {
                             holder.image.setImageResource(R.drawable.not_found);
                         }else {

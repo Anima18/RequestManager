@@ -1,5 +1,7 @@
 package com.example.requestmanager.service;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.stream.JsonReader;
 import com.example.requestmanager.okhttp.OkHttpUtils;
 import com.example.requestmanager.callBack.CallBack;
@@ -53,7 +55,7 @@ public abstract class Service {
      * @return Response
      * @throws IOException
      */
-    Response getResponse(WebServiceParam param) throws IOException {
+    Response getResponse(@NonNull WebServiceParam param) throws IOException {
         Call call = null;
         if(GET_TYPE.equals(param.getMethod())) {
             call = OkHttpUtils.get(param.getRequestUrl());
@@ -69,7 +71,7 @@ public abstract class Service {
      * @param e 异常对象
      * @param callBack 回调对象
      */
-    public static void handleException(Throwable e, CallBack callBack) {
+    public static void handleException(Throwable e, @NonNull CallBack callBack) {
         WebServiceError webServiceError = null;
         if (e instanceof ServiceErrorException) {
             int code = ((ServiceErrorException) e).getCode();
@@ -98,7 +100,7 @@ public abstract class Service {
         callBack.onFailure(webServiceError.getCode(), webServiceError.getMessage());
     }
 
-    public static void rebuildJsonObj(JsonObject jsonObject) {
+    public static void rebuildJsonObj(@NonNull JsonObject jsonObject) {
         Set<Map.Entry<String, JsonElement>> entrySet = jsonObject.entrySet();
         for (Map.Entry<String, JsonElement> entry : entrySet) {
             String key = entry.getKey();
@@ -125,7 +127,7 @@ public abstract class Service {
         }
     }
 
-    public static void rebuildJsonArray(JsonArray jsonArray) {
+    public static void rebuildJsonArray(@NonNull JsonArray jsonArray) {
         for(JsonElement jsonElement : jsonArray){
             if(jsonElement.isJsonObject()) {
                 rebuildJsonObj((JsonObject) jsonElement);

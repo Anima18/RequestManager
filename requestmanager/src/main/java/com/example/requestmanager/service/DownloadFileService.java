@@ -1,6 +1,8 @@
 package com.example.requestmanager.service;
 
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.requestmanager.callBack.CallBack;
@@ -34,14 +36,15 @@ public final class DownloadFileService extends Service {
 
     private DownloadFileService() {}
 
+    @NonNull
     public static DownloadFileService getInstance() {
         return INSTATNCE;
     }
     @Override
-    public <T> void execute(final WebServiceParam param, CallBack<T> callBack) {
+    public <T> void execute(@NonNull final WebServiceParam param, CallBack<T> callBack) {
         Observable.create(new Observable.OnSubscribe<ProgressValue<T>>() {
             @Override
-            public void call(final Subscriber<? super ProgressValue<T>> subscriber) {
+            public void call(@NonNull final Subscriber<? super ProgressValue<T>> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
                 try {
@@ -88,7 +91,8 @@ public final class DownloadFileService extends Service {
                 .subscribe(getProgressSubscriber((ProgressCallBack<T>)callBack));
     }
 
-    private <T> Subscriber<ProgressValue<T>> getProgressSubscriber(final ProgressCallBack<T> callBack) {
+    @Nullable
+    private <T> Subscriber<ProgressValue<T>> getProgressSubscriber(@NonNull final ProgressCallBack<T> callBack) {
         return new Subscriber<ProgressValue<T>>() {
             @Override
             public void onCompleted() {
@@ -97,7 +101,7 @@ public final class DownloadFileService extends Service {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Log.d(TAG, "WebService onError");
                 Service.handleException(e, callBack);
                 callBack.onCompleted();
@@ -105,7 +109,7 @@ public final class DownloadFileService extends Service {
             }
 
             @Override
-            public void onNext(ProgressValue<T> t) {
+            public void onNext(@Nullable ProgressValue<T> t) {
                 if(t == null) {
                     callBack.onSuccess((T)new Boolean(true));
                 }else {

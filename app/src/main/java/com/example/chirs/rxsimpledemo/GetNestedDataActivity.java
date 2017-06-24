@@ -2,6 +2,7 @@ package com.example.chirs.rxsimpledemo;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -51,7 +52,7 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
                 getObjectData2();
@@ -70,7 +71,7 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                 .request()
                 .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
-                    public Observable<?> call(DataObject<User> o) {
+                    public Observable<?> call(@NonNull DataObject<User> o) {
                         Log.i("WebService", "嵌套请求一成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return new NetworkRequest.Builder()
@@ -82,7 +83,7 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                 })
                 .flatMap(new Func1<DataObject<User>, Observable<?>>() {
                     @Override
-                    public Observable<?> call(DataObject<User> o) {
+                    public Observable<?> call(@NonNull DataObject<User> o) {
                         Log.i("WebService", "嵌套请求二成功");
                         Log.i("WebService", o.data.rows.get(0).toString());
                         return new NetworkRequest.Builder()
@@ -102,14 +103,14 @@ public class GetNestedDataActivity extends BaseActivity implements View.OnClickL
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NonNull Throwable e) {
                         Log.i("WebService", e.getMessage());
                         resultTv.setText(e.getMessage());
                         hideProgress();
                     }
 
                     @Override
-                    public void onNext(DataObject<User> o) {
+                    public void onNext(@NonNull DataObject<User> o) {
                         resultTv.setText("嵌套请求成功");
                         Log.i("WebService", "最后请求成功");
                         Log.i("WebService", o.data.rows.get(0).toString());

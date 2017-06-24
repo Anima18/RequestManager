@@ -1,5 +1,7 @@
 package com.example.chirs.rxsimpledemo.entity;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 /**
@@ -187,6 +189,7 @@ public class ShowObject {
         this.ltfield = ltfield;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ShowObject{" +

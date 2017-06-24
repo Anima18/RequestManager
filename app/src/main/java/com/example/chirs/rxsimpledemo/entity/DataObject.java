@@ -1,5 +1,7 @@
 package com.example.chirs.rxsimpledemo.entity;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ public class DataObject<T> {
         public int total;
         public List<T> rows;
 
+        @NonNull
         @Override
         public String toString() {
             return "DataBean{" +
@@ -23,6 +26,7 @@ public class DataObject<T> {
         }
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "DataObject{" +

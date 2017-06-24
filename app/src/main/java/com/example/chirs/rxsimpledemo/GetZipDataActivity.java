@@ -1,6 +1,7 @@
 package com.example.chirs.rxsimpledemo;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +48,7 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         switch (v.getId()) {
             case R.id.goAct_bt:
                 getObjectData();
@@ -77,8 +78,9 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
                 .dataType(new TypeToken<DataObject<User>>(){}.getType())
                 .request();
         Observable.zip(observable1, observable2, observable3, new Func3<DataObject<User>, DataObject<User>, DataObject<User>, DataObject<User>>() {
+            @NonNull
             @Override
-            public DataObject<User> call(DataObject<User> userDataObject, DataObject<User> userDataObject2, DataObject<User> userDataObject3) {
+            public DataObject<User> call(@NonNull DataObject<User> userDataObject, @NonNull DataObject<User> userDataObject2, @NonNull DataObject<User> userDataObject3) {
                 Log.i("WebService", "第一个请求："+ userDataObject.data.rows.get(0).toString());
                 Log.i("WebService", "第二个请求："+ userDataObject2.data.rows.get(0).toString());
                 Log.i("WebService", "第三个请求："+ userDataObject3.data.rows.get(0).toString());
@@ -95,7 +97,7 @@ public class GetZipDataActivity extends BaseActivity implements View.OnClickList
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Log.i("WebService", e.getMessage());
                 resultTv.setText(e.getMessage());
                 hideProgress();

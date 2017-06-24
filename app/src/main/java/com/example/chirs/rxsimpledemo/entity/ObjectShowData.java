@@ -1,5 +1,7 @@
 package com.example.chirs.rxsimpledemo.entity;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 
 /**
@@ -34,6 +36,7 @@ public class ObjectShowData {
         this.result = result;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "ObjectShowData{" +

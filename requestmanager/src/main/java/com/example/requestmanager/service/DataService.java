@@ -1,5 +1,6 @@
 package com.example.requestmanager.service;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.example.requestmanager.callBack.CallBack;
@@ -30,15 +31,16 @@ public final class DataService extends Service {
     private DataService() {
     }
 
+    @NonNull
     public static DataService getInstance() {
         return INSTATNCE;
     }
 
     @Override
-    public <T> void execute(final WebServiceParam param, CallBack<T> callBack) {
+    public <T> void execute(@NonNull final WebServiceParam param, CallBack<T> callBack) {
         Observable.create(new Observable.OnSubscribe<T>() {
             @Override
-            public void call(Subscriber<? super T> subscriber) {
+            public void call(@NonNull Subscriber<? super T> subscriber) {
                 if (subscriber.isUnsubscribed())
                     return;
                 callObjectWebService(subscriber, param);
@@ -52,7 +54,7 @@ public final class DataService extends Service {
 
     }
 
-    public <T> void callObjectWebService(Subscriber<? super T> subscriber, WebServiceParam param) {
+    public <T> void callObjectWebService(@NonNull Subscriber<? super T> subscriber, @NonNull WebServiceParam param) {
         try {
             Response response = getResponse(param);
             if (response.isSuccessful()) {
@@ -76,7 +78,8 @@ public final class DataService extends Service {
         }
     }
 
-    private <T> Subscriber<T> getSubscriber(final DataCallBack<T> callBack) {
+    @NonNull
+    private <T> Subscriber<T> getSubscriber(@NonNull final DataCallBack<T> callBack) {
         return new Subscriber<T>() {
             @Override
             public void onCompleted() {
@@ -85,7 +88,7 @@ public final class DataService extends Service {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(@NonNull Throwable e) {
                 Log.d(TAG, "WebService onError");
                 Service.handleException(e, callBack);
                 callBack.onCompleted();

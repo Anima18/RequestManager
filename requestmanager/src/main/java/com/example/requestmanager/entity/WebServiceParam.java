@@ -1,5 +1,7 @@
 package com.example.requestmanager.entity;
 
+import android.support.annotation.NonNull;
+
 import com.trello.rxlifecycle.LifecycleProvider;
 
 import java.lang.reflect.Type;
@@ -75,7 +77,7 @@ public class WebServiceParam {
         params.put(key, value);
     }
 
-    public void addParam(Map<String, Object> param) {
+    public void addParam(@NonNull Map<String, Object> param) {
         params.putAll(param);
     }
 

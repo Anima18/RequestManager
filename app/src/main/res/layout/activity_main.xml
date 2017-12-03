@@ -1,12 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.chirs.rxsimpledemo.MainActivity">
+    android:orientation="vertical"
+    tools:context="com.ut.requestmanagerdemo.MainActivity">
 
-    <ListView
-        android:id="@+id/data_lv"
+    <Button
+        android:id="@+id/mainAct_data_bt"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</RelativeLayout>
+        android:layout_height="wrap_content"
+        android:text="数据请求"/>
+
+    <Button
+        android:id="@+id/mainAct_download_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下载请求"/>
+
+    <Button
+        android:id="@+id/mainAct_upload_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="上传请求"/>
+
+    <Button
+        android:id="@+id/mainAct_nestData_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="嵌套请求"/>
+
+    <Button
+        android:id="@+id/mainAct_sequence_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="顺序请求"/>
+
+    <Button
+        android:id="@+id/mainAct_merge_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="并发请求"/>
+
+</LinearLayout>

@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/RequestManager.iml" filepath="$PROJECT_DIR$/RequestManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/UTRequestManagerDemo.iml" filepath="$PROJECT_DIR$/UTRequestManagerDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/requestmanager/requestmanager.iml" filepath="$PROJECT_DIR$/requestmanager/requestmanager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/requsetmanager/requsetmanager.iml" filepath="$PROJECT_DIR$/requsetmanager/requsetmanager.iml" />
     </modules>
   </component>
 </project>

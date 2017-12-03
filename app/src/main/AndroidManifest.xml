@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chirs.rxsimpledemo">
+    package="com.ut.requestmanagerdemo">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -8,27 +8,19 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
-        android:name="com.example.chirs.rxsimpledemo.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.chirs.rxsimpledemo.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.chirs.rxsimpledemo.GetDataActivity" android:label="GetData"/>
-        <activity android:name="com.example.chirs.rxsimpledemo.GetNestedDataActivity" android:label="GetNestedData"/>
-        <activity android:name="com.example.chirs.rxsimpledemo.GetSeqDataActivity" android:label="GetSeqData"/>
-        <activity android:name="com.example.chirs.rxsimpledemo.PostDataActivity" android:label="PostData"/>
-        <activity android:name="com.example.chirs.rxsimpledemo.GetBitmapDataActivity" android:label="GetBitmap"/>
-        <activity android:name="com.example.chirs.rxsimpledemo.UploadFileActivity" android:label="UploadFile"/>
-        <activity android:name="com.example.chirs.rxsimpledemo.DownloadFileActivity" android:label="DownloadFile" />
-        <activity android:name=".GetZipDataActivity" android:label="ZipData"/>
     </application>
 
 </manifest>

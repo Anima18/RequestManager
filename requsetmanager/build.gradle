@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 25
@@ -19,7 +20,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+        lintConfig file("lint.xml")
+    }
 }
+
+task makeJar(type: Copy) {
+    delete 'build/libs/requestmanager.jar'
+    from('build/intermediates/bundles/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename('classes.jar', 'requestmanager.jar')
+}
+makeJar.dependsOn(build)
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -35,3 +50,22 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'com.squareup.okio:okio:1.11.0'
 }
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            snapshotRepository(url: "http://192.168.60.200:8081/repository/maven-snapshots/") {
+                authentication(userName: project.hasProperty('nexus.user') ? project.property('nexus.user') : System.getenv('NEXUS_USER'),
+                        password: project.hasProperty('nexus.password') ? project.property('nexus.password') : System.getenv('NEXUS_PASSWORD'))
+            }
+
+            pom.version = "1.2.0-SNAPSHOT"
+            pom.artifactId = "requestmanager"
+            pom.groupId = "com.ut.requestmanager"
+            pom.name = "requestmanager"
+            pom.packaging = "aar"
+        }
+    }
+}
+
+build.dependsOn uploadArchives

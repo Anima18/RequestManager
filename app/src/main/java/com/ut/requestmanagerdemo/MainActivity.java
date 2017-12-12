@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.ut.requestmanagerdemo.entity.User;
@@ -25,7 +26,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
-    protected final static String BASE_PATH = "http://192.168.1.103:8080/webService/";
+    protected final static String BASE_PATH = "http://192.168.60.176:8080/webService/";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void dataRequest() {
-        NetworkRequestImpl.create(this)
+        /*NetworkRequestImpl.create(this)
                 .setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .setMethod("GET")
                 .setProgressMessage("正在加载中，请稍后...")
@@ -77,19 +78,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.i(TAG, data.toString());
                         }
                     }
+                });*/
+        NetworkRequestImpl.create(this)
+                //.setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
+                .setUrl("http://192.168.60.104:44423/GetRDDataJson?a=&b=&c=getdtobjectdata&d=dtctsvr_objectcode=fdzhizhanglog;dtctsvr_projectversion=1;dtctsvr_projectcode=utdtpower")
+                .setMethod("GET")
+                .setProgressMessage("正在加载中，请稍后...")
+                .isPlatformService(true)
+                .send(new DataRequestCallback() {
+                    @Override
+                    public void onResult(Object data, ResponseStatus status) {
+                        Log.i(TAG, status.toString());
+                        Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
+                        if(data != null) {
+                            Log.i(TAG, data.toString());
+                        }
+                    }
                 });
     }
 
     public void downloadRequest() {
-        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/LuaDemo.rar")
+        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                 .setDataClass(Boolean.class)
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                .addParam("fileName", "LuaDemo.rar")
+                .addParam("fileName", "gxcz_1.1.2.ipa")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .download(new DataRequestCallback<Boolean>() {
                     @Override
                     public void onResult(Boolean data, ResponseStatus status) {
+                        Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
                         Log.i(TAG, status.toString());
                         if(data != null) {
                             Log.i(TAG, data.toString());
@@ -124,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .upload(new DataRequestCallback<DataObject<User>>() {
                     @Override
                     public void onResult(DataObject<User> data, ResponseStatus status) {
+                        Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
                         Log.i(TAG, status.toString());
                         if(data != null) {
                             Log.i(TAG, data.toString());
@@ -143,13 +162,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NetworkRequestManager.create(request).nest(new NetworkRequestManager.NestFlatMapCallback<DataObject<User>>(){
             @Override
             public NetworkRequest flatMap(DataObject<User> userDataObject, ResponseStatus status, NetworkRequestManager manager) {
+                Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
                 Log.i(TAG, status.toString());
                 if(userDataObject != null) {
                     Log.i(TAG, "first: "+ userDataObject.data.rows.get(0).getName());
-                    return NetworkRequestImpl.create(MainActivity.this).setUrl(BASE_PATH + "file/LuaDemo.rar")
+                    return NetworkRequestImpl.create(MainActivity.this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                             .setDataClass(Boolean.class)
                             .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                            .addParam("fileName", "LuaDemo.rar")
+                            .addParam("fileName", "gxcz_1.1.2.ipa")
                             .setMethod("POST")
                             .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                             .downloadRequest();
@@ -162,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResult(Boolean data, ResponseStatus status) {
                 Log.i(TAG, status.toString());
+                Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
                 if(data != null) {
                     Log.i(TAG, data.toString());
                 }
@@ -177,10 +198,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .dataRequest();
 
-        NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/LuaDemo.rar")
+        NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                 .setDataClass(Boolean.class)
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                .addParam("fileName", "LuaDemo.rar")
+                .addParam("fileName", "gxcz_1.1.2.ipa")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .downloadRequest();
@@ -197,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResult(List<Boolean> resultData, ResponseStatus status) {
                 Log.i(TAG, status.toString());
+                Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
                 if(resultData != null) {
                     Log.i(TAG, resultData.toString());
                 }
@@ -212,10 +234,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .dataRequest();
 
-        /*NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/LuaDemo.rar")
+        /*NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                 .setDataClass(Boolean.class)
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                .addParam("fileName", "LuaDemo.rar")
+                .addParam("fileName", "gxcz_1.1.2.ipa")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .downloadRequest();*/
@@ -232,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onResult(List<Object> dataList, ResponseStatus status) {
                 Log.i(TAG, status.toString());
+                Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
                 if(dataList != null) {
                     Log.i(TAG, dataList.toString());
                 }

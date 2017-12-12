@@ -1,5 +1,8 @@
 package com.ut.requsetmanager.callback;
 
+import android.app.Activity;
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.ut.requsetmanager.entity.WebServiceParam;
 import com.ut.requsetmanager.exception.ServiceErrorException;
@@ -23,20 +26,26 @@ import okhttp3.Response;
 public class DownloadResponseCallback implements Callback {
     private NetworkTaskImpl.ProgressTaskCallback dataCallback;
     private WebServiceParam param;
-    private static Gson gson = new Gson();
+    private Context context;
 
-    public DownloadResponseCallback(WebServiceParam param, NetworkTaskImpl.ProgressTaskCallback dataCallback) {
+    public DownloadResponseCallback(Context context, WebServiceParam param, NetworkTaskImpl.ProgressTaskCallback dataCallback) {
         this.dataCallback = dataCallback;
         this.param = param;
+        this.context = context;
     }
 
     @Override
-    public void onFailure(Call call, IOException e) {
-        dataCallback.onFailure(e);
+    public void onFailure(Call call, final IOException e) {
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dataCallback.onFailure(e);
+            }
+        });
     }
 
     @Override
-    public void onResponse(Call call, Response response) throws IOException {
+    public void onResponse(Call call, final Response response) throws IOException {
         if(response.isSuccessful()) {
             InputStream is = response.body().byteStream();
             BufferedInputStream input = new BufferedInputStream(is);
@@ -53,9 +62,19 @@ public class DownloadResponseCallback implements Callback {
             output.close();
             input.close();
 
-            dataCallback.onSuccess(true);
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    dataCallback.onSuccess(true);
+                }
+            });
         }else {
-            dataCallback.onFailure(new ServiceErrorException(response.code()));
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    dataCallback.onFailure(new ServiceErrorException(response.code()));
+                }
+            });
         }
     }
 }

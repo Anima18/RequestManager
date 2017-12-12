@@ -16,6 +16,7 @@ import com.ut.requsetmanager.util.JsonUtil;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import rx.Observable;
@@ -106,10 +107,23 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
+    public NetworkRequest setTimeout(long timeout, TimeUnit timeUnit) {
+        param.setTimeout(timeout);
+        param.setTimeoutUnit(timeUnit);
+        return this;
+    }
+
+    @Override
+    public NetworkRequest isPlatformService(Boolean platformService) {
+        param.setPlatformService(platformService);
+        return this;
+    }
+
+    @Override
     public <T> void send(final DataRequestCallback<T> callback) {
         this.progressDialog.showProgress(progressMessage);
 
-        this.task = NetworkTaskImpl.getInstance().dataTask(param, new NetworkTaskImpl.DataTaskCallback<T>() {
+        this.task = NetworkTaskImpl.getInstance().dataTask(context, param, new NetworkTaskImpl.DataTaskCallback<T>() {
             @Override
             public void onSuccess(T data) {
                 callback.onResult(data, new ResponseStatus(200, ""));
@@ -129,7 +143,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     public <T> void download(final DataRequestCallback<T> callback) {
         this.progressDialog.showProgress(progressMessage);
 
-        this.task = NetworkTaskImpl.getInstance().downloadTask(param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
+        this.task = NetworkTaskImpl.getInstance().downloadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
             @Override
             public void onSuccess(Object data) {
                 callback.onResult((T)data, new ResponseStatus(200, ""));
@@ -154,7 +168,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     public <T> void upload(final DataRequestCallback<T> callback) {
         this.progressDialog.showProgress(progressMessage);
 
-        this.task = NetworkTaskImpl.getInstance().uploadTask(param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
+        this.task = NetworkTaskImpl.getInstance().uploadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
             @Override
             public void onSuccess(Object data) {
                 callback.onResult((T)data, new ResponseStatus(200, ""));
@@ -185,7 +199,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
                     return;
                 progressDialog.showProgress(progressMessage);
 
-                Call task = NetworkTaskImpl.getInstance().dataTask(param, new NetworkTaskImpl.DataTaskCallback<T>() {
+                Call task = NetworkTaskImpl.getInstance().dataTask(context, param, new NetworkTaskImpl.DataTaskCallback<T>() {
                     @Override
                     public void onSuccess(T data) {
                         Map<String, T> dataMap = new HashMap<>();
@@ -218,7 +232,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
                     return;
                 progressDialog.showProgress(progressMessage);
 
-                Call task = NetworkTaskImpl.getInstance().downloadTask(param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
+                Call task = NetworkTaskImpl.getInstance().downloadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
                     @Override
                     public void onSuccess(Object data) {
                         Map<String, Object> dataMap = new HashMap<>();
@@ -257,7 +271,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
 
                 progressDialog.showProgress(progressMessage);
 
-                Call task = NetworkTaskImpl.getInstance().uploadTask(param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
+                Call task = NetworkTaskImpl.getInstance().uploadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
                     @Override
                     public void onSuccess(Object data) {
                         Map<String, Object> dataMap = new HashMap<>();

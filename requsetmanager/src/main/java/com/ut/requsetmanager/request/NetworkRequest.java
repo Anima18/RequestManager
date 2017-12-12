@@ -4,6 +4,7 @@ import com.ut.requsetmanager.callback.DataRequestCallback;
 
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import rx.Observable;
@@ -31,6 +32,10 @@ public interface NetworkRequest {
     NetworkRequest addParam(String key, Object value);
 
     NetworkRequest setParams(Map<String, Object> params);
+
+    NetworkRequest setTimeout(long timeout, TimeUnit timeUnit);
+
+    NetworkRequest isPlatformService(Boolean platformService);
 
     <T> void send(DataRequestCallback<T> callback);
 

@@ -1,5 +1,6 @@
 package com.ut.requsetmanager.network;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -31,9 +32,9 @@ import okhttp3.Response;
  */
 
 public class NetworkTaskImpl implements NetworkTask {
-    private final static long CONNECT_TIMEOUT =30;
-    private final static long READ_TIMEOUT=30;
-    private final static long WRITE_TIMEOUT=30;
+    private final static long CONNECT_TIMEOUT = 30;
+    private final static long READ_TIMEOUT = 30;
+    private final static long WRITE_TIMEOUT = 30;
     private final static String POST_TYPE = "POST";
     private final static String GET_TYPE = "GET";
 
@@ -61,18 +62,18 @@ public class NetworkTaskImpl implements NetworkTask {
     }
 
     @Override
-    public <T> Call dataTask(WebServiceParam param, DataTaskCallback<T> dataCallback) {
+    public <T> Call dataTask(Context context, WebServiceParam param, DataTaskCallback<T> dataCallback) {
         if(GET_TYPE.equals(param.getMethod())) {
-            return getDataTask(param, dataCallback);
+            return getDataTask(context, param, dataCallback);
         }else if(POST_TYPE.equals(param.getMethod())) {
-            return postDataTask(param, dataCallback);
+            return postDataTask(context, param, dataCallback);
         }else  {
             return null;
         }
     }
 
     @Override
-    public <T> Call downloadTask(WebServiceParam param, final ProgressTaskCallback<T> callBack) {
+    public <T> Call downloadTask(Context context, WebServiceParam param, final ProgressTaskCallback<T> callBack) {
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("1", "1");
 
@@ -113,12 +114,12 @@ public class NetworkTaskImpl implements NetworkTask {
 
         resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
         Call call = client.newCall(request);
-        call.enqueue(new DownloadResponseCallback(param, callBack));
+        call.enqueue(new DownloadResponseCallback(context, param, callBack));
         return call;
     }
 
     @Override
-    public <T> Call uploadTask(WebServiceParam param, final ProgressTaskCallback<T> callBack) {
+    public <T> Call uploadTask(Context context, WebServiceParam param, final ProgressTaskCallback<T> callBack) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         //MultipartBody必须有一个请求体，设置一个默认请求体
         builder.addFormDataPart("1", "1");
@@ -162,7 +163,7 @@ public class NetworkTaskImpl implements NetworkTask {
 
         resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
         Call call = client.newCall(request);
-        call.enqueue(new DataResponseCallback(param, callBack));
+        call.enqueue(new DataResponseCallback(context, param, callBack));
         return call;
     }
 
@@ -173,7 +174,7 @@ public class NetworkTaskImpl implements NetworkTask {
      * @return call
      * @throws IOException
      */
-    private <T> Call getDataTask(WebServiceParam param, DataTaskCallback<T> dataCallback) {
+    private <T> Call getDataTask(Context context, WebServiceParam param, DataTaskCallback<T> dataCallback) {
         StringBuilder urlBuilder = new StringBuilder(param.getUrl());
         if(!param.getUrl().contains("?")) {
             urlBuilder.append("?1=1");
@@ -198,7 +199,7 @@ public class NetworkTaskImpl implements NetworkTask {
         resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
 
         Call call = client.newCall(request);
-        call.enqueue(new DataResponseCallback(param, dataCallback));
+        call.enqueue(new DataResponseCallback(context, param, dataCallback));
         return call;
     }
 
@@ -210,7 +211,7 @@ public class NetworkTaskImpl implements NetworkTask {
      * @return call
      * @throws IOException
      */
-    private <T> Call postDataTask(WebServiceParam param, DataTaskCallback<T> dataCallback) {
+    private <T> Call postDataTask(Context context, WebServiceParam param, DataTaskCallback<T> dataCallback) {
 
         FormBody.Builder builder = new FormBody.Builder();
         builder.add("1", "1");
@@ -232,7 +233,7 @@ public class NetworkTaskImpl implements NetworkTask {
 
         resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
         Call call = client.newCall(request);
-        call.enqueue(new DataResponseCallback(param, dataCallback));
+        call.enqueue(new DataResponseCallback(context, param, dataCallback));
         return call;
     }
 

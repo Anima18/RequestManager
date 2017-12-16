@@ -1,0 +1,2 @@
+# RequestManager
+RequestManager是支持网络请求、数据库请求和IO请求的通用库

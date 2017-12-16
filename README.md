@@ -1,4 +1,5 @@
-RequestManager是一个Android的网络请求框架，通过解耦请求者和响应者简化多重网络传递。  
+# RequestManager
+RequestManager是一个Android的网络请求框架，通过解耦请求者和响应者简化多重网络传递。   
 
 #### 支持单一请求
 1. 数据请求，支持GET和POST请求

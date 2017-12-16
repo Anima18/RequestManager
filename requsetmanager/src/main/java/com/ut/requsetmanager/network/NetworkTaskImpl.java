@@ -63,37 +63,20 @@ public class NetworkTaskImpl implements NetworkTask {
 
     @Override
     public <T> Call dataTask(Context context, WebServiceParam param, DataTaskCallback<T> dataCallback) {
-        if(GET_TYPE.equals(param.getMethod())) {
-            return getDataTask(context, param, dataCallback);
-        }else if(POST_TYPE.equals(param.getMethod())) {
-            return postDataTask(context, param, dataCallback);
-        }else  {
-            return null;
-        }
+        Request request = generateRequest(param);
+        resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
+        Call call = client.newCall(request);
+        call.enqueue(new DataResponseCallback(context, param, dataCallback));
+        return call;
     }
 
     @Override
-    public <T> Call downloadTask(Context context, WebServiceParam param, final ProgressTaskCallback<T> callBack) {
-        FormBody.Builder builder = new FormBody.Builder();
-        builder.add("1", "1");
-
-        final Map<String, Object> paramMap = param.getParams();
-        if(paramMap != null && !paramMap.isEmpty()) {
-            Iterator<String> it = paramMap.keySet().iterator();
-            while (it.hasNext()) {
-                String key = it.next();
-                builder.addEncoded(key, paramMap.get(key).toString());
-            }
-        }
-        RequestBody requestBody = builder.build();
-        Request request = new Request.Builder()
-                .url(param.getUrl())
-                .post(requestBody)
-                .build();
+    public <T> Call downloadTask(Context context, final WebServiceParam param, final ProgressTaskCallback<T> callBack) {
+        Request request = generateRequest(param);
 
         final ProgressResponseBody.ProgressListener progressListener = new ProgressResponseBody.ProgressListener() {
             @Override public void update(long bytesRead, long contentLength, boolean done) {
-                callBack.onProgress(paramMap.get("fileName").toString(), (int)((100 * bytesRead) / contentLength));
+                callBack.onProgress(param.getDownloadFileName(), (int)((100 * bytesRead) / contentLength));
 
             }
         };
@@ -167,21 +150,25 @@ public class NetworkTaskImpl implements NetworkTask {
         return call;
     }
 
-
-    /**
-     * 获取一个get请求
-     * @param param 请求WebServiceParam
-     * @return call
-     * @throws IOException
-     */
-    private <T> Call getDataTask(Context context, WebServiceParam param, DataTaskCallback<T> dataCallback) {
-        StringBuilder urlBuilder = new StringBuilder(param.getUrl());
-        if(!param.getUrl().contains("?")) {
-            urlBuilder.append("?1=1");
+    private Request generateRequest(WebServiceParam param) {
+        if(GET_TYPE.equals(param.getMethod())) {
+            return getRequest(param);
+        }else if(POST_TYPE.equals(param.getMethod())) {
+            return postRequest(param);
+        }else {
+            return null;
         }
+    }
+
+    private Request getRequest(WebServiceParam param) {
+        StringBuilder urlBuilder = new StringBuilder(param.getUrl());
 
         Map<String, Object> paramMap = param.getParams();
         if(paramMap != null && !paramMap.isEmpty()) {
+            if(!param.getUrl().contains("?")) {
+                urlBuilder.append("?");
+            }
+
             Iterator<String> it = paramMap.keySet().iterator();
             while (it.hasNext()) {
                 String key = it.next();
@@ -196,25 +183,11 @@ public class NetworkTaskImpl implements NetworkTask {
                 .url(urlBuilder.toString())
                 .build();
 
-        resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
-
-        Call call = client.newCall(request);
-        call.enqueue(new DataResponseCallback(context, param, dataCallback));
-        return call;
+        return request;
     }
 
-    /**
-     * 获取一个post请求，这个请求包含多块请求体，可以上传多个普通参数和多个文件参数。
-     * 如果有上传文件，可以通过ProgressCallBack回调得到文件上载的进度
-     * @param param 请求WebServiceParam
-     * @param dataCallback 文件上载回调
-     * @return call
-     * @throws IOException
-     */
-    private <T> Call postDataTask(Context context, WebServiceParam param, DataTaskCallback<T> dataCallback) {
-
+    private Request postRequest(WebServiceParam param) {
         FormBody.Builder builder = new FormBody.Builder();
-        builder.add("1", "1");
 
         Map<String, Object> paramMap = param.getParams();
         if(paramMap != null && !paramMap.isEmpty()) {
@@ -231,10 +204,7 @@ public class NetworkTaskImpl implements NetworkTask {
                 .post(requestBody)
                 .build();
 
-        resetClientTimeOut(param.getTimeout(), param.getTimeoutUnit());
-        Call call = client.newCall(request);
-        call.enqueue(new DataResponseCallback(context, param, dataCallback));
-        return call;
+        return request;
     }
 
     private void resetClientTimeOut(long timeOut, TimeUnit timeUnit) {

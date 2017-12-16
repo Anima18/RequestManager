@@ -3,7 +3,6 @@ package com.ut.requsetmanager.callback;
 import android.app.Activity;
 import android.content.Context;
 
-import com.google.gson.Gson;
 import com.ut.requsetmanager.entity.WebServiceParam;
 import com.ut.requsetmanager.exception.ServiceErrorException;
 import com.ut.requsetmanager.network.NetworkTaskImpl;
@@ -50,7 +49,7 @@ public class DownloadResponseCallback implements Callback {
             InputStream is = response.body().byteStream();
             BufferedInputStream input = new BufferedInputStream(is);
             FileUtil.createDir(param.getDownloadFilePath());
-            OutputStream output = new FileOutputStream(param.getDownloadFilePath() + param.getParams().get("fileName").toString());
+            OutputStream output = new FileOutputStream(param.getDownloadFilePath() + param.getDownloadFileName());
 
             byte[] data = new byte[1024];
             int count = 0;

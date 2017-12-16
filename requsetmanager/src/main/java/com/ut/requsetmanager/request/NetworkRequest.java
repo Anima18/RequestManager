@@ -25,6 +25,10 @@ public interface NetworkRequest {
 
     NetworkRequest setDownloadFilePath(String filePath);
 
+    NetworkRequest setDownloadFileName(String fileName);
+
+    NetworkRequest setTimeout(long timeout, TimeUnit timeoutUnit);
+
     NetworkRequest setProgressMessage(String message);
 
     NetworkRequest setProgressMessage(String message, int style);
@@ -32,10 +36,6 @@ public interface NetworkRequest {
     NetworkRequest addParam(String key, Object value);
 
     NetworkRequest setParams(Map<String, Object> params);
-
-    NetworkRequest setTimeout(long timeout, TimeUnit timeUnit);
-
-    NetworkRequest isPlatformService(Boolean platformService);
 
     <T> void send(DataRequestCallback<T> callback);
 

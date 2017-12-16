@@ -44,15 +44,14 @@ public class WebServiceParam {
     private TimeUnit timeoutUnit;
 
     /**
-     * 是否平台服务请求
-     * 如果是平台服务请求，会有特殊解析
-     */
-    private boolean isPlatformService;
-
-    /**
      * 文件下载目录
      */
     private String downloadFilePath;
+
+    /**
+     * 文件下载名称
+     */
+    private String downloadFileName;
 
     /**
      * 添加请求参数
@@ -131,11 +130,11 @@ public class WebServiceParam {
         this.downloadFilePath = downloadFilePath;
     }
 
-    public boolean isPlatformService() {
-        return isPlatformService;
+    public String getDownloadFileName() {
+        return downloadFileName;
     }
 
-    public void setPlatformService(boolean platformService) {
-        isPlatformService = platformService;
+    public void setDownloadFileName(String downloadFileName) {
+        this.downloadFileName = downloadFileName;
     }
 }

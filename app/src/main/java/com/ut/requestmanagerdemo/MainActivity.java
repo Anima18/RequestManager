@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void dataRequest() {
-        /*NetworkRequestImpl.create(this)
+        NetworkRequestImpl.create(this)
                 .setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .setMethod("GET")
                 .setProgressMessage("正在加载中，请稍后...")
@@ -78,30 +78,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             Log.i(TAG, data.toString());
                         }
                     }
-                });*/
-        NetworkRequestImpl.create(this)
-                //.setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
-                .setUrl("http://192.168.60.104:44423/GetRDDataJson?a=&b=&c=getdtobjectdata&d=dtctsvr_objectcode=fdzhizhanglog;dtctsvr_projectversion=1;dtctsvr_projectcode=utdtpower")
-                .setMethod("GET")
-                .setProgressMessage("正在加载中，请稍后...")
-                .isPlatformService(true)
-                .send(new DataRequestCallback() {
-                    @Override
-                    public void onResult(Object data, ResponseStatus status) {
-                        Log.i(TAG, status.toString());
-                        Toast.makeText(MainActivity.this, status.toString(), Toast.LENGTH_SHORT).show();
-                        if(data != null) {
-                            Log.i(TAG, data.toString());
-                        }
-                    }
                 });
     }
 
     public void downloadRequest() {
-        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
+        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/text.zip")
                 .setDataClass(Boolean.class)
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                .addParam("fileName", "gxcz_1.1.2.ipa")
+                .setDownloadFileName("text.zip")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .download(new DataRequestCallback<Boolean>() {

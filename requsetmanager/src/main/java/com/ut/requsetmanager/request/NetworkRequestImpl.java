@@ -80,6 +80,18 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
+    public NetworkRequest setDownloadFileName(String fileName) {
+        this.param.setDownloadFileName(fileName);
+        return this;
+    }
+
+    @Override
+    public NetworkRequest setTimeout(long timeout, TimeUnit timeoutUnit) {
+        this.param.setTimeout(timeout);
+        this.param.setTimeoutUnit(timeoutUnit);
+        return this;
+    }
+    @Override
     public NetworkRequest setProgressMessage(String message) {
         return setProgressMessage(message, ProgressDialog.STYLE_SPINNER);
     }
@@ -89,7 +101,6 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
         if(!TextUtils.isEmpty(message)) {
             this.progressMessage = message;
             this.progressDialog = new NetworkProgressDialogImpl(context, style, this);
-            //this.progressDialog.getProgressDialog().setOnCancelListener(this);
         }
         return this;
     }
@@ -107,21 +118,8 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
-    public NetworkRequest setTimeout(long timeout, TimeUnit timeUnit) {
-        param.setTimeout(timeout);
-        param.setTimeoutUnit(timeUnit);
-        return this;
-    }
-
-    @Override
-    public NetworkRequest isPlatformService(Boolean platformService) {
-        param.setPlatformService(platformService);
-        return this;
-    }
-
-    @Override
     public <T> void send(final DataRequestCallback<T> callback) {
-        this.progressDialog.showProgress(progressMessage);
+        showProgress();
 
         this.task = NetworkTaskImpl.getInstance().dataTask(context, param, new NetworkTaskImpl.DataTaskCallback<T>() {
             @Override
@@ -141,7 +139,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
 
     @Override
     public <T> void download(final DataRequestCallback<T> callback) {
-        this.progressDialog.showProgress(progressMessage);
+        showProgress();
 
         this.task = NetworkTaskImpl.getInstance().downloadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
             @Override
@@ -158,15 +156,15 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
             }
 
             @Override
-            public void onProgress(final String fileName, final int progress) {
-                progressDialog.updateProgress(fileName, progress);
+            public void onProgress(String fileName, int progress) {
+                updateProgress(fileName, progress);
             }
         });
     }
 
     @Override
     public <T> void upload(final DataRequestCallback<T> callback) {
-        this.progressDialog.showProgress(progressMessage);
+        showProgress();
 
         this.task = NetworkTaskImpl.getInstance().uploadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
             @Override
@@ -183,8 +181,8 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
             }
 
             @Override
-            public void onProgress(final String fileName, final int progress) {
-                progressDialog.updateProgress(fileName, progress);
+            public void onProgress(String fileName, int progress) {
+                updateProgress(fileName, progress);
             }
         });
     }
@@ -197,7 +195,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
             public void call(final Subscriber<? super Map<String, T>> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
-                progressDialog.showProgress(progressMessage);
+                showProgress();
 
                 Call task = NetworkTaskImpl.getInstance().dataTask(context, param, new NetworkTaskImpl.DataTaskCallback<T>() {
                     @Override
@@ -230,7 +228,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
             public void call(final Subscriber<? super Map<String, Object>> subscriber) {
                 if(subscriber.isUnsubscribed())
                     return;
-                progressDialog.showProgress(progressMessage);
+                showProgress();
 
                 Call task = NetworkTaskImpl.getInstance().downloadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
                     @Override
@@ -250,8 +248,8 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
                     }
 
                     @Override
-                    public void onProgress(final String fileName, final int progress) {
-                        progressDialog.updateProgress(fileName, progress);
+                    public void onProgress(String fileName, int progress) {
+                        updateProgress(fileName, progress);
                     }
                 });
                 setTask(task);
@@ -269,7 +267,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
                 if(subscriber.isUnsubscribed())
                     return;
 
-                progressDialog.showProgress(progressMessage);
+                showProgress();
 
                 Call task = NetworkTaskImpl.getInstance().uploadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
                     @Override
@@ -289,8 +287,8 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
                     }
 
                     @Override
-                    public void onProgress(final String fileName, final int progress) {
-                        progressDialog.updateProgress(fileName, progress);
+                    public void onProgress(String fileName, int progress) {
+                        updateProgress(fileName, progress);
                     }
                 });
                 setTask(task);
@@ -325,6 +323,18 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     public void hideProgress() {
         if(progressDialog != null) {
             progressDialog.hideProgress();
+        }
+    }
+
+    private void showProgress() {
+        if(progressDialog != null) {
+            progressDialog.showProgress(progressMessage);
+        }
+    }
+
+    private void updateProgress(String fileName, int progress) {
+        if(progressDialog != null) {
+            progressDialog.updateProgress(fileName, progress);
         }
     }
 }

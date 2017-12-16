@@ -8,15 +8,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.ut.requsetmanager.entity.PlatformServiceData;
 import com.ut.requsetmanager.entity.WebServiceParam;
 import com.ut.requsetmanager.exception.ServiceErrorException;
 import com.ut.requsetmanager.network.NetworkTaskImpl;
 import com.ut.requsetmanager.util.JsonUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,8 +59,6 @@ public class DataResponseCallback implements Callback {
                 result = gson.fromJson(jsonElement.toString(), param.getClassType());
             }else if((param.getClazz() != null)) {
                 result = gson.fromJson(jsonElement.toString(), param.getClazz());
-            }else if(param.isPlatformService()) {
-                result = convertPlatformServiceData(jsonElement.toString());
             }else {
                 result = gson.fromJson(jsonElement.toString(), new TypeToken<Object>(){}.getType());
             }
@@ -83,18 +78,4 @@ public class DataResponseCallback implements Callback {
             });
         }
     }
-
-    private Object convertPlatformServiceData(String jsonData) {
-        List<PlatformServiceData> dataList = gson.fromJson(jsonData.toString(), new TypeToken<List<PlatformServiceData>>(){}.getType());
-        List<Object> valueList = new ArrayList<>();
-        if(dataList != null) {
-            PlatformServiceData data;
-            for(int i = 1; i < dataList.size(); i++) {
-                data = dataList.get(i);
-                valueList.add(gson.fromJson(data.getV(), new TypeToken<Object>(){}.getType()));
-            }
-        }
-        return valueList;
-    }
-
 }

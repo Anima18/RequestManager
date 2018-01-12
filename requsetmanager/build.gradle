@@ -43,12 +43,12 @@ dependencies {
     })
     implementation 'com.android.support:appcompat-v7:25.1.0'
     testImplementation 'junit:junit:4.12'
-    implementation 'io.reactivex:rxandroid:1.2.0'
-    implementation 'io.reactivex:rxjava:1.1.5'
-    implementation 'com.squareup.okhttp:okhttp:2.7.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.5.0'
-    implementation 'com.squareup.okio:okio:1.11.0'
-    api 'com.google.code.gson:gson:2.8.2'
+    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'io.reactivex:rxjava:1.1.5'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.okio:okio:1.11.0'
+    compile 'com.google.code.gson:gson:2.8.2'
 }
 
 /** 以下开始是将Android Library上传到jcenter的相关配置**/
@@ -60,7 +60,7 @@ publish{
     userOrg = 'anima'//bintray.com的用户名
     groupId = 'com.anima'//jcenter上的路径
     artifactId = 'RequestManager'//项目名称
-    publishVersion = '1.0.1'//版本号
+    publishVersion = '1.0.4'//版本号
     desc = '一个Android的网络请求框架，通过解耦请求者和响应者简化多重网络传递。'//描述，不重要
     website = siteUrl//项目主页
 }

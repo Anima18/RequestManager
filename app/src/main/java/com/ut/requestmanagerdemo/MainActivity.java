@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.gson.reflect.TypeToken;
 import com.ut.requestmanagerdemo.entity.User;
 import com.ut.requsetmanager.callback.DataListRequestCallback;
 import com.ut.requsetmanager.callback.DataRequestCallback;
@@ -23,6 +22,8 @@ import com.ut.requsetmanager.request.NetworkRequestImpl;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.reflect.TypeToken;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
@@ -82,10 +83,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void downloadRequest() {
-        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/text.zip")
+        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/InnerRes.zip")
                 .setDataClass(Boolean.class)
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                .setDownloadFileName("text.zip")
+                .setDownloadFileName("InnerRes.zip")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .download(new DataRequestCallback<Boolean>() {
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public Map<String, Object> getUploadFileParam() {
-        String basePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/documents/";
+        String basePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/";
         File file = new File(basePath);
         String[] fileNameArray = file.list();
 
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     return NetworkRequestImpl.create(MainActivity.this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                             .setDataClass(Boolean.class)
                             .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                            .addParam("fileName", "gxcz_1.1.2.ipa")
+                            .setDownloadFileName("gxcz_1.1.2.ipa")
                             .setMethod("POST")
                             .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                             .downloadRequest();
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                 .setDataClass(Boolean.class)
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-                .addParam("fileName", "gxcz_1.1.2.ipa")
+                .setDownloadFileName("gxcz_1.1.2.ipa")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .downloadRequest();

@@ -3,7 +3,7 @@ apply plugin: 'maven'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 21
@@ -37,35 +37,35 @@ task makeJar(type: Copy) {
 makeJar.dependsOn(build)
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    testCompile 'junit:junit:4.12'
-    compile 'io.reactivex:rxandroid:1.2.0'
-    compile 'io.reactivex:rxjava:1.1.5'
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.google.code.gson:gson:2.6.2'
-    compile 'com.squareup.okio:okio:1.11.0'
+    implementation 'com.android.support:appcompat-v7:25.1.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'io.reactivex:rxandroid:1.2.0'
+    implementation 'io.reactivex:rxjava:1.1.5'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.5.0'
+    implementation 'com.squareup.okio:okio:1.11.0'
+    api 'com.google.code.gson:gson:2.8.2'
 }
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            snapshotRepository(url: "http://192.168.60.200:8081/repository/maven-snapshots/") {
-                authentication(userName: project.hasProperty('nexus.user') ? project.property('nexus.user') : System.getenv('NEXUS_USER'),
-                        password: project.hasProperty('nexus.password') ? project.property('nexus.password') : System.getenv('NEXUS_PASSWORD'))
-            }
-
-            pom.version = "1.2.0-SNAPSHOT"
-            pom.artifactId = "requestmanager"
-            pom.groupId = "com.ut.requestmanager"
-            pom.name = "requestmanager"
-            pom.packaging = "aar"
-        }
-    }
+/** 以下开始是将Android Library上传到jcenter的相关配置**/
+apply plugin: 'com.novoda.bintray-release'//添加
+//项目主页
+def siteUrl = 'https://github.com/Anima18/RequestManager'
+publish{
+    repoName = 'maven'//远程仓库名字,不指明，默认是上传到maven
+    userOrg = 'anima'//bintray.com的用户名
+    groupId = 'com.anima'//jcenter上的路径
+    artifactId = 'RequestManager'//项目名称
+    publishVersion = '1.0.1'//版本号
+    desc = '一个Android的网络请求框架，通过解耦请求者和响应者简化多重网络传递。'//描述，不重要
+    website = siteUrl//项目主页
 }
-
-build.dependsOn uploadArchives
+tasks.withType(Javadoc) {//防止编码问题
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}

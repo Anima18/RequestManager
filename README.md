@@ -17,7 +17,10 @@ RequestManager是一个Android的网络请求框架，通过解耦请求者和�
 
 
 ## 安装
+```
+implementation 'com.anima:RequestManager:1.0.4'
 
+```
 
 
 ## 示例

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ut.requestmanagerdemo.entity.Item;
 import com.ut.requestmanagerdemo.entity.User;
 import com.ut.requsetmanager.callback.DataListRequestCallback;
 import com.ut.requsetmanager.callback.DataRequestCallback;
@@ -22,6 +23,7 @@ import com.ut.requsetmanager.request.NetworkRequestImpl;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -48,32 +50,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dataRequest();
                 break;
             case R.id.mainAct_download_bt:
-                downloadRequest();
+                //downloadRequest();
                 break;
             case R.id.mainAct_upload_bt:
-                uploadRequest();
+                //uploadRequest();
                 break;
             case R.id.mainAct_nestData_bt:
-                nestRequest();
+                //nestRequest();
                 break;
             case R.id.mainAct_sequence_bt:
-                sequenceRequest();
+                //sequenceRequest();
                 break;
             case R.id.mainAct_merge_bt:
-                mergeRequest();
+                //mergeRequest();
                 break;
         }
     }
 
     public void dataRequest() {
-        NetworkRequestImpl.create(this)
-                .setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
+
+        new NetworkRequestImpl<List<Item>>(this)
+                .setUrl("https://api.github.com/users/yeasy/followers?page=1")
                 .setMethod("GET")
                 .setProgressMessage("正在加载中，请稍后...")
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
-                .send(new DataRequestCallback<DataObject<User>>() {
+                .send(new DataRequestCallback<List<Item>>() {
                     @Override
-                    public void onResult(DataObject<User> data, ResponseStatus status) {
+                    public void onResult(List<Item> data, ResponseStatus status) {
                         Log.i(TAG, status.toString());
                         if(data != null) {
                             Log.i(TAG, data.toString());
@@ -81,10 +83,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 });
     }
-
     public void downloadRequest() {
-        NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/InnerRes.zip")
-                .setDataClass(Boolean.class)
+        new NetworkRequestImpl<Boolean>(this)
+                .setUrl(BASE_PATH + "file/InnerRes.zip")
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
                 .setDownloadFileName("InnerRes.zip")
                 .setMethod("POST")
@@ -118,11 +119,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void uploadRequest() {
 
-        NetworkRequestImpl.create(this)
+        new NetworkRequestImpl<DataObject<User>>(this)
                 .setUrl(BASE_PATH + "security/security_uploadList.action")
                 .setParams(getUploadFileParam())
                 .setMethod(NetworkRequestImpl.POST)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .setProgressMessage("正在上传中，请稍后后", ProgressDialog.STYLE_HORIZONTAL)
                 .upload(new DataRequestCallback<DataObject<User>>() {
                     @Override
@@ -137,11 +137,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void nestRequest() {
-        NetworkRequest request = NetworkRequestImpl.create(this)
+        NetworkRequest request = new NetworkRequestImpl<DataObject<User>>(this)
                                     .setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                                     .setMethod("GET")
                                     .setProgressMessage("请求一，请稍后...")
-                                    .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                                     .dataRequest();
 
         NetworkRequestManager.create(request).nest(new NetworkRequestManager.NestFlatMapCallback<DataObject<User>>(){
@@ -151,8 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(TAG, status.toString());
                 if(userDataObject != null) {
                     Log.i(TAG, "first: "+ userDataObject.data.rows.get(0).getName());
-                    return NetworkRequestImpl.create(MainActivity.this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
-                            .setDataClass(Boolean.class)
+                    return new NetworkRequestImpl<Boolean>(MainActivity.this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                             .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
                             .setDownloadFileName("gxcz_1.1.2.ipa")
                             .setMethod("POST")
@@ -176,26 +174,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void sequenceRequest() {
-        NetworkRequest request1 = NetworkRequestImpl.create(this)
+        NetworkRequest request1 = new NetworkRequestImpl<DataObject<User>>(this)
                 .setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .setMethod("GET")
                 .setProgressMessage("请求一...")
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .dataRequest();
 
-        NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
-                .setDataClass(Boolean.class)
+        NetworkRequest request2 = new NetworkRequestImpl<Boolean>(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
                 .setDownloadFileName("gxcz_1.1.2.ipa")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
                 .downloadRequest();
 
-        NetworkRequest request3 = NetworkRequestImpl.create(this)
+        NetworkRequest request3 = new NetworkRequestImpl<DataObject<User>>(this)
                 .setUrl(BASE_PATH + "security/security_uploadList.action")
                 .setParams(getUploadFileParam())
                 .setMethod(NetworkRequestImpl.POST)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .setProgressMessage("正在上传中，请稍后后", ProgressDialog.STYLE_HORIZONTAL)
                 .uploadRequest();
 
@@ -212,26 +207,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void mergeRequest() {
-        NetworkRequest request1 = NetworkRequestImpl.create(this)
+        NetworkRequest request1 = new NetworkRequestImpl<DataObject<User>>(this)
                 .setUrl(BASE_PATH + "userInfo/getAllUserInfoLayer.action")
                 .setMethod("GET")
                 .setProgressMessage("请求一...")
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .dataRequest();
 
-        /*NetworkRequest request2 = NetworkRequestImpl.create(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
-                .setDataClass(Boolean.class)
+        NetworkRequest request2 = new NetworkRequestImpl<Boolean>(this).setUrl(BASE_PATH + "file/gxcz_1.1.2.ipa")
                 .setDownloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
                 .addParam("fileName", "gxcz_1.1.2.ipa")
                 .setMethod("POST")
                 .setProgressMessage("正在加载中，请稍后...", ProgressDialog.STYLE_HORIZONTAL)
-                .downloadRequest();*/
+                .downloadRequest();
 
-        NetworkRequest request3 = NetworkRequestImpl.create(this)
+        NetworkRequest request3 = new NetworkRequestImpl<DataObject<User>>(this)
                 .setUrl(BASE_PATH + "security/security_uploadList.action")
                 .setParams(getUploadFileParam())
                 .setMethod(NetworkRequestImpl.POST)
-                .setDataType(new TypeToken<DataObject<User>>(){}.getType())
                 .setProgressMessage("正在上传中，请稍后后", ProgressDialog.STYLE_HORIZONTAL)
                 .uploadRequest();
 

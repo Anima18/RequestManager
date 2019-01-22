@@ -13,15 +13,11 @@ import rx.Observable;
  * Created by jianjianhong on 2017/11/19.
  */
 
-public interface NetworkRequest {
+public interface NetworkRequest<T> {
 
     NetworkRequest setUrl(String url);
 
     NetworkRequest setMethod(String method);
-
-    NetworkRequest setDataClass(Class cls);
-
-    NetworkRequest setDataType(Type type);
 
     NetworkRequest setDownloadFilePath(String filePath);
 
@@ -37,17 +33,17 @@ public interface NetworkRequest {
 
     NetworkRequest setParams(Map<String, Object> params);
 
-    <T> void send(DataRequestCallback<T> callback);
+    void send(DataRequestCallback<T> callback);
 
-    <T> void download(DataRequestCallback<T> callback);
+    void download(DataRequestCallback<T> callback);
 
-    <T>void upload(DataRequestCallback<T> callback);
+    void upload(DataRequestCallback<T> callback);
 
-    <T> NetworkRequest dataRequest();
+    NetworkRequest dataRequest();
 
-    <T>NetworkRequest downloadRequest();
+    NetworkRequest downloadRequest();
 
-    <T> NetworkRequest uploadRequest();
+    NetworkRequest uploadRequest();
 
     Call getTask();
 

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.reflect.TypeToken;
 import com.ut.requsetmanager.callback.DataRequestCallback;
 import com.ut.requsetmanager.entity.ResponseStatus;
 import com.ut.requsetmanager.entity.WebServiceError;
@@ -26,7 +27,7 @@ import rx.Subscriber;
  * Created by jianjianhong on 2017/11/19.
  */
 
-public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCancelListener {
+public class NetworkRequestImpl<T> implements NetworkRequest, DialogInterface.OnCancelListener {
     
     private static final String TAG = "NetworkRequestImpl";
     public static final String POST = "POST";
@@ -40,13 +41,10 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     private Call task;
     private Observable observable;
 
-    private NetworkRequestImpl(Context context) {
+    public NetworkRequestImpl(Context context) {
         this.context = context;
         this.param = new WebServiceParam();
-    }
-
-    public static NetworkRequestImpl create(Context context) {
-        return new NetworkRequestImpl(context);
+        param.setClassType(new TypeToken<T>(){}.getType());
     }
 
     @Override
@@ -58,18 +56,6 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     @Override
     public NetworkRequest setMethod(String method) {
         this.param.setMethod(method);
-        return this;
-    }
-
-    @Override
-    public NetworkRequest setDataClass(Class cls) {
-        this.param.setClazz(cls);
-        return this;
-    }
-
-    @Override
-    public NetworkRequest setDataType(Type type) {
-        this.param.setClassType(type);
         return this;
     }
 
@@ -112,13 +98,13 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
-    public NetworkRequest setParams(Map<String, Object> params) {
+    public NetworkRequest setParams(Map params) {
         this.param.addParam(params);
         return this;
     }
 
     @Override
-    public <T> void send(final DataRequestCallback<T> callback) {
+    public void send(final DataRequestCallback callback) {
         showProgress();
 
         this.task = NetworkTaskImpl.getInstance().dataTask(context, param, new NetworkTaskImpl.DataTaskCallback<T>() {
@@ -136,9 +122,8 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
             }
         });
     }
-
     @Override
-    public <T> void download(final DataRequestCallback<T> callback) {
+    public void download(final DataRequestCallback callback) {
         showProgress();
 
         this.task = NetworkTaskImpl.getInstance().downloadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
@@ -163,7 +148,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
-    public <T> void upload(final DataRequestCallback<T> callback) {
+    public void upload(final DataRequestCallback callback) {
         showProgress();
 
         this.task = NetworkTaskImpl.getInstance().uploadTask(context, param, new NetworkTaskImpl.ProgressTaskCallback<T>() {
@@ -188,7 +173,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
-    public <T> NetworkRequest dataRequest() {
+    public NetworkRequest dataRequest() {
         final NetworkRequestImpl request = this;
         this.observable = Observable.create(new Observable.OnSubscribe<Map<String, T>>() {
             @Override
@@ -221,7 +206,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
-    public <T> NetworkRequest downloadRequest() {
+    public  NetworkRequest downloadRequest() {
         final NetworkRequestImpl request = this;
         this.observable = Observable.create(new Observable.OnSubscribe<Map<String, Object>>() {
             @Override
@@ -259,7 +244,7 @@ public class NetworkRequestImpl implements NetworkRequest, DialogInterface.OnCan
     }
 
     @Override
-    public <T> NetworkRequest uploadRequest() {
+    public NetworkRequest uploadRequest() {
         final NetworkRequestImpl request = this;
         this.observable = Observable.create(new Observable.OnSubscribe<Map<String, Object>>() {
             @Override

@@ -1,1 +1,1 @@
-include ':app', ':requsetmanager'
+include ':app', ':networkrequest'

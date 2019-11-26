@@ -5,17 +5,6 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven {
-            credentials {
-                username project.hasProperty('nexus.user') ? project.property('nexus.user') : System.getenv('NEXUS_USER')
-                password project.hasProperty('nexus.password') ? project.property('nexus.password') : System.getenv('NEXUS_PASSWORD')
-            }
-            url 'http://192.168.60.200:8081/repository/maven-public/'
-
-        }
-        maven {
-            url 'https://jitpack.io'
-        }
 
     }
     dependencies {
@@ -30,17 +19,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven {
-            credentials {
-                username project.hasProperty('nexus.user') ? project.property('nexus.user') : System.getenv('NEXUS_USER')
-                password project.hasProperty('nexus.password') ? project.property('nexus.password') : System.getenv('NEXUS_PASSWORD')
-            }
-            url 'http://192.168.60.200:8081/repository/maven-public/'
-
-        }
-        maven {
-            url 'https://jitpack.io'
-        }
     }
 }
 

@@ -1,12 +1,14 @@
 package com.anima.networkrequestTest
 
+import android.Manifest
 import android.os.Bundle
+import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import com.anima.networkrequest.*
-import com.anima.networkrequest.data.okhttp.USER_SEEION_ID
 import com.anima.networkrequest.entity.RequestParam
-import com.anima.networkrequest.util.sharedprefs.UserInfoSharedPreferences
+import com.tbruyelle.rxpermissions.RxPermissions
+
 
 class MainActivity : ScopedActivity() {
 
@@ -14,10 +16,21 @@ class MainActivity : ScopedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        RxPermissions(this)
+            .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .subscribe({ granted ->
+                if (granted) { // Always true pre-M
+                    // I can control the camera now
+                } else {
+                    // Oups permission denied
+                }
+            });
+
     }
 
     fun login(view: View) {
-        NetworkRequest<UserInfo>(this)
+       /* NetworkRequest<UserInfo>(this)
             .url("http://192.168.60.146:8080/userright/loginVerify.do")
             .coroutineScope(this)
             .addParam("username", "utadmin")
@@ -30,6 +43,24 @@ class MainActivity : ScopedActivity() {
                     Toast.makeText(this@MainActivity, data.user.userName, Toast.LENGTH_SHORT).show()
                     UserInfoSharedPreferences.getInstance(this@MainActivity).putStringValue(USER_SEEION_ID, data.sessionid)
                 }
+
+                override fun onFailure(message: String) {
+                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                }
+            })*/
+
+        NetworkRequest<String>(this)
+            .url("http://114.67.65.199:8080/software/Android/protect.eye_9.6_88.apk")
+            .coroutineScope(this)
+            .method(RequestParam.Method.POST)
+            .dataClass(String::class.java)
+            //.loadingMessage("正在登录中,请稍后...")
+            .downloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
+            .downloadFileName("ddddddddddddd.apk")
+            .download(object :DataObjectCallback<String> {
+                override fun onSuccess(data: String) {
+                    Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
+                 }
 
                 override fun onFailure(message: String) {
                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()

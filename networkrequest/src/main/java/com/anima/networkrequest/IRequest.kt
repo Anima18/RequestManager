@@ -21,9 +21,12 @@ interface IRequest<T> {
     fun addParam(key: String, value: String): IRequest<T>
     fun dataFormat(format: RequestParam.DataFormat): IRequest<T>
     fun loadingMessage(message: String): IRequest<T>
+    fun downloadFileName(fileName: String): IRequest<T>
+    fun downloadFilePath(filePath: String): IRequest<T>
     fun getObject(objectCallback: DataObjectCallback<T>): Job
     fun getList(callback: DataListCallback<T>): Job
     fun getPageData(callback: DataPagingCallback<T>): Job
+    fun download(callback: DataObjectCallback<String>): Job
 
     fun create(): NetworkRequest<T>
 }

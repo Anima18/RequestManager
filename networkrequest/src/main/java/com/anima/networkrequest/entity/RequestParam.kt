@@ -29,4 +29,8 @@ class RequestParam {
     var dataParser: ResponseParser? = null
     //请求提示
     var loadingMessage: String? = null
+
+    var downloadFileName: String? = null
+
+    var downloadFilePath: String? = null
 }

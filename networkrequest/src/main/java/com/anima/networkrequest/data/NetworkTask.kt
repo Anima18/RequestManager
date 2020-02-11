@@ -1,5 +1,6 @@
 package com.anima.networkrequest.data
 
+import com.anima.networkrequest.DataDownloadCallback
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
 import com.anima.networkrequest.entity.RequestParam
 
@@ -8,4 +9,5 @@ import com.anima.networkrequest.entity.RequestParam
  */
 interface NetworkTask {
     suspend fun <T> dataTask(param: RequestParam): ResponseParser
+    suspend fun downloadTask(param: RequestParam, callBack: DataDownloadCallback): String
 }

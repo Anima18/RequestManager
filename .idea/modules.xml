@@ -2,15 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/RequestManager.iml" filepath="$PROJECT_DIR$/RequestManager.iml" />
-      <module fileurl="file://$PROJECT_DIR$/RequestManager.iml" filepath="$PROJECT_DIR$/RequestManager.iml" />
-      <module fileurl="file://E:/code/github_workspace/RequestManager/RequestManager.iml" filepath="E:/code/github_workspace/RequestManager/RequestManager.iml" />
-      <module fileurl="file://E:/code/github_workspace/RequestManager/UTRequestManagerDemo.iml" filepath="E:/code/github_workspace/RequestManager/UTRequestManagerDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://E:/code/github_workspace/RequestManager/app/app.iml" filepath="E:/code/github_workspace/RequestManager/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GitHub-RequestManager.iml" filepath="$PROJECT_DIR$/GitHub-RequestManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../github_workspace/RequestManager/RequestManager.iml" filepath="$PROJECT_DIR$/../../github_workspace/RequestManager/RequestManager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/RequestManager-app.iml" filepath="$PROJECT_DIR$/app/RequestManager-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/networkrequest/RequestManager-networkrequest.iml" filepath="$PROJECT_DIR$/networkrequest/RequestManager-networkrequest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../github_workspace/RequestManager/UTRequestManagerDemo.iml" filepath="$PROJECT_DIR$/../../github_workspace/RequestManager/UTRequestManagerDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../github_workspace/RequestManager/app/app.iml" filepath="$PROJECT_DIR$/../../github_workspace/RequestManager/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/networkrequest/networkrequest.iml" filepath="$PROJECT_DIR$/networkrequest/networkrequest.iml" />
       <module fileurl="file://$PROJECT_DIR$/requsetmanager/requsetmanager.iml" filepath="$PROJECT_DIR$/requsetmanager/requsetmanager.iml" />
-      <module fileurl="file://E:/code/github_workspace/RequestManager/requsetmanager/requsetmanager.iml" filepath="E:/code/github_workspace/RequestManager/requsetmanager/requsetmanager.iml" />
     </modules>
   </component>
 </project>

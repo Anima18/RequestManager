@@ -3,6 +3,7 @@ package com.anima.networkrequest
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.util.Log
 import com.anima.networkrequest.data.okhttp.OkHttpTask
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
 import com.anima.networkrequest.entity.RequestParam
@@ -71,6 +72,16 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
 
     override fun loadingMessage(message: String): IRequest<T> {
         this.param.loadingMessage = message
+        return this
+    }
+
+    override fun downloadFilePath(filePath: String): IRequest<T> {
+        this.param.downloadFilePath = filePath
+        return this
+    }
+
+    override fun downloadFileName(fileName: String): IRequest<T> {
+        this.param.downloadFileName = fileName
         return this
     }
 
@@ -147,6 +158,34 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
         return job as Job
     }
 
+    override fun download(callback: DataObjectCallback<String>): Job {
+        var processDialog = showProcessIndicator()
+        this.param.dataFormat = RequestParam.DataFormat.OBJECT
+        if (mainScope == null)
+            mainScope = MainScope()
+        job = mainScope!!.launch {
+            try {
+                val resultData = OkHttpTask.getInstance(context).downloadTask(param, object : DataDownloadCallback{
+                    override fun onProgress(fileName: String, progress: Int) {
+                       Log.i("ddddddddddddd", ""+progress)
+                        processDialog?.updateProgress(fileName, progress)
+                    }
+                })
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    callback.onSuccess(resultData)
+                }
+            }catch (e: Exception) {
+                val message = ExceptionUtil.analysisException(e)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    message?.let { callback.onFailure(it) }
+                }
+            }
+        }
+        return job as Job
+    }
+
     override fun onCancel(p0: DialogInterface?) {
         job?.cancel()
     }
@@ -155,6 +194,14 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
     private fun showRequestIndicator(): IndicatorDialog? {
         var processDialog = param.loadingMessage?.let {
             IndicatorDialog(context, param.loadingMessage!!, ProgressDialog.STYLE_SPINNER, this)
+        }
+        processDialog?.showProgress()
+        return processDialog
+    }
+
+    private fun showProcessIndicator(): IndicatorDialog? {
+        var processDialog = param.loadingMessage?.let {
+            IndicatorDialog(context, param.loadingMessage!!, ProgressDialog.STYLE_HORIZONTAL, this)
         }
         processDialog?.showProgress()
         return processDialog

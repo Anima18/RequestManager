@@ -3,6 +3,7 @@ package com.anima.networkrequest
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Message
 import android.util.Log
 import com.anima.networkrequest.data.okhttp.OkHttpTask
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
@@ -10,6 +11,7 @@ import com.anima.networkrequest.entity.RequestParam
 import com.anima.networkrequest.exception.ExceptionUtil
 import com.anima.networkrequest.indicator.IndicatorDialog
 import kotlinx.coroutines.*
+import java.io.File
 
 
 /**
@@ -85,6 +87,11 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
         return this
     }
 
+    override fun uploadFiles(files: List<File>): IRequest<T> {
+        this.param.uploadFiles = files;
+        return this;
+    }
+
     override fun getObject(objectCallback: DataObjectCallback<T>): Job {
         var processDialog = showRequestIndicator()
         this.param.dataFormat = RequestParam.DataFormat.OBJECT
@@ -158,6 +165,7 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
         return job as Job
     }
 
+
     override fun download(callback: DataObjectCallback<String>): Job {
         var processDialog = showProcessIndicator()
         this.param.dataFormat = RequestParam.DataFormat.OBJECT
@@ -167,13 +175,41 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
             try {
                 val resultData = OkHttpTask.getInstance(context).downloadTask(param, object : DataDownloadCallback{
                     override fun onProgress(fileName: String, progress: Int) {
-                       Log.i("ddddddddddddd", ""+progress)
+                        Log.i("ddddddddddddd", ""+progress)
                         processDialog?.updateProgress(fileName, progress)
                     }
                 })
                 GlobalScope.launch(Dispatchers.Main) {
                     processDialog?.hideProgress()
                     callback.onSuccess(resultData)
+                }
+            }catch (e: Exception) {
+                val message = ExceptionUtil.analysisException(e)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    message?.let { callback.onFailure(it) }
+                }
+            }
+        }
+        return job as Job
+    }
+
+    override fun upload(callback: DataObjectCallback<T>): Job {
+        var processDialog = showProcessIndicator()
+        this.param.dataFormat = RequestParam.DataFormat.OBJECT
+        if (mainScope == null)
+            mainScope = MainScope()
+        job = mainScope!!.launch {
+            try {
+                val resultData = OkHttpTask.getInstance(context).uploadTask<T>(param, object : DataDownloadCallback{
+                    override fun onProgress(fileName: String, progress: Int) {
+                        Log.i("ddddddddddddd", ""+progress)
+                        processDialog?.updateProgress(fileName, progress)
+                    }
+                })
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    callback.onSuccess(resultData.getResult()!! as T)
                 }
             }catch (e: Exception) {
                 val message = ExceptionUtil.analysisException(e)

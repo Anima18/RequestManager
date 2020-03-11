@@ -10,4 +10,5 @@ import com.anima.networkrequest.entity.RequestParam
 interface NetworkTask {
     suspend fun <T> dataTask(param: RequestParam): ResponseParser
     suspend fun downloadTask(param: RequestParam, callBack: DataDownloadCallback): String
+    suspend fun <T> uploadTask(param: RequestParam, callBack: DataDownloadCallback): ResponseParser
 }

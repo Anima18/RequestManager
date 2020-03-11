@@ -43,4 +43,16 @@
             android:layout_height="wrap_content"
             android:text="parallel requests"
             android:onClick="parallelRequests"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="download requests"
+            android:onClick="downloadRequests"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="upload requests"
+            android:onClick="uploadRequests"/>
 </LinearLayout>

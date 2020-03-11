@@ -3,17 +3,18 @@ package com.anima.networkrequest.data.okhttp
 import android.content.Context
 import com.anima.networkrequest.DataDownloadCallback
 import com.anima.networkrequest.data.NetworkTask
+import com.anima.networkrequest.data.okhttp.CountingFileRequestBody.ProgressListener
 import com.anima.networkrequest.data.okhttp.dataConvert.DataConvertFactory
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
 import com.anima.networkrequest.entity.RequestParam
 import com.anima.networkrequest.exception.RequestErrorException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.*
+import okhttp3.Headers.Companion.headersOf
 import okhttp3.OkHttpClient
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
+import java.net.URLEncoder
+import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -55,21 +56,13 @@ class OkHttpTask private constructor(context: Context): NetworkTask {
     }
 
     override suspend fun <T> dataTask(param: RequestParam): ResponseParser {
-        val request = when(param.method) {
-            RequestParam.Method.GET -> getRequest(param)
-            RequestParam.Method.POST -> postRequest(param)
-            else -> throw IllegalArgumentException("请求方式不能为空")
-        }
+        val request = requestOf(param)
         val call = client.newCall(request)
         return executeCall<T>(param, call)
     }
 
     override suspend fun downloadTask(param: RequestParam, callBack: DataDownloadCallback): String {
-        val request = when(param.method) {
-            RequestParam.Method.GET -> getRequest(param)
-            RequestParam.Method.POST -> postRequest(param)
-            else -> throw IllegalArgumentException("请求方式不能为空")
-        }
+        val request = requestOf(param)
 
         val progressListener = object : ProgressResponseBody.ProgressListener {
             override fun update(bytesRead: Long, contentLength: Long, done: Boolean) {
@@ -98,6 +91,48 @@ class OkHttpTask private constructor(context: Context): NetworkTask {
         Request.Builder().url(param.url).build()
         val call = client.newCall(request)
         return downloadCall(param, call)
+    }
+
+    override suspend fun <T> uploadTask(param: RequestParam, callBack: DataDownloadCallback): ResponseParser {
+        val builder = MultipartBody.Builder().setType(MultipartBody.FORM)
+        //MultipartBody必须有一个请求体，设置一个默认请求体
+        builder.addFormDataPart("1", "1")
+        param.params?.forEach { builder.addFormDataPart(it.key, it.value) }
+
+        var totalFilesLength = 0L
+        param.uploadFiles?.forEach {
+            if(it.exists()) {
+                totalFilesLength += it.length();
+            }
+        }
+
+        var totalReadLength = 0L
+        for (file in param.uploadFiles!!) {
+            val fileBody = CountingFileRequestBody( file, "application/octet-stream",
+                object : ProgressListener {
+                    override fun onUpdate(bytesRead: Long, fileName: String) {
+                        totalReadLength += bytesRead
+                        callBack.onProgress(fileName, (100 * totalReadLength / totalFilesLength).toInt())
+                    }
+                })
+            var fileName = URLEncoder.encode(file.name, "UTF-8")
+            builder.addPart(
+                headersOf(
+                    "Content-Disposition",
+                    "form-data; name=files; filename=\"$fileName\""
+                ), fileBody
+            )
+        }
+
+        val requestBody = builder.build()
+
+        val request = Request.Builder()
+            .url(param.url)
+            .post(requestBody)
+            .build()
+
+        val call = client.newCall(request)
+        return executeCall<T>(param, call)
     }
 
     private suspend fun <T> executeCall(param: RequestParam, call: Call) = suspendCancellableCoroutine<ResponseParser> { continuation ->
@@ -175,6 +210,15 @@ class OkHttpTask private constructor(context: Context): NetworkTask {
 
             }
         })
+    }
+
+
+    private fun requestOf(param: RequestParam): Request {
+        return when(param.method) {
+            RequestParam.Method.GET -> getRequest(param)
+            RequestParam.Method.POST -> postRequest(param)
+            else -> throw IllegalArgumentException("请求方式不能为空")
+        }
     }
 
     private fun getRequest(param: RequestParam): Request {

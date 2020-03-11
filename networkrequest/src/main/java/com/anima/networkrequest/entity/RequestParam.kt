@@ -1,6 +1,7 @@
 package com.anima.networkrequest.entity
 
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
+import java.io.File
 
 /**
  * Created by jianjianhong on 19-11-1
@@ -29,8 +30,10 @@ class RequestParam {
     var dataParser: ResponseParser? = null
     //请求提示
     var loadingMessage: String? = null
-
+    //下载文件名称
     var downloadFileName: String? = null
-
+    //下载文件存储路径
     var downloadFilePath: String? = null
+    //上传文件列表
+    var uploadFiles: List<File>? = null
 }

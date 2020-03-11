@@ -6,8 +6,11 @@ import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import com.anima.networkrequest.*
+import com.anima.networkrequest.data.okhttp.USER_SEEION_ID
 import com.anima.networkrequest.entity.RequestParam
+import com.anima.networkrequest.util.sharedprefs.UserInfoSharedPreferences
 import com.tbruyelle.rxpermissions.RxPermissions
+import java.io.File
 
 
 class MainActivity : ScopedActivity() {
@@ -30,37 +33,19 @@ class MainActivity : ScopedActivity() {
     }
 
     fun login(view: View) {
-       /* NetworkRequest<UserInfo>(this)
-            .url("http://192.168.60.146:8080/userright/loginVerify.do")
+        NetworkRequest<UserInfo>(this)
+            .url("http://192.168.66.132:9021/rest/users/login")
             .coroutineScope(this)
-            .addParam("username", "utadmin")
-            .addParam("pwd", "e10adc3949ba59abbe56e057f20f883e")
+            .addParam("username", "admin")
+            .addParam("password", "e10adc3949ba59abbe56e057f20f883e")
             .method(RequestParam.Method.POST)
             .dataClass(UserInfo::class.java)
             .loadingMessage("正在登录中,请稍后...")
             .getObject(object :DataObjectCallback<UserInfo> {
                 override fun onSuccess(data: UserInfo) {
                     Toast.makeText(this@MainActivity, data.user.userName, Toast.LENGTH_SHORT).show()
-                    UserInfoSharedPreferences.getInstance(this@MainActivity).putStringValue(USER_SEEION_ID, data.sessionid)
+                    UserInfoSharedPreferences.getInstance(this@MainActivity).putStringValue(USER_SEEION_ID, data.token)
                 }
-
-                override fun onFailure(message: String) {
-                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-                }
-            })*/
-
-        NetworkRequest<String>(this)
-            .url("http://114.67.65.199:8080/software/Android/protect.eye_9.6_88.apk")
-            .coroutineScope(this)
-            .method(RequestParam.Method.POST)
-            .dataClass(String::class.java)
-            //.loadingMessage("正在登录中,请稍后...")
-            .downloadFilePath(Environment.getExternalStorageDirectory().getAbsolutePath() + "/RxJava22/")
-            .downloadFileName("ddddddddddddd.apk")
-            .download(object :DataObjectCallback<String> {
-                override fun onSuccess(data: String) {
-                    Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
-                 }
 
                 override fun onFailure(message: String) {
                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
@@ -208,5 +193,45 @@ class MainActivity : ScopedActivity() {
                 Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    fun downloadRequests(view: View) {
+        NetworkRequest<String>(this)
+            .url("http://114.67.65.199:8080/software/Android/protect.eye_9.6_88.apk")
+            .coroutineScope(this)
+            .method(RequestParam.Method.POST)
+            .dataClass(String::class.java)
+            .loadingMessage("正在下载中,请稍后...")
+            .downloadFilePath(this.getExternalFilesDir(null)?.getAbsolutePath() + "/RxJava22/")
+            .downloadFileName("ddddddddddddd.apk")
+            .download(object :DataObjectCallback<String> {
+                override fun onSuccess(data: String) {
+                    Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
+                 }
+
+                override fun onFailure(message: String) {
+                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    fun uploadRequests(view: View) {
+        var files = listOf<File>(File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/atom/test.pdf"))
+        NetworkRequest<String>(this)
+            .url("http://114.67.65.199:8080/software/Android/protect.eye_9.6_88.apk")
+            .coroutineScope(this)
+            .method(RequestParam.Method.POST)
+            .dataClass(String::class.java)
+            .loadingMessage("正在下载中,请稍后...")
+            .uploadFiles(files)
+            .upload(object :DataObjectCallback<String> {
+                override fun onSuccess(data: String) {
+                    Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onFailure(message: String) {
+                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 }

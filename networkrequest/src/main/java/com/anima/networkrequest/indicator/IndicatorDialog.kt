@@ -3,6 +3,8 @@ package com.anima.networkrequest.indicator
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
+import android.os.Handler
+import android.os.Message
 import com.anima.networkrequest.NetworkRequest
 
 /**
@@ -16,6 +18,16 @@ class IndicatorDialog(val context: Context, val message: String, val style: Int,
 
     init {
         initProgressDialog(style, request)
+    }
+
+    private val handler = object : Handler() {
+
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            //updateProgress(msg.obj.toString(), msg.what)
+            progressDialog!!.setMessage(msg.obj.toString())
+            progressDialog!!.progress = msg.what
+        }
     }
 
     private fun initProgressDialog(style: Int, request: NetworkRequest<*>?) {
@@ -43,8 +55,10 @@ class IndicatorDialog(val context: Context, val message: String, val style: Int,
 
     override fun updateProgress(message: String, progress: Int) {
         if (isShowInActivity()) {
-            progressDialog!!.setMessage(message)
-            progressDialog!!.progress = progress
+            val msg = Message()
+            msg.what = progress
+            msg.obj = message
+            handler.sendMessage(msg)
         }
     }
 

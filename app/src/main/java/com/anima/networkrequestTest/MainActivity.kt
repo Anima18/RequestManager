@@ -6,11 +6,17 @@ import android.os.Environment
 import android.view.View
 import android.widget.Toast
 import com.anima.networkrequest.*
-import com.anima.networkrequest.data.okhttp.USER_SEEION_ID
+import com.anima.networkrequest.callback.DataListCallback
+import com.anima.networkrequest.callback.DataObjectCallback
+import com.anima.networkrequest.callback.DataPagingCallback
 import com.anima.networkrequest.entity.RequestParam
-import com.anima.networkrequest.util.sharedprefs.UserInfoSharedPreferences
+import com.anima.networkrequestTest.entity.ResultDataParser
+import com.google.gson.Gson
 import com.tbruyelle.rxpermissions.RxPermissions
 import java.io.File
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.util.HashMap
 
 
 class MainActivity : ScopedActivity() {
@@ -33,7 +39,7 @@ class MainActivity : ScopedActivity() {
     }
 
     fun login(view: View) {
-        NetworkRequest<UserInfo>(this)
+        /*NetworkRequest<UserInfo>(this)
             .url("http://192.168.66.132:9021/rest/users/login")
             .coroutineScope(this)
             .addParam("username", "admin")
@@ -50,6 +56,38 @@ class MainActivity : ScopedActivity() {
                 override fun onFailure(message: String) {
                     Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
                 }
+            })*/
+
+        val argServiceParam = HashMap<String, String>()
+        argServiceParam["UserId"] = "5be268f1-c4d2-46f9-b682-90247f07f369"
+        argServiceParam["UserName"] = "张三"
+        argServiceParam["Token"] = "89CFB5886913CCDE6881DD2C2A35F68E35638E7FE54965A20A11D4DF016D955BE2F490583A1C2915042E7DBEFDACB9470B02DF7270482DDD9C5B08AE4666ED00"
+        argServiceParam["CarCode"] = "粤C00001"
+        argServiceParam["Jiashiren"] = "张三"
+        argServiceParam["MachineId"] = "2cd119436631ba2d"
+
+        var paramStr = Gson().toJson(argServiceParam)
+        paramStr = URLEncoder.encode(paramStr, StandardCharsets.UTF_8.name())
+
+        NetworkRequest<String>(this)
+            .url("http://61.145.230.152:8735/WZJCYWebService/WZJCSubmitGrant")
+            .coroutineScope(this)
+            .addParam("argServiceParam", paramStr)
+            .asJson(true)
+            .method(RequestParam.Method.POST)
+            .dataClass(String::class.java)
+            .dataParser(ResultDataParser<String>())
+            .loadingMessage("正在登录中,请稍后...")
+            .getObject(object :
+                DataObjectCallback<String> {
+                override fun onSuccess(data: String?) {
+                    Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
+
+                }
+
+                override fun onFailure(message: String) {
+                    Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+                }
             })
     }
 
@@ -61,9 +99,10 @@ class MainActivity : ScopedActivity() {
             .method(RequestParam.Method.POST)
             .dataClass(MajorTable::class.java)
             .loadingMessage("正在登录中,请稍后...")
-            .getList(object: DataListCallback<MajorTable> {
-                override fun onSuccess(t: List<MajorTable>) {
-                    Toast.makeText(this@MainActivity, "${t.size}", Toast.LENGTH_SHORT).show()
+            .getList(object:
+                DataListCallback<MajorTable> {
+                override fun onSuccess(t: List<MajorTable>?) {
+                    Toast.makeText(this@MainActivity, "${t?.size}", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onFailure(message: String) {
@@ -79,7 +118,8 @@ class MainActivity : ScopedActivity() {
             .method(RequestParam.Method.GET)
             .dataClass(Defect::class.java)
             .loadingMessage("正在登录中,请稍后...")
-            .getPageData(object: DataPagingCallback<Defect> {
+            .getPageData(object:
+                DataPagingCallback<Defect> {
                 override fun onSuccess(dataList: List<Defect>, total: Int) {
                     Toast.makeText(this@MainActivity, "${total}", Toast.LENGTH_SHORT).show()
                 }
@@ -98,9 +138,10 @@ class MainActivity : ScopedActivity() {
             .dataClass(GitHubUser::class.java)
             .dataParser(GitHubUserParser<GitHubUser>())
             //.loadingMessage("正在登录中,请稍后...")
-            .getList(object: DataListCallback<GitHubUser> {
-                override fun onSuccess(t: List<GitHubUser>) {
-                    Toast.makeText(this@MainActivity, "${t.size}", Toast.LENGTH_SHORT).show()
+            .getList(object:
+                DataListCallback<GitHubUser> {
+                override fun onSuccess(t: List<GitHubUser>?) {
+                    Toast.makeText(this@MainActivity, "${t?.size}", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onFailure(message: String) {
@@ -204,8 +245,9 @@ class MainActivity : ScopedActivity() {
             .loadingMessage("正在下载中,请稍后...")
             .downloadFilePath(this.getExternalFilesDir(null)?.getAbsolutePath() + "/RxJava22/")
             .downloadFileName("ddddddddddddd.apk")
-            .download(object :DataObjectCallback<String> {
-                override fun onSuccess(data: String) {
+            .download(object :
+                DataObjectCallback<String> {
+                override fun onSuccess(data: String?) {
                     Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
                  }
 
@@ -224,8 +266,9 @@ class MainActivity : ScopedActivity() {
             .dataClass(String::class.java)
             .loadingMessage("正在下载中,请稍后...")
             .uploadFiles(files)
-            .upload(object :DataObjectCallback<String> {
-                override fun onSuccess(data: String) {
+            .upload(object :
+                DataObjectCallback<String> {
+                override fun onSuccess(data: String?) {
                     Toast.makeText(this@MainActivity, data, Toast.LENGTH_SHORT).show()
                 }
 

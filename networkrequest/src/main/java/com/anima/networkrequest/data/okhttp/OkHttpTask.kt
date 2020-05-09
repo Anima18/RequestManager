@@ -1,23 +1,25 @@
 package com.anima.networkrequest.data.okhttp
 
-import android.content.Context
-import com.anima.networkrequest.DataDownloadCallback
+import com.anima.networkrequest.callback.DataDownloadCallback
 import com.anima.networkrequest.data.NetworkTask
 import com.anima.networkrequest.data.okhttp.CountingFileRequestBody.ProgressListener
 import com.anima.networkrequest.data.okhttp.dataConvert.DataConvertFactory
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
 import com.anima.networkrequest.entity.RequestParam
 import com.anima.networkrequest.exception.RequestErrorException
+import com.google.gson.Gson
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.*
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.OkHttpClient
 import java.io.*
 import java.net.URLEncoder
-import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 
 /**
@@ -27,7 +29,7 @@ import kotlin.coroutines.resumeWithException
 private const val CONNECT_TIMEOUT: Long = 10
 private const val READ_TIMEOUT: Long = 10
 private const val WRITE_TIMEOUT: Long = 10
-class OkHttpTask private constructor(context: Context): NetworkTask {
+class OkHttpTask private constructor(): NetworkTask {
     private var client: OkHttpClient
     init {
         println("OkHttpTask init")
@@ -35,7 +37,7 @@ class OkHttpTask private constructor(context: Context): NetworkTask {
             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            .addInterceptor(CookieInterceptor(context))
+            //.addInterceptor(CookieInterceptor(context))
             .build()
     }
 
@@ -43,11 +45,11 @@ class OkHttpTask private constructor(context: Context): NetworkTask {
         @Volatile
         var instance: OkHttpTask? = null
 
-        fun getInstance(context: Context): OkHttpTask {
+        fun create(): OkHttpTask {
             if (instance == null) {
                 synchronized(OkHttpTask::class) {
                     if (instance == null) {
-                        instance = OkHttpTask(context)
+                        instance = OkHttpTask()
                     }
                 }
             }
@@ -234,10 +236,14 @@ class OkHttpTask private constructor(context: Context): NetworkTask {
     }
 
     private fun getRequestBody(param: RequestParam): RequestBody {
-        val builder = FormBody.Builder()
-        param.params?.forEach { builder.add(it.key, it.value) }
+        if (param.asJson) {
+            return Gson().toJson(param.params).toRequestBody("application/json;charset=utf-8".toMediaType())
+        }else {
+            val builder = FormBody.Builder()
+            param.params?.forEach { builder.add(it.key, it.value) }
+            return builder.build()
+        }
 
-        return builder.build()
     }
 
     private fun createDir(destDirName: String): Boolean {

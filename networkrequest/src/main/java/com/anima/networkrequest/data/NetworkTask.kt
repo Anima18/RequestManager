@@ -1,6 +1,6 @@
 package com.anima.networkrequest.data
 
-import com.anima.networkrequest.DataDownloadCallback
+import com.anima.networkrequest.callback.DataDownloadCallback
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
 import com.anima.networkrequest.entity.RequestParam
 

@@ -47,7 +47,7 @@ dependencies {
 }
 
 
-/*uploadArchives {
+uploadArchives {
     repositories {
         mavenDeployer {
             snapshotRepository(url: "http://192.168.60.200:8081/repository/maven-snapshots/") {
@@ -55,7 +55,7 @@ dependencies {
                         password: project.hasProperty('nexus.password') ? project.property('nexus.password') : System.getenv('NEXUS_PASSWORD'))
             }
 
-            pom.version = "1.0.3-SNAPSHOT"
+            pom.version = "2.0.7-SNAPSHOT"
             pom.artifactId = "networkrequest"
             pom.groupId = "com.anima.networkrequest"
             pom.name = "networkrequest"
@@ -64,11 +64,11 @@ dependencies {
     }
 }
 
-build.dependsOn uploadArchives*/
+build.dependsOn uploadArchives
 
 /* 以下开始是将Android Library上传到jcenter的相关配置*/
 
-apply plugin: 'com.novoda.bintray-release'//添加
+/*apply plugin: 'com.novoda.bintray-release'//添加
 //项目主页
 def siteUrl = 'https://github.com/Anima18/RequestManager'
 publish{
@@ -84,4 +84,4 @@ tasks.withType(Javadoc) {//防止编码问题
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
-}
+}*/

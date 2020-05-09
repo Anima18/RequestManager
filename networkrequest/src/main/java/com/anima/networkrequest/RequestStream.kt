@@ -79,7 +79,7 @@ class RequestStream<T> {
             processDialog = showRequestIndicator()
             var deferredList = mutableListOf<Deferred<ResponseParser>>()
             for (request in requestList) {
-                val deferred = MainScope().async { OkHttpTask.getInstance(context).dataTask<T>(request.param) }
+                val deferred = MainScope().async { OkHttpTask.create().dataTask<T>(request.param) }
                 deferredList.add(deferred)
             }
 
@@ -114,7 +114,7 @@ class RequestStream<T> {
             val job = MainScope().launch {
                 try {
                     for (request in requestList) {
-                        val responseParser = OkHttpTask.getInstance(context).dataTask<T>(request.param)
+                        val responseParser = OkHttpTask.create().dataTask<T>(request.param)
                         val data = responseParser.getResult()!! as T
                         dataList.add(data)
                     }

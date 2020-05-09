@@ -3,11 +3,11 @@ package com.anima.networkrequest
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.os.Message
-import android.util.Log
+import com.anima.networkrequest.callback.*
 import com.anima.networkrequest.data.okhttp.OkHttpTask
 import com.anima.networkrequest.data.okhttp.dataConvert.ResponseParser
 import com.anima.networkrequest.entity.RequestParam
+import com.anima.networkrequest.entity.ViewModelStatus
 import com.anima.networkrequest.exception.ExceptionUtil
 import com.anima.networkrequest.indicator.IndicatorDialog
 import kotlinx.coroutines.*
@@ -67,6 +67,11 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
         return this
     }
 
+    override fun asJson(isJson: Boolean): IRequest<T> {
+        this.param.asJson = isJson
+        return this
+    }
+
     override fun dataFormat(format: RequestParam.DataFormat): IRequest<T> {
         this.param.dataFormat = format
         return this
@@ -99,16 +104,39 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
             mainScope = MainScope()
         job = mainScope!!.launch {
             try {
-                val resultData = OkHttpTask.getInstance(context).dataTask<T>(param)
+                val resultData = OkHttpTask.create().dataTask<T>(param)
                 GlobalScope.launch(Dispatchers.Main) {
                     processDialog?.hideProgress()
-                    objectCallback.onSuccess(resultData.getResult()!! as T)
+                    objectCallback.onSuccess(resultData.getResult() as T)
                 }
             }catch (e: Exception) {
                 val message = ExceptionUtil.analysisException(e)
                 GlobalScope.launch(Dispatchers.Main) {
                     processDialog?.hideProgress()
                     message?.let { objectCallback.onFailure(it) }
+                }
+            }
+        }
+        return job as Job
+    }
+
+    override fun getObject(callback: DataObjectStatusCallback<T>): Job {
+        var processDialog = showRequestIndicator()
+        this.param.dataFormat = RequestParam.DataFormat.OBJECT
+        if (mainScope == null)
+            mainScope = MainScope()
+        job = mainScope!!.launch {
+            try {
+                val resultData = OkHttpTask.create().dataTask<T>(param)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    callback.onStatus(ViewModelStatus(true, resultData.getResult() as T, null, 1))
+                }
+            }catch (e: Exception) {
+                val message = ExceptionUtil.analysisException(e)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    message?.let { callback.onStatus(ViewModelStatus(false, null, it)) }
                 }
             }
         }
@@ -126,7 +154,7 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
             mainScope = MainScope()
         job = mainScope!!.launch {
             try {
-                val resultData = OkHttpTask.getInstance(context).dataTask<T>(param)
+                val resultData = OkHttpTask.create().dataTask<T>(param)
                 GlobalScope.launch(Dispatchers.Main) {
                     processDialog?.hideProgress()
                     callback.onSuccess(resultData.getResult()!! as List<T>)
@@ -142,6 +170,29 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
         return job as Job
     }
 
+    override fun getList(callback: DataListStatusCallback<T>): Job {
+        var processDialog = showRequestIndicator()
+        this.param.dataFormat = RequestParam.DataFormat.LIST
+        if (mainScope == null)
+            mainScope = MainScope()
+        job = mainScope!!.launch {
+            try {
+                val resultData = OkHttpTask.create().dataTask<T>(param)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    callback.onStatus(ViewModelStatus(true, resultData.getResult()!! as List<T>, null))
+                }
+            }catch (e: Exception) {
+                val message = ExceptionUtil.analysisException(e)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    message?.let { callback.onStatus(ViewModelStatus(false, null, it))}
+                }
+            }
+        }
+        return job as Job
+    }
+
     override fun getPageData(callback: DataPagingCallback<T>): Job {
         var processDialog = showRequestIndicator()
         this.param.dataFormat = RequestParam.DataFormat.PAGELIST
@@ -149,7 +200,7 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
             mainScope = MainScope()
         job = mainScope!!.launch {
             try {
-                val resultData = OkHttpTask.getInstance(context).dataTask<T>(param)
+                val resultData = OkHttpTask.create().dataTask<T>(param)
                 GlobalScope.launch(Dispatchers.Main) {
                     processDialog?.hideProgress()
                     callback.onSuccess(resultData.getResult()!! as List<T>, resultData.getTotal())
@@ -165,6 +216,28 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
         return job as Job
     }
 
+    override fun getPageData(callback: DataListStatusCallback<T>): Job {
+        var processDialog = showRequestIndicator()
+        this.param.dataFormat = RequestParam.DataFormat.PAGELIST
+        if (mainScope == null)
+            mainScope = MainScope()
+        job = mainScope!!.launch {
+            try {
+                val resultData = OkHttpTask.create().dataTask<T>(param)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    callback.onStatus(ViewModelStatus(true, resultData.getResult()!! as List<T>, null, resultData.getTotal()))
+                }
+            }catch (e: Exception) {
+                val message = ExceptionUtil.analysisException(e)
+                GlobalScope.launch(Dispatchers.Main) {
+                    processDialog?.hideProgress()
+                    message?.let { callback.onStatus(ViewModelStatus(false, null, it)) }
+                }
+            }
+        }
+        return job as Job
+    }
 
     override fun download(callback: DataObjectCallback<String>): Job {
         var processDialog = showProcessIndicator()
@@ -173,9 +246,9 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
             mainScope = MainScope()
         job = mainScope!!.launch {
             try {
-                val resultData = OkHttpTask.getInstance(context).downloadTask(param, object : DataDownloadCallback{
+                val resultData = OkHttpTask.create().downloadTask(param, object :
+                    DataDownloadCallback {
                     override fun onProgress(fileName: String, progress: Int) {
-                        Log.i("ddddddddddddd", ""+progress)
                         processDialog?.updateProgress(fileName, progress)
                     }
                 })
@@ -201,9 +274,9 @@ class NetworkRequest<T>(private val context: Context) : IRequest<T>, DialogInter
             mainScope = MainScope()
         job = mainScope!!.launch {
             try {
-                val resultData = OkHttpTask.getInstance(context).uploadTask<T>(param, object : DataDownloadCallback{
+                val resultData = OkHttpTask.create().uploadTask<T>(param, object :
+                    DataDownloadCallback {
                     override fun onProgress(fileName: String, progress: Int) {
-                        Log.i("ddddddddddddd", ""+progress)
                         processDialog?.updateProgress(fileName, progress)
                     }
                 })

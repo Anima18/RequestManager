@@ -22,6 +22,7 @@ class RequestParam {
     var method: Method = Method.GET
     //请求参数
     var params: MutableMap<String, String>? = null
+    var asJson: Boolean = false
     //请求数据格式
     var dataFormat: DataFormat = DataFormat.OBJECT
     //请求数据类型
